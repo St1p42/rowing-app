@@ -1,7 +1,7 @@
 # First Meeting Minutes
 ## Meeting Information
 **Meeting Date/Time:** 22.11.2022, 14:45-15:15  
-**Meeting Purpose:** Kickoff 
+**Meeting Purpose:** Kickoff  
 **Meeting Location:** DW PC-Hall 1, Cubicle 7  
 **Note Taker:** Alexandru Ojica  
 
