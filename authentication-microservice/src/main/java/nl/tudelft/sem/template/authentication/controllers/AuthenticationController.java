@@ -93,7 +93,7 @@ public class AuthenticationController {
             Password password = new Password(request.getPassword());
             registrationService.registerUser(netId, password);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString());
         }
 
         return ResponseEntity.ok().build();

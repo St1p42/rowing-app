@@ -27,7 +27,7 @@ public class RegistrationServiceTests {
     private transient PasswordHashingService mockPasswordEncoder;
 
     @Autowired
-    private transient UserRepository userRepository;
+    private transient CredentialRepository credentialRepository;
 
     @Test
     public void createUser_withValidData_worksCorrectly() throws Exception {
@@ -41,7 +41,7 @@ public class RegistrationServiceTests {
         registrationService.registerUser(testUser, testPassword);
 
         // Assert
-        AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
+        AppUser savedUser = credentialRepository.findByNetId(testUser).orElseThrow();
 
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
@@ -55,7 +55,7 @@ public class RegistrationServiceTests {
         final Password newTestPassword = new Password("password456");
 
         AppUser existingAppUser = new AppUser(testUser, existingTestPassword);
-        userRepository.save(existingAppUser);
+        credentialRepository.save(existingAppUser);
 
         // Act
         ThrowingCallable action = () -> registrationService.registerUser(testUser, newTestPassword);
@@ -64,7 +64,7 @@ public class RegistrationServiceTests {
         assertThatExceptionOfType(Exception.class)
                 .isThrownBy(action);
 
-        AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
+        AppUser savedUser = credentialRepository.findByNetId(testUser).orElseThrow();
 
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);

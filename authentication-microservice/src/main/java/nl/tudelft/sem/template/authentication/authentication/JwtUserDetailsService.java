@@ -1,8 +1,8 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
 import java.util.ArrayList;
+import nl.tudelft.sem.template.authentication.domain.user.CredentialRepository;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
-import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
-    private final transient UserRepository userRepository;
+    private final transient CredentialRepository credentialRepository;
 
     @Autowired
-    public JwtUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public JwtUserDetailsService(CredentialRepository credentialRepository) {
+        this.credentialRepository = credentialRepository;
     }
 
     /**
@@ -32,7 +32,7 @@ public class JwtUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var optionalUser = userRepository.findByNetId(new NetId(username));
+        var optionalUser = credentialRepository.findByNetId(new NetId(username));
 
         if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException("User does not exist");
