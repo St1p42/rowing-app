@@ -75,7 +75,7 @@ public class User extends HasEvents {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        //this.recordThat(new UserWasCreatedEvent(netId));
+        //this.recordThat(new UserWasCreatedEvent(username));
     }
 
     /**
