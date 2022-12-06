@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
  * A DDD repository for quering and persisting user aggregate roots.
  */
 @Repository
-public interface UserRepository extends JpaRepository<AppUser, String> {
+public interface CredentialRepository extends JpaRepository<AppUser, String> {
     /**
      * Find user by NetID.
      */

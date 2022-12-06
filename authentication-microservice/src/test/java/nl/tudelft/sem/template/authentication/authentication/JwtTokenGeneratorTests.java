@@ -57,7 +57,7 @@ public class JwtTokenGeneratorTests {
 
         // Assert
         Claims claims = getClaims(token);
-        assertThat(claims.getExpiration()).isEqualTo(mockedTime.plus(1, ChronoUnit.DAYS).toString());
+        assertThat(claims.getExpiration()).isEqualTo(mockedTime.plus(15, ChronoUnit.MINUTES).toString());
     }
 
     @Test
