@@ -1,11 +1,12 @@
 package rowing.user.profiles;
 
-import rowing.user.authentication.AuthManager;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import rowing.user.authentication.AuthManager;
+
 
 /**
  * A configuration profile to allow injection of a mock AuthenticationManager.
