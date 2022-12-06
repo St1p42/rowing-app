@@ -1,8 +1,8 @@
 package nl.tudelft.sem.template.authentication.authentication;
 
 import java.util.ArrayList;
-import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.CredentialRepository;
+import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
