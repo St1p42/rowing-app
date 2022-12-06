@@ -1,4 +1,5 @@
-rootProject.name = 'template'
+rootProject.name = 'rowing'
 
 include 'authentication-microservice'
 include 'example-microservice'
+include 'user-microservice'
