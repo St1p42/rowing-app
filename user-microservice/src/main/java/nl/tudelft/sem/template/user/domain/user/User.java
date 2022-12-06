@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain.user;
+package nl.tudelft.sem.template.user.domain.user;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nl.tudelft.sem.template.example.domain.HasEvents;
+import nl.tudelft.sem.template.user.domain.HasEvents;
 
 /**
  * A DDD entity representing an application user in our domain.

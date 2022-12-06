@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain;
+package nl.tudelft.sem.template.user.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain.user;
+package nl.tudelft.sem.template.user.domain.user;
 
 public enum Gender {
     MALE,
