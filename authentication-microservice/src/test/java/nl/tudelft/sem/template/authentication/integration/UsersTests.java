@@ -15,7 +15,7 @@ import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
 import nl.tudelft.sem.template.authentication.domain.user.Password;
 import nl.tudelft.sem.template.authentication.domain.user.PasswordHashingService;
-import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
+import nl.tudelft.sem.template.authentication.domain.user.CredentialRepository;
 import nl.tudelft.sem.template.authentication.framework.integration.utils.JsonUtil;
 import nl.tudelft.sem.template.authentication.models.AuthenticationRequestModel;
 import nl.tudelft.sem.template.authentication.models.AuthenticationResponseModel;
@@ -56,7 +56,7 @@ public class UsersTests {
     private transient AuthenticationManager mockAuthenticationManager;
 
     @Autowired
-    private transient UserRepository userRepository;
+    private transient CredentialRepository credentialRepository;
 
     @Test
     public void register_withValidData_worksCorrectly() throws Exception {
@@ -78,7 +78,7 @@ public class UsersTests {
         // Assert
         resultActions.andExpect(status().isOk());
 
-        AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
+        AppUser savedUser = credentialRepository.findByNetId(testUser).orElseThrow();
 
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(testHashedPassword);
@@ -92,7 +92,7 @@ public class UsersTests {
         final HashedPassword existingTestPassword = new HashedPassword("password123");
 
         AppUser existingAppUser = new AppUser(testUser, existingTestPassword);
-        userRepository.save(existingAppUser);
+        credentialRepository.save(existingAppUser);
 
         RegistrationRequestModel model = new RegistrationRequestModel();
         model.setNetId(testUser.toString());
@@ -106,7 +106,7 @@ public class UsersTests {
         // Assert
         resultActions.andExpect(status().isBadRequest());
 
-        AppUser savedUser = userRepository.findByNetId(testUser).orElseThrow();
+        AppUser savedUser = credentialRepository.findByNetId(testUser).orElseThrow();
 
         assertThat(savedUser.getNetId()).isEqualTo(testUser);
         assertThat(savedUser.getPassword()).isEqualTo(existingTestPassword);
@@ -131,7 +131,7 @@ public class UsersTests {
         ).thenReturn(testToken);
 
         AppUser appUser = new AppUser(testUser, testHashedPassword);
-        userRepository.save(appUser);
+        credentialRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
         model.setNetId(testUser.toString());
@@ -203,7 +203,7 @@ public class UsersTests {
         ))).thenThrow(new BadCredentialsException("Invalid password"));
 
         AppUser appUser = new AppUser(new NetId(testUser), testHashedPassword);
-        userRepository.save(appUser);
+        credentialRepository.save(appUser);
 
         AuthenticationRequestModel model = new AuthenticationRequestModel();
         model.setNetId(testUser);

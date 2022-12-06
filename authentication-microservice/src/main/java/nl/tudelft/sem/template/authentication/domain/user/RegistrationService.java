@@ -7,17 +7,17 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RegistrationService {
-    private final transient UserRepository userRepository;
+    private final transient CredentialRepository credentialRepository;
     private final transient PasswordHashingService passwordHashingService;
 
     /**
      * Instantiates a new UserService.
      *
-     * @param userRepository  the user repository
+     * @param credentialRepository  the user repository
      * @param passwordHashingService the password encoder
      */
-    public RegistrationService(UserRepository userRepository, PasswordHashingService passwordHashingService) {
-        this.userRepository = userRepository;
+    public RegistrationService(CredentialRepository credentialRepository, PasswordHashingService passwordHashingService) {
+        this.credentialRepository = credentialRepository;
         this.passwordHashingService = passwordHashingService;
     }
 
@@ -36,7 +36,7 @@ public class RegistrationService {
 
             // Create new account
             AppUser user = new AppUser(netId, hashedPassword);
-            userRepository.save(user);
+            credentialRepository.save(user);
 
             return user;
         }
@@ -45,6 +45,6 @@ public class RegistrationService {
     }
 
     public boolean checkNetIdIsUnique(NetId netId) {
-        return !userRepository.existsByNetId(netId);
+        return !credentialRepository.existsByNetId(netId);
     }
 }

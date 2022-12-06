@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import nl.tudelft.sem.template.authentication.domain.user.AppUser;
 import nl.tudelft.sem.template.authentication.domain.user.HashedPassword;
 import nl.tudelft.sem.template.authentication.domain.user.NetId;
-import nl.tudelft.sem.template.authentication.domain.user.UserRepository;
+import nl.tudelft.sem.template.authentication.domain.user.CredentialRepository;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ public class JwtUserDetailsServiceTests {
     private transient JwtUserDetailsService jwtUserDetailsService;
 
     @Autowired
-    private transient UserRepository userRepository;
+    private transient CredentialRepository credentialRepository;
 
     @Test
     public void loadUserByUsername_withValidUser_returnsCorrectUser() {
@@ -38,7 +38,7 @@ public class JwtUserDetailsServiceTests {
         final HashedPassword testHashedPassword = new HashedPassword("password123Hash");
 
         AppUser appUser = new AppUser(testUser, testHashedPassword);
-        userRepository.save(appUser);
+        credentialRepository.save(appUser);
 
         // Act
         UserDetails actual = jwtUserDetailsService.loadUserByUsername(testUser.toString());
@@ -57,7 +57,7 @@ public class JwtUserDetailsServiceTests {
         final String testPasswordHash = "password123Hash";
 
         AppUser appUser = new AppUser(testUser, new HashedPassword(testPasswordHash));
-        userRepository.save(appUser);
+        credentialRepository.save(appUser);
 
         // Act
         ThrowableAssert.ThrowingCallable action = () -> jwtUserDetailsService.loadUserByUsername(testNonexistentUser);
