@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.authentication.domain.user;
 
 import java.util.Objects;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -21,7 +22,7 @@ public class AppUser extends HasEvents {
      */
     @Id
     @Column(name = "id", nullable = false)
-    private int id;
+    private UUID id;
 
     @Column(name = "net_id", nullable = false, unique = true)
     @Convert(converter = NetIdAttributeConverter.class)
@@ -40,6 +41,7 @@ public class AppUser extends HasEvents {
     public AppUser(NetId netId, HashedPassword password) {
         this.netId = netId;
         this.password = password;
+        this.id = UUID.randomUUID();
         this.recordThat(new UserWasCreatedEvent(netId));
     }
 
