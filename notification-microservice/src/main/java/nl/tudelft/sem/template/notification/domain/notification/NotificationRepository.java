@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain.notification;
+package nl.tudelft.sem.template.notification.domain.notification;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

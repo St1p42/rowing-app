@@ -1,6 +1,6 @@
-package nl.tudelft.sem.template.example.profiles;
+package nl.tudelft.sem.template.notification.profiles;
 
-import nl.tudelft.sem.template.example.authentication.AuthManager;
+import nl.tudelft.sem.template.notification.authentication.AuthManager;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

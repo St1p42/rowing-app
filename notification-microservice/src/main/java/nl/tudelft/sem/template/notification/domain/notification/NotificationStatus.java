@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain.notification;
+package nl.tudelft.sem.template.notification.domain.notification;
 
 public enum NotificationStatus {
     ACCEPTED,

@@ -1,6 +1,6 @@
-package nl.tudelft.sem.template.example.profiles;
+package nl.tudelft.sem.template.notification.profiles;
 
-import nl.tudelft.sem.template.example.authentication.JwtTokenVerifier;
+import nl.tudelft.sem.template.notification.authentication.JwtTokenVerifier;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
