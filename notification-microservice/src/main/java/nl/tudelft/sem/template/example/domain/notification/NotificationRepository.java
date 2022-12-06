@@ -24,7 +24,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     /**
      * Delete all notifications by activity id
      */
-    boolean deleteAllByActivityIdId(int activityId);
+    boolean deleteAllByActivityId(int activityId);
 
     //TODO
     //validate the request
