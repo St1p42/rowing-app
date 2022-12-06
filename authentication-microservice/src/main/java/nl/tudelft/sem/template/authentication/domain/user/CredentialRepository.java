@@ -10,12 +10,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CredentialRepository extends JpaRepository<AppUser, String> {
     /**
-     * Find user by NetID.
+     * Find user by Username.
      */
-    Optional<AppUser> findByNetId(NetId netId);
+    Optional<AppUser> findByUsername(Username username);
 
     /**
-     * Check if an existing user already uses a NetID.
+     * Check if an existing user already uses a Username.
      */
-    boolean existsByNetId(NetId netId);
+    boolean existsByUsername(Username username);
 }
