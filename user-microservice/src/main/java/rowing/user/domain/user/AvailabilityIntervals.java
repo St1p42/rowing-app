@@ -1,12 +1,10 @@
 package rowing.user.domain.user;
 
 import java.util.Date;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class AvailabilityIntervals {
     private Date startInterval;

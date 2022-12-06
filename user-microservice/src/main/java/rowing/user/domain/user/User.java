@@ -10,9 +10,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import rowing.user.domain.HasEvents;
 
 /**
@@ -20,9 +19,8 @@ import rowing.user.domain.HasEvents;
  */
 @Entity
 @Table(name = "users")
+@Data
 @NoArgsConstructor
-@Getter
-@Setter
 public class User extends HasEvents {
     /**
      * Identifier for the application user.
@@ -39,6 +37,9 @@ public class User extends HasEvents {
     @Column(name = "availability", nullable = true, unique = false)
     @Convert(converter = AvailabilityIntervalsAttributeConverter.class)
     private List<AvailabilityIntervals> availability;
+
+    @Column(name = "email", nullable = false, unique = false)
+    private String email;
 
     @Column(name = "firstName", nullable = false, unique = false)
     private String firstName;
@@ -66,12 +67,14 @@ public class User extends HasEvents {
      * @param userId - the unique identifier of the user
      * @param firstName - the first name of the user
      * @param lastName - the last name of the user
+     * @param email - the email of the user to send notifications to
      */
-    public User(int userId, String firstName, String lastName) {
+    public User(int userId, String firstName, String lastName, String email) {
         //TODO validation if necessary
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         //this.recordThat(new UserWasCreatedEvent(netId));
     }
 
