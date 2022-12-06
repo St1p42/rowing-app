@@ -1,7 +1,7 @@
 package rowing.notification.domain.notification;
 
 public class NotificationReader {
-    private final NotificationStatus status;
+    private transient final NotificationStatus status;
 
     public NotificationReader(NotificationStatus status) {
         this.status = status;
