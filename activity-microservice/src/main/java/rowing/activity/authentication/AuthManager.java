@@ -1,4 +1,4 @@
-package nl.tudelft.activity.authentication;
+package rowing.activity.authentication;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

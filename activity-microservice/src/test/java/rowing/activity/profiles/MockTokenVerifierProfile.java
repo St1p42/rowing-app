@@ -1,6 +1,6 @@
-package nl.tudelft.activity.profiles;
+package rowing.activity.profiles;
 
-import nl.tudelft.activity.authentication.JwtTokenVerifier;
+import rowing.activity.authentication.JwtTokenVerifier;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package nl.tudelft.activity.authentication;
+package rowing.activity.authentication;
 
 import java.io.IOException;
 import javax.servlet.ServletException;

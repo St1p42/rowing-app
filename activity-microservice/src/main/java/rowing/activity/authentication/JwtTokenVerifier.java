@@ -1,4 +1,4 @@
-package nl.tudelft.activity.authentication;
+package rowing.activity.authentication;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package nl.tudelft.activity.domain;
+package rowing.activity.domain;
 
 import lombok.Data;
 

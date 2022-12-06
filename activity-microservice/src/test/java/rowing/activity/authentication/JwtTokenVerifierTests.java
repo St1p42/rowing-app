@@ -1,4 +1,4 @@
-package nl.tudelft.activity.authentication;
+package rowing.activity.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

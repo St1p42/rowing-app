@@ -1,4 +1,4 @@
-package nl.tudelft.activity.config;
+package rowing.activity.config;
 
 import javax.sql.DataSource;
 import lombok.Getter;

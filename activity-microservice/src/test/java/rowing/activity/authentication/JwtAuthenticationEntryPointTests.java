@@ -1,4 +1,4 @@
-package nl.tudelft.activity.authentication;
+package rowing.activity.authentication;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;

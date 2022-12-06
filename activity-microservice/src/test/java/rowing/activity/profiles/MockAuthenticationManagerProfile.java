@@ -1,6 +1,6 @@
-package nl.tudelft.activity.profiles;
+package rowing.activity.profiles;
 
-import nl.tudelft.activity.authentication.AuthManager;
+import rowing.activity.authentication.AuthManager;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

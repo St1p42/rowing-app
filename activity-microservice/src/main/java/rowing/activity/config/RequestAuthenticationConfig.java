@@ -1,7 +1,7 @@
-package nl.tudelft.activity.config;
+package rowing.activity.config;
 
-import nl.tudelft.activity.authentication.JwtAuthenticationEntryPoint;
-import nl.tudelft.activity.authentication.JwtRequestFilter;
+import rowing.activity.authentication.JwtAuthenticationEntryPoint;
+import rowing.activity.authentication.JwtRequestFilter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;

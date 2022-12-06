@@ -1,4 +1,4 @@
-package nl.tudelft.activity.domain;
+package rowing.activity.domain;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,6 @@
-package nl.tudelft.activity.controllers;
+package rowing.activity.controllers;
 
-import nl.tudelft.activity.authentication.AuthManager;
+import rowing.activity.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
