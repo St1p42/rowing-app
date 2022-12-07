@@ -2,11 +2,8 @@ package rowing.authentication.domain.user;
 
 import java.util.Objects;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.NoArgsConstructor;
 import rowing.authentication.domain.HasEvents;
 
@@ -22,6 +19,7 @@ public class AppUser extends HasEvents {
      */
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Column(name = "username", nullable = false, unique = true)
@@ -41,7 +39,6 @@ public class AppUser extends HasEvents {
     public AppUser(Username username, HashedPassword password) {
         this.username = username;
         this.password = password;
-        this.id = UUID.randomUUID();
         this.recordThat(new UserWasCreatedEvent(username));
     }
 
