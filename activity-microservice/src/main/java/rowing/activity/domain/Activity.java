@@ -19,10 +19,15 @@ public class Activity  {
     @Column(name = "activityOwner", nullable = false, unique = false)
     private String activityOwner;
 
+    @Column(name = "requirements", nullable = true, unique = false)
+    @Enumerated(EnumType.STRING)
+    @OneToMany
+    private List<Requirement> requirements;
+
     @Column(name = "participants", nullable = true, unique = false)
     @Enumerated(EnumType.STRING)
     @OneToMany
-    private List<Participant> participants;
+    private List<String> participantsUsername;
 
     @Column(name = "type", nullable = true, unique = false)
     private String type;
