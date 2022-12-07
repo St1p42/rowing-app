@@ -20,13 +20,12 @@ public class Activity  {
     private String activityOwner;
 
     @Column(name = "requirements", nullable = true, unique = false)
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RequirementAttributeConverter.class)
     @OneToMany
     private List<Requirement> requirements;
 
     @Column(name = "participants", nullable = true, unique = false)
-    @Enumerated(EnumType.STRING)
-    @OneToMany
+    @ElementCollection
     private List<String> participantsUsername;
 
     @Column(name = "type", nullable = true, unique = false)
