@@ -12,7 +12,7 @@ public interface ActivityRepository extends JpaRepository<Activity, String> {
     /**
      * Find activity by name.
      */
-    Optional<Activity> findActivityByName(String activityName);
+    Optional<Activity> findActivityByActivityName(String activityName);
 
-    boolean existsActivityBy(int activityId);
+    boolean existsByActivityId(int activityId);
 }

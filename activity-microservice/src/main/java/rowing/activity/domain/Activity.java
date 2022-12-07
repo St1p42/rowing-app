@@ -21,7 +21,6 @@ public class Activity  {
 
     @Column(name = "requirements", nullable = true, unique = false)
     @Convert(converter = RequirementAttributeConverter.class)
-    @OneToMany
     private List<Requirement> requirements;
 
     @Column(name = "participants", nullable = true, unique = false)
