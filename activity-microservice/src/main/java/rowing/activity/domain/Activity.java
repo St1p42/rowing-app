@@ -21,7 +21,7 @@ public class Activity  {
 
     @Column(name = "participants", nullable = true, unique = false)
     @Enumerated(EnumType.STRING)
-    @ElementCollection
+    @OneToMany
     private List<Participant> participants;
 
     @Column(name = "type", nullable = true, unique = false)
