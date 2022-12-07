@@ -79,21 +79,21 @@ public class JwtTokenVerifierTests {
     }
 
     @Test
-    public void parseNetid() {
+    public void parseUsername() {
         // Arrange
         String expected = "user123";
         String token = generateToken(secret, expected, -10_000_000, 10_000_000);
 
         // Act
-        String actual = jwtTokenVerifier.getNetIdFromToken(token);
+        String actual = jwtTokenVerifier.getUsernameFromToken(token);
 
         // Assert
         assertThat(actual).isEqualTo(expected);
     }
 
-    private String generateToken(String jwtSecret, String netid, long issuanceOffset, long expirationOffset) {
+    private String generateToken(String jwtSecret, String username, long issuanceOffset, long expirationOffset) {
         Map<String, Object> claims = new HashMap<>();
-        return Jwts.builder().setClaims(claims).setSubject(netid)
+        return Jwts.builder().setClaims(claims).setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis() + issuanceOffset))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationOffset))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
