@@ -1,8 +1,8 @@
 package rowing.authentication.application.user;
 
-import rowing.authentication.domain.user.UserWasCreatedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import rowing.authentication.domain.user.UserWasCreatedEvent;
 
 /**
  * This event listener is automatically called when a domain entity is saved
