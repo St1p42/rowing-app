@@ -3,5 +3,5 @@ rootProject.name = 'rowing'
 include 'authentication-microservice'
 include 'example-microservice'
 include 'user-microservice'
-include 'producer-template'
+include 'kafka-template'
 
