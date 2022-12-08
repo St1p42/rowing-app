@@ -4,3 +4,5 @@ include 'authentication-microservice'
 include 'example-microservice'
 include 'notification-microservice'
 include 'user-microservice'
+include 'commons'
+

@@ -1,5 +1,7 @@
 package rowing.notification.domain.notification;
 
+import rowing.commons.NotificationStatus;
+
 import java.util.Locale;
 
 //write tests for this class
@@ -8,13 +10,7 @@ public class Notification {
     private transient NotificationStatus status;
     private transient String destinationEmail;
 
-    public enum NotificationStatus {
-        ACCEPTED,
-        REJECTED,
-        WITHDRAWN,
-        KICKED,
-        DELETED
-    }
+
 
     /**
      * Constructor for the notification object.
