@@ -2,4 +2,5 @@ rootProject.name = 'rowing'
 
 include 'authentication-microservice'
 include 'example-microservice'
+include 'activity-microservice'
 include 'user-microservice'
