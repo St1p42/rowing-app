@@ -5,8 +5,9 @@ import java.util.Locale;
 //write tests for this class
 //later add the activity information to this class and change retrieveText respectively
 public class Notification {
-    private NotificationStatus status;
-    private String destinationEmail;
+    private transient NotificationStatus status;
+    private transient String destinationEmail;
+
     public enum NotificationStatus {
         ACCEPTED,
         REJECTED,
@@ -33,18 +34,16 @@ public class Notification {
      */
     public String retrieveBody() {
         if (this.status == NotificationStatus.ACCEPTED) {
-            return "You were " + this.status.toString().toLowerCase(Locale.ROOT) +
-                    " to the activity!"; // + activity name, time, etc
-        }
-        else if (this.status == NotificationStatus.DELETED ||
-                this.status == NotificationStatus.REJECTED ||
-                this.status == NotificationStatus.KICKED) {
-            return "Unfortunately, you were " + this.status.toString().toLowerCase(Locale.ROOT) +
-                    " from the activity.";
-        }
-        else if (this.status == NotificationStatus.WITHDRAWN) {
-            return "You have successfully " + this.status.toString().toLowerCase(Locale.ROOT) +
-                    " from the activity";
+            return "You were " + this.status.toString().toLowerCase(Locale.ROOT)
+                    + " to the activity!"; // + activity name, time, etc
+        } else if (this.status == NotificationStatus.DELETED
+                || this.status == NotificationStatus.REJECTED
+                || this.status == NotificationStatus.KICKED) {
+            return "Unfortunately, you were " + this.status.toString().toLowerCase(Locale.ROOT)
+                    + " from the activity.";
+        } else if (this.status == NotificationStatus.WITHDRAWN) {
+            return "You have successfully " + this.status.toString().toLowerCase(Locale.ROOT)
+                    + " from the activity";
         }
 
         //default case

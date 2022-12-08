@@ -14,11 +14,17 @@ import rowing.notification.domain.notification.Notification;
 @SpringBootApplication
 public class Application {
     @Autowired
-    private EmailService senderService;
+    private transient EmailService senderService;
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
+    /**
+     * Generates a random notification to test the service and sends it
+     * to the hard-coded email address as soon as the application starts
+     * to check the functionality.
+     */
     @EventListener(ApplicationReadyEvent.class)
     public void sendMail() {
         //checking whether works
