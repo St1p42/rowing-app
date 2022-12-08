@@ -1,72 +1,72 @@
 package rowing.notification.domain.notification;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Locale;
 
-import javax.persistence.*;
-import java.util.Objects;
-
-/**
- * Notification entity to store in the database.
- * In constructor takes all the arguments listed as fields including the reader object
- * which gives different toString() results based on the notification status.
- */
-@Entity
-@Table(name = "notifications")
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
+//write tests for this class
+//later add the activity information to this class and change retrieveText respectively
 public class Notification {
-    @Id
-    @Column(name = "notificationId", nullable = false, unique = true)
-    private int id;
-
-    @Column(name = "activity", nullable = false, unique = false)
-    private int activityId;
-
-    @Column(name = "user", nullable = false, unique = false)
-    private int userId;
-
-
-    @Column(name = "notificationStatus", nullable = true, unique = false)
-    @Enumerated(EnumType.STRING)
     private NotificationStatus status;
-
-    //field is ignored when the notification is added to the database
-    //but not ignored when converting to JSON
-    @JsonInclude()
-    @Transient
-    private NotificationReader reader;
-
-
-    /**
-     * Equality is only based on the identifier.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Notification other = (Notification) o;
-        return this.id == (other.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId);
+    private String destinationEmail;
+    public enum NotificationStatus {
+        ACCEPTED,
+        REJECTED,
+        WITHDRAWN,
+        KICKED,
+        DELETED
     }
 
     /**
-     * Converts the notification to the text message.
-     * @return String representing the message for the user.
+     * Constructor for the notification object.
+     *
+     * @param status - status of the user regarding the activity he applied to
+     * @param destinationEmail - an email of the user who should receive the notification
      */
-    @Override
-    public String toString() {
-        return this.reader.read();
+    public Notification(NotificationStatus status, String destinationEmail) {
+        this.status = status;
+        this.destinationEmail = destinationEmail;
+    }
+
+    /**
+     * Generate body text for the email based on the status.
+     *
+     * @return the body of an email in a string format
+     */
+    public String retrieveBody() {
+        if (this.status == NotificationStatus.ACCEPTED) {
+            return "You were " + this.status.toString().toLowerCase(Locale.ROOT) +
+                    " to the activity!"; // + activity name, time, etc
+        }
+        else if (this.status == NotificationStatus.DELETED ||
+                this.status == NotificationStatus.REJECTED ||
+                this.status == NotificationStatus.KICKED) {
+            return "Unfortunately, you were " + this.status.toString().toLowerCase(Locale.ROOT) +
+                    " from the activity.";
+        }
+        else if (this.status == NotificationStatus.WITHDRAWN) {
+            return "You have successfully " + this.status.toString().toLowerCase(Locale.ROOT) +
+                    " from the activity";
+        }
+
+        //default case
+        return "You have a notification regarding your activity";
+    }
+
+    /**
+     * Retrieves the subject of an email based on the status of user in
+     * this notification.
+     *
+     * @return String representing an email's subject
+     */
+    public String retrieveSubject() {
+        return "Your status for the activity is " + this.status; //add info about activity
+    }
+
+    /**
+     * Getter for the destination email.
+     *
+     * @return destination email as a string
+     */
+    public String getDestinationEmail() {
+        return this.destinationEmail;
     }
 }
