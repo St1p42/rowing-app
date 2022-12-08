@@ -1,18 +1,17 @@
 package rowing.notification.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.server.ResponseStatusException;
-import rowing.notification.authentication.AuthManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+import rowing.commons.NotificationStatus;
+import rowing.notification.authentication.AuthManager;
+import rowing.notification.domain.notification.EmailService;
 import rowing.notification.domain.notification.Notification;
 import rowing.notification.models.NotificationRequestModel;
-import rowing.commons.NotificationStatus;
-
-import rowing.notification.domain.notification.EmailService;
 
 /**
  * Hello World example controller.

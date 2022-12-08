@@ -1,12 +1,12 @@
 package rowing.authentication.profiles;
 
-import rowing.authentication.domain.user.PasswordHashingService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import rowing.authentication.domain.user.PasswordHashingService;
 
 /**
  * This is a configuration profile.

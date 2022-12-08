@@ -1,14 +1,15 @@
 package rowing.authentication.authentication;
 
-import java.util.ArrayList;
-import rowing.authentication.domain.user.CredentialRepository;
-import rowing.authentication.domain.user.Username;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import rowing.authentication.domain.user.CredentialRepository;
+import rowing.authentication.domain.user.Username;
+
+import java.util.ArrayList;
 
 /**
  * User details service responsible for retrieving the user from the DB.

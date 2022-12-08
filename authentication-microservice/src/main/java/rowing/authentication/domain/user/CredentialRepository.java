@@ -1,10 +1,9 @@
 package rowing.authentication.domain.user;
 
-import java.util.Optional;
-
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 /**
  * A DDD repository for quering and persisting user aggregate roots.
