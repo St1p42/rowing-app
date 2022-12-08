@@ -1,25 +1,5 @@
 package rowing.authentication.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import rowing.authentication.authentication.JwtTokenGenerator;
-import rowing.authentication.domain.user.AppUser;
-import rowing.authentication.domain.user.CredentialRepository;
-import rowing.authentication.domain.user.HashedPassword;
-import rowing.authentication.domain.user.Username;
-import rowing.authentication.domain.user.Password;
-import rowing.authentication.domain.user.PasswordHashingService;
-import rowing.authentication.integration.utils.JsonUtil;
-import rowing.authentication.models.AuthenticationRequestModel;
-import rowing.authentication.models.AuthenticationResponseModel;
-import rowing.authentication.models.RegistrationRequestModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +15,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import rowing.authentication.authentication.JwtTokenGenerator;
+import rowing.authentication.domain.user.*;
+import rowing.authentication.integration.utils.JsonUtil;
+import rowing.authentication.models.AuthenticationRequestModel;
+import rowing.authentication.models.AuthenticationResponseModel;
+import rowing.authentication.models.RegistrationRequestModel;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)

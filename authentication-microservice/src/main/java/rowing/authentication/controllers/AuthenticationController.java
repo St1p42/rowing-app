@@ -1,13 +1,5 @@
 package rowing.authentication.controllers;
 
-import rowing.authentication.authentication.JwtTokenGenerator;
-import rowing.authentication.authentication.JwtUserDetailsService;
-import rowing.authentication.domain.user.Username;
-import rowing.authentication.domain.user.Password;
-import rowing.authentication.domain.user.RegistrationService;
-import rowing.authentication.models.AuthenticationRequestModel;
-import rowing.authentication.models.AuthenticationResponseModel;
-import rowing.authentication.models.RegistrationRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import rowing.authentication.authentication.JwtTokenGenerator;
+import rowing.authentication.authentication.JwtUserDetailsService;
+import rowing.authentication.domain.user.Password;
+import rowing.authentication.domain.user.RegistrationService;
+import rowing.authentication.domain.user.Username;
+import rowing.authentication.models.AuthenticationRequestModel;
+import rowing.authentication.models.AuthenticationResponseModel;
+import rowing.authentication.models.RegistrationRequestModel;
 
 @RestController
 public class AuthenticationController {

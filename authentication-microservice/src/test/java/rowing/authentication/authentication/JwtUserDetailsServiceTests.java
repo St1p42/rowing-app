@@ -1,12 +1,5 @@
 package rowing.authentication.authentication;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-
-import rowing.authentication.domain.user.AppUser;
-import rowing.authentication.domain.user.CredentialRepository;
-import rowing.authentication.domain.user.HashedPassword;
-import rowing.authentication.domain.user.Username;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +10,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import rowing.authentication.domain.user.AppUser;
+import rowing.authentication.domain.user.CredentialRepository;
+import rowing.authentication.domain.user.HashedPassword;
+import rowing.authentication.domain.user.Username;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

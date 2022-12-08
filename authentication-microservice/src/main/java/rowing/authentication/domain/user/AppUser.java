@@ -1,11 +1,11 @@
 package rowing.authentication.domain.user;
 
-import java.util.Objects;
-import java.util.UUID;
-import javax.persistence.*;
-
 import lombok.NoArgsConstructor;
 import rowing.authentication.domain.HasEvents;
+
+import javax.persistence.*;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * A DDD entity representing an application user in our domain.
