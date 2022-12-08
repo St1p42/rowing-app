@@ -1,6 +1,2 @@
 rootProject.name = 'notification-microservice'
 
-include 'commons'
-// The following line tells Gradle where to find the shared project,
-// since it is in the parent directory of example-microservice.
-project(':commons').projectDir = new File('../commons')
