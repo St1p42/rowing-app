@@ -5,6 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rowing.activity.domain.Activity;
+import rowing.activity.services.ActivityService;
+
+import java.util.List;
 
 /**
  * Hello World example controller.
@@ -16,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class DefaultController {
 
     private final transient AuthManager authManager;
+    private final ActivityService activityService;
+
+
 
     /**
      * Instantiates a new controller.
@@ -23,8 +30,9 @@ public class DefaultController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public DefaultController(AuthManager authManager) {
+    public DefaultController(AuthManager authManager, ActivityService activityService) {
         this.authManager = authManager;
+        this.activityService = activityService;
     }
 
     /**
@@ -38,4 +46,13 @@ public class DefaultController {
 
     }
 
+    /**
+     * Gets all activities
+     *
+     * @return all activities in the database
+     */
+    @GetMapping("/return/activityList")
+    public ResponseEntity<List<Activity>> allActivities(){
+        return ResponseEntity.ok(activityService.activityList());
+    }
 }
