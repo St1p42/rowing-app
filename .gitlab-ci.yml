@@ -3,3 +3,4 @@ include:
   - example-microservice/.gitlab-ci.yml
   - notification-microservice/.gitlab-ci.yml
   - user-microservice/.gitlab-ci.yml
+  - commons/.gitlab-ci.yml

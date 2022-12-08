@@ -4,8 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import rowing.commons.NotificationStatus;
 import rowing.notification.authentication.AuthManager;
 import rowing.notification.authentication.JwtTokenVerifier;
 import org.junit.jupiter.api.Test;
@@ -48,16 +52,15 @@ public class ExampleTest {
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        ResultActions result = mockMvc.perform(get("/hello")
+        JSONObject json = new JSONObject();
+        json.put("status", NotificationStatus.ACCEPTED);
+        json.put("email", "aojica65@gmail.com");
+        ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken"));
+                .header("Authorization", "Bearer MockedToken")
+                .content(json.toString()));
 
         // Assert
         result.andExpect(status().isOk());
-
-        String response = result.andReturn().getResponse().getContentAsString();
-
-        assertThat(response).isEqualTo("Hello ExampleUser");
-
     }
 }

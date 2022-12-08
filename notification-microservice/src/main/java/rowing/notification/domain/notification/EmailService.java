@@ -23,6 +23,5 @@ public class EmailService {
         newMessage.setSubject(notification.retrieveSubject());
         mailSender.send(newMessage);
         System.out.println("The email was sent successfully.");
-
     }
 }
