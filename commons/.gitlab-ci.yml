@@ -14,13 +14,6 @@ build-commons:
   script:
     gradle commons:assemble commons:testClasses
 
-checkStyle-commons:
-  stage: staticAnalysis
-  script:
-    gradle commons:checkstyleMain commons:checkStyleTest
-  allow_failure: true
-
-
 PMD-commons:
   stage: staticAnalysis
   script:
@@ -31,5 +24,4 @@ test-commons:
   stage: test
   script:
     - gradle commons:test commons:jacocoTestReport
-    - cat commons/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/

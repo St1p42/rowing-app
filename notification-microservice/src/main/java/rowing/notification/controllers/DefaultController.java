@@ -43,12 +43,12 @@ public class DefaultController {
      */
     @PostMapping("/notify")
     public ResponseEntity notifyUser(@RequestBody NotificationRequestModel request) {
-        try{
+        try {
             NotificationStatus status = request.getStatus();
             Notification notification = new Notification(status,
                     request.getEmail());
             senderService.sendEmail(notification);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString());
         }
 
