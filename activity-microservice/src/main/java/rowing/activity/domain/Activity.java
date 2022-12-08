@@ -11,7 +11,7 @@ import java.util.List;
 public class Activity  {
     @Id
     @Column(name = "activityId", nullable = false, unique = true)
-    private String activityId;
+    private int activityId;
 
     @Column(name = "activityName", nullable = false, unique = false)
     private String activityName;
