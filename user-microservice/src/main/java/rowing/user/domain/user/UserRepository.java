@@ -12,10 +12,11 @@ public interface UserRepository extends JpaRepository<User, String> {
     /**
      * Find user by Username.
      */
-    Optional<User> findByUserId(int userId);
+    Optional<User> findByUserId(String userId);
+
 
     /**
      * Check if an existing user already uses a Username.
      */
-    boolean existsByUserId(int userId);
+    boolean existsByUserId(String userId);
 }
