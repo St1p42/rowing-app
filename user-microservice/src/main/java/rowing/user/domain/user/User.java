@@ -21,7 +21,7 @@ public class User extends HasEvents {
      */
     @Id
     @Column(name = "userId", nullable = false, unique = true)
-    private int userId;
+    private String userId;
 
     @Column(name = "rowingPositions", nullable = true, unique = false)
     @Enumerated(EnumType.STRING)
@@ -63,7 +63,7 @@ public class User extends HasEvents {
      * @param lastName - the last name of the user
      * @param email - the email of the user to send notifications to
      */
-    public User(int userId, String firstName, String lastName, String email) {
+    public User(String userId, String firstName, String lastName, String email) {
         //TODO validation if necessary
         this.userId = userId;
         this.firstName = firstName;
@@ -113,7 +113,7 @@ public class User extends HasEvents {
             return false;
         }
         User appUser = (User) o;
-        return userId == (appUser.userId);
+        return userId.equals(appUser.userId);
     }
 
     @Override
