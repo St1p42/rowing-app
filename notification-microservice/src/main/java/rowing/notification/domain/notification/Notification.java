@@ -53,7 +53,9 @@ public class Notification {
      * @return String representing an email's subject
      */
     public String retrieveSubject() {
-        if (this.status == null) return "Your status for the activity is unknown";
+        if (this.status == null) {
+            return "Your status for the activity is unknown";
+        }
         return "Your status for the activity is " + this.status; //add info about activity
     }
 
