@@ -23,7 +23,7 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = UserDTO.class, name = "DefiniteGameDTO")
+        @JsonSubTypes.Type(value = UserDTO.class, name = "UserDTO")
 })
 @JsonView(Views.Public.class)
 
@@ -49,58 +49,6 @@ public class UserDTO implements DTO {
 
     private Boolean competitive;
 
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public List<Position> getRowingPositions() {
-        return rowingPositions;
-    }
-
-    public List<AvailabilityIntervals> getAvailability() {
-        return availability;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public List<CoxCertificate> getCoxCertificates() {
-        return coxCertificates;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public String getRowingOrganization() {
-        return rowingOrganization;
-    }
-
-    public Boolean getCompetitive() {
-        return competitive;
-    }
-
-    public UserDTO(UserDTO user) {
-        this.userId = user.getUserId();
-        this.rowingPositions = user.getRowingPositions();
-        this.availability = user.getAvailability();
-        this.email = user.getEmail();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.coxCertificates = user.getCoxCertificates();
-        this.gender = user.getGender();
-        this.rowingOrganization = user.getRowingOrganization();
-        this.competitive = user.getCompetitive();
-    }
 }
 
 
