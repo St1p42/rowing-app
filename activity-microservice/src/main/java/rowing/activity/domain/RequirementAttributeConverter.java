@@ -1,5 +1,7 @@
 package rowing.activity.domain;
 
+import rowing.commons.Requirement;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 

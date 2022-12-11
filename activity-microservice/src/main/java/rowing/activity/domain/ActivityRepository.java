@@ -3,6 +3,7 @@ package rowing.activity.domain;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import rowing.activity.domain.entities.Activity;
 
 /**
  * A DDD repository for quering and persisting user aggregate roots.
