@@ -26,6 +26,6 @@ public class Match {
     private UUID userId;
 
     @Column(name = "position", nullable = false, unique = true)
-    private Position position ;
+    private Position position;
 
 }

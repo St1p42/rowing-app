@@ -9,14 +9,13 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-public class Training extends Activity {
+public class Training extends Activity<TrainingDTO> {
 
     public Training(TrainingDTO dto) {
         super(dto);
@@ -25,13 +24,14 @@ public class Training extends Activity {
     public Training(UUID id, UUID owner, String name, List<Position> positions, String type, Date start) {
         super(id, owner, name, type, start, positions);
     }
+
     /**
      * Returns the DTO of this training.
      *
      * @return the DTO of this training.
      */
     @Override
-    public TrainingDTO getDTO() {
-        return new TrainingDTO((TrainingDTO) super.toDTO());
+    public TrainingDTO getDto() {
+        return new TrainingDTO((TrainingDTO) super.toDto());
     }
 }

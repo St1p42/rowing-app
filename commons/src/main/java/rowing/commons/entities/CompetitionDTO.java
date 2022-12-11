@@ -29,6 +29,10 @@ public class CompetitionDTO extends ActivityDTO {
 
     private Requirement requirement;
 
+    public Requirement getRequirement() {
+        return requirement;
+    }
+
     public CompetitionDTO(ActivityDTO activity, Requirement requirement) {
         super(activity);
         this.requirement = requirement;

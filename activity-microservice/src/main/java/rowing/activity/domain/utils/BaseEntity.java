@@ -28,7 +28,7 @@ public abstract class BaseEntity<D extends DTO> {
     protected UUID id;
 
     /**
-     * Concert the entity to a DTO
+     * Convert the entity to a DTO.
     */
-    public abstract D getDTO();
+    public abstract D getDto();
 }

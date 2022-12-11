@@ -11,7 +11,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +21,7 @@ import java.util.UUID;
 @ToString(callSuper = true)
 @Data
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-public class Competition extends Activity {
+public class Competition extends Activity<CompetitionDTO> {
 
     Requirement requirement;
 
@@ -30,18 +29,19 @@ public class Competition extends Activity {
         super(dto);
     }
 
-    public Competition(UUID id, UUID owner, String name, List<Position> positions, String type, Date start, Requirement requirement) {
+    public Competition(UUID id, UUID owner, String name, List<Position> positions,
+                       String type, Date start, Requirement requirement) {
         super(id, owner, name, type, start, positions);
         this.requirement = requirement;
     }
 
     /**
-     * Returns the DTO of this training.
+     * Returns the DTO of this competition.
      *
-     * @return the DTO of this training.
+     * @return the DTO of this competition.
      */
     @Override
-    public CompetitionDTO getDTO() {
-        return new CompetitionDTO((CompetitionDTO) super.toDTO());
+    public CompetitionDTO getDto() {
+        return new CompetitionDTO((CompetitionDTO) super.toDto());
     }
 }

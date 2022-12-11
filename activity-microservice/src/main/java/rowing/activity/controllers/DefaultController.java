@@ -49,6 +49,12 @@ public class DefaultController {
 
     }
 
+    /**
+     * Endpoint to create a new activity.
+     *
+     * @param dto that will contain basic activity information
+     * @return response OK if the activity has been created
+     */
     @GetMapping("/new")
     public ResponseEntity<String> createActivity(ActivityDTO dto) {
         Builder builder;
@@ -59,8 +65,7 @@ public class DefaultController {
             director.constructTraining((TrainingBuilder) builder, dto);
             Training activity = (Training) builder.build();
             return ResponseEntity.ok("Activity " + activity.getId() + "created successfully !");
-        }
-        else {
+        } else {
             builder = new CompetitionBuilder();
             director = new Director();
             director.constructCompetition((CompetitionBuilder) builder, (CompetitionDTO) dto);

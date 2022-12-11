@@ -38,7 +38,11 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
     @ElementCollection
     private List<Position> positions;
 
-
+    /**
+     * Mapper that maps a dto to an activity.
+     *
+     * @param dto that contains activity information
+     */
     public Activity(ActivityDTO dto) {
         ModelMapper mapper = new ModelMapper();
         mapper.addConverter(
@@ -57,7 +61,12 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
         this.type = dto.getType();
     }
 
-    protected ActivityDTO toDTO() {
+    /**
+     * Function that compresses an activity to a DTO.
+     *
+     * @return the dto containing the information that should be sent.
+     */
+    public ActivityDTO toDto() {
         return new ActivityDTO(
                 this.id,
                 this.owner,
@@ -68,5 +77,5 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
                 );
     }
 
-    public abstract T getDTO();
+    public abstract T getDto();
 }

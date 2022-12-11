@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Repository to keep matching information : user to activity and which position
+ * Repository to keep matching information : user to activity and which position.
  */
 public interface MatchRepository extends JpaRepository<Match, UUID> {
 
