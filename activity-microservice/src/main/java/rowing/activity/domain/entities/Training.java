@@ -18,15 +18,12 @@ import java.util.*;
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 public class Training extends Activity {
 
-    Map<UUID, Position> participants;
-
     public Training(TrainingDTO dto) {
         super(dto);
     }
 
-    public Training(UUID id, UUID owner, String name, List<Position> positions, String type, Date start, Map<UUID, Position> participants) {
+    public Training(UUID id, UUID owner, String name, List<Position> positions, String type, Date start) {
         super(id, owner, name, type, start, positions);
-        this.participants = participants;
     }
     /**
      * Returns the DTO of this training.

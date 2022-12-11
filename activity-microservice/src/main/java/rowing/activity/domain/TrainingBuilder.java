@@ -15,9 +15,8 @@ public class TrainingBuilder implements Builder {
     private List<Position> positions;
     private String type;
     private Date start;
-    private Map<UUID, Position> participants;
 
     public Training build() {
-        return new Training(id, owner, name, positions, type, start, participants);
+        return new Training(id, owner, name, positions, type, start);
     }
 }

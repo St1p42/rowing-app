@@ -27,16 +27,14 @@ import java.util.UUID;
 @JsonView(Views.Public.class)
 public class CompetitionDTO extends ActivityDTO {
 
-    private Map<UUID, Position> participants;
     private Requirement requirement;
 
-    public CompetitionDTO(ActivityDTO activity, Map<UUID, Position> participants, Requirement requirement) {
+    public CompetitionDTO(ActivityDTO activity, Requirement requirement) {
         super(activity);
-        this.participants = participants;
         this.requirement = requirement;
     }
 
     public CompetitionDTO(CompetitionDTO activity) {
-        this(activity, activity.getParticipants(), activity.getRequirement());
+        this(activity, activity.getRequirement());
     }
 }

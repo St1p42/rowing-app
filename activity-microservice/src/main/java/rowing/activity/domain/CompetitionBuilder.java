@@ -18,10 +18,9 @@ public class CompetitionBuilder implements Builder {
     private List<Position> positions;
     private String type;
     private Date start;
-    private Map<UUID, Position> participants;
     private Requirement requirement;
 
     public Competition build() {
-        return new Competition(id, owner, name, positions, type, start, participants, requirement);
+        return new Competition(id, owner, name, positions, type, start, requirement);
     }
 }

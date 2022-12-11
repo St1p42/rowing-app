@@ -24,16 +24,14 @@ import java.util.UUID;
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 public class Competition extends Activity {
 
-    Map<UUID, Position> participants;
     Requirement requirement;
 
     public Competition(CompetitionDTO dto) {
         super(dto);
     }
 
-    public Competition(UUID id, UUID owner, String name, List<Position> positions, String type, Date start, Map<UUID, Position> participants, Requirement requirement) {
+    public Competition(UUID id, UUID owner, String name, List<Position> positions, String type, Date start, Requirement requirement) {
         super(id, owner, name, type, start, positions);
-        this.participants = participants;
         this.requirement = requirement;
     }
 

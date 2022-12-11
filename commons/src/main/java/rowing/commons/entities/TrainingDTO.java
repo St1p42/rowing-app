@@ -24,14 +24,7 @@ import java.util.UUID;
 public class TrainingDTO extends ActivityDTO{
 
 
-    private Map<UUID, Position> participants;
-
-    public TrainingDTO(TrainingDTO dto) {
-        this(dto, dto.getParticipants());
-    }
-
-    public TrainingDTO(ActivityDTO superDTO, Map<UUID, Position> participants) {
+    public TrainingDTO(ActivityDTO superDTO) {
         super(superDTO);
-        this.participants = participants;
     }
 }
