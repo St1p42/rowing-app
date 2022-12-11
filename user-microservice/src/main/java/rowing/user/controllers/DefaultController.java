@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import rowing.user.authentication.AuthManager;
 import rowing.user.domain.user.User;
+import rowing.user.domain.user.UserDTO;
 import rowing.user.domain.user.UserRepository;
 
 import java.util.Optional;
@@ -66,12 +67,12 @@ public class DefaultController {
      * Updates basic user details :
      * rowing positions, availability, cox certificates
      *
-     * @param basicUserDetails User object containing updated details
+     * @param basicUserDetailsDTO DTO object containing updated user details
      *
      * @return updated user
      */
     @PutMapping("{userId}")
-    public ResponseEntity<User> createBasicUserDetails(@RequestBody User basicUserDetails){
+    public ResponseEntity<User> createBasicUserDetails(@RequestBody UserDTO basicUserDetailsDTO){
         String userId = authManager.getUsername();
         Optional<User> u = userRepository.findByUserId(userId);
         if (!u.isPresent()) {
@@ -79,9 +80,9 @@ public class DefaultController {
         }
         User updateUser = u.get();
 
-        updateUser.createProfileBasic(basicUserDetails.getRowingPositions(),
-                basicUserDetails.getAvailability(),
-                basicUserDetails.getCoxCertificates());
+        updateUser.createProfileBasic(basicUserDetailsDTO.getRowingPositions(),
+                basicUserDetailsDTO.getAvailability(),
+                basicUserDetailsDTO.getCoxCertificates());
 
         userRepository.save(updateUser);
 
