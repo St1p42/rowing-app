@@ -2,6 +2,7 @@ package rowing.activity.domain;
 
 import lombok.Data;
 import rowing.activity.domain.entities.Competition;
+import rowing.commons.Gender;
 import rowing.commons.Position;
 import rowing.commons.Requirement;
 
@@ -18,9 +19,10 @@ public class CompetitionBuilder implements Builder {
     private List<Position> positions;
     private String type;
     private Date start;
-    private Requirement requirement;
+    private Gender gender;
+    private String organisation;
 
     public Competition build() {
-        return new Competition(id, owner, name, positions, type, start, requirement);
+        return new Competition(id, owner, name, positions, type, start, gender, organisation);
     }
 }

@@ -32,6 +32,7 @@ public class Director {
         builder.setType("T");
         builder.setStart(dto.getStart());
         builder.setPositions(dto.getPositions());
-        builder.setRequirement(dto.getRequirement());
+        builder.setGender(dto.getGender());
+        builder.setOrganisation(dto.getOrganisation());
     }
 }

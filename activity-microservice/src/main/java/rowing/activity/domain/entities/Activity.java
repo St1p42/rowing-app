@@ -2,6 +2,7 @@ package rowing.activity.domain.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import rowing.activity.domain.utils.BaseEntity;
 import rowing.commons.Position;
@@ -16,6 +17,7 @@ import java.util.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(indexes = {@Index(name = "id", columnList = "id")})
 public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {

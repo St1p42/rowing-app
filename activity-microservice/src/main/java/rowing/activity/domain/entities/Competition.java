@@ -2,6 +2,7 @@ package rowing.activity.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
+import rowing.commons.Gender;
 import rowing.commons.Requirement;
 import rowing.commons.Position;
 import rowing.commons.entities.CompetitionDTO;
@@ -23,16 +24,30 @@ import java.util.UUID;
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 public class Competition extends Activity<CompetitionDTO> {
 
-    Requirement requirement;
+    private Gender gender;
+    private String organisation;
 
     public Competition(CompetitionDTO dto) {
         super(dto);
     }
 
+    /**
+     * Constructor for activity.
+     *
+     * @param id of the activity
+     * @param owner id of the owner
+     * @param name name of the activity
+     * @param positions list of positions to be filled
+     * @param type training or competition
+     * @param start date it starts at
+     * @param gender gender requirements
+     * @param organisation organization requirements
+     */
     public Competition(UUID id, UUID owner, String name, List<Position> positions,
-                       String type, Date start, Requirement requirement) {
+                       String type, Date start, Gender gender, String organisation) {
         super(id, owner, name, type, start, positions);
-        this.requirement = requirement;
+        this.gender = gender;
+        this.organisation = organisation;
     }
 
     /**

@@ -9,7 +9,5 @@ import rowing.commons.Gender;
 public class Requirement {
 
     private Position position;
-    private Gender gender;
-    private String organisation;
 
 }

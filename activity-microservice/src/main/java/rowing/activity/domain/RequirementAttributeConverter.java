@@ -6,7 +6,7 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 /**
- * JPA Converter for the NetID value object.
+ * JPA Converter for the Requirement value object.
  */
 @Converter
 public class RequirementAttributeConverter implements AttributeConverter<Requirement, String> {

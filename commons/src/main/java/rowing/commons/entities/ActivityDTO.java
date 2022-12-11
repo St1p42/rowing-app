@@ -16,14 +16,13 @@ import java.util.UUID;
 /**
  * Dto for any activity
  */
-@AllArgsConstructor
 @Data
 @NoArgsConstructor
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ActivityDTO.class, name = "DefiniteGameDTO")
+        @JsonSubTypes.Type(value = ActivityDTO.class, name = "ActivityDTO")
 })
 @JsonView(Views.Public.class)
 public class ActivityDTO implements DTO {

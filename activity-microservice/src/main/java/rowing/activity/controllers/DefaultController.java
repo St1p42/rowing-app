@@ -1,6 +1,7 @@
 package rowing.activity.controllers;
 
 import org.apache.coyote.Response;
+import org.springframework.web.bind.annotation.RequestBody;
 import rowing.activity.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class DefaultController {
      * @return response OK if the activity has been created
      */
     @GetMapping("/new")
-    public ResponseEntity<String> createActivity(ActivityDTO dto) {
+    public ResponseEntity<String> createActivity(@RequestBody ActivityDTO dto) {
         Builder builder;
         Director director;
         if (dto.getType().equals("Training")) {
