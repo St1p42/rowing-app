@@ -9,12 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import rowing.commons.Gender;
-import rowing.commons.Position;
-import rowing.commons.Requirement;
 import rowing.commons.entities.utils.Views;
-
-import java.util.Map;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Data

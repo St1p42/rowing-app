@@ -3,7 +3,6 @@ package rowing.activity.domain.entities;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 import rowing.commons.Gender;
-import rowing.commons.Requirement;
 import rowing.commons.Position;
 import rowing.commons.entities.CompetitionDTO;
 

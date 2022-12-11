@@ -4,11 +4,9 @@ import lombok.Data;
 import rowing.activity.domain.entities.Competition;
 import rowing.commons.Gender;
 import rowing.commons.Position;
-import rowing.commons.Requirement;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Data
