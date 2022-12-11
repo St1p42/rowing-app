@@ -30,7 +30,7 @@ public class Notification {
      */
     public String retrieveBody() {
         //add this string to the end of each return statement after receiving activity dto
-        String activityInfo = "";
+        //String activityInfo = "";
         if (this.status == NotificationStatus.ACCEPTED) {
             return "You were " + this.status.toString().toLowerCase(Locale.ROOT)
                     + " to the activity!"; // + activity name, time, etc
