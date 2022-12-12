@@ -17,6 +17,7 @@ import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 import rowing.commons.entities.TrainingDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -84,7 +85,12 @@ public class DefaultController {
      * @return list of all activities stored in the database
      */
     @GetMapping("/activityList")
-    public ResponseEntity<List<Activity>> getActivities(){
-        return ResponseEntity.ok(activityRepository.findAll());
+    public ResponseEntity<List<ActivityDTO>> getActivities(){
+        List<Activity> activities = activityRepository.findAll();
+        List<ActivityDTO> activityDTOS = new ArrayList<>();
+        for(Activity activity : activities){
+            activityDTOS.add(activity.toDto());
+        }
+        return ResponseEntity.ok(activityDTOS);
     }
 }
