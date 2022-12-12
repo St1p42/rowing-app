@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 public class ActivityService {
-    private final ActivityRepository activityRepository;
+    private final transient ActivityRepository activityRepository;
     private final transient AuthManager authManager;
 
     @Autowired

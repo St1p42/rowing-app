@@ -32,7 +32,7 @@ public class ActivityController {
     private final transient AuthManager authManager;
     private final transient ActivityRepository activityRepository;
 
-    private final ActivityService activityService;
+    private final transient ActivityService activityService;
 
     /**
      * Instantiates a new controller.

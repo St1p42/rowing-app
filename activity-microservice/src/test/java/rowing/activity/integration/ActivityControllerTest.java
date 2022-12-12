@@ -145,8 +145,6 @@ public class ActivityControllerTest {
         when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-        List<Activity> activity_list = new ArrayList<>();
-        List<ActivityDTO> activity_dto_list = new ArrayList<>();
 
         Training mockActivity = new Training();
         mockActivity.setId(UUID.randomUUID());
@@ -175,11 +173,14 @@ public class ActivityControllerTest {
         activity.setPositions(positionList2);
         MockMvcResultMatchers.content();
 
-        activity_list.add(mockActivity);
-        activity_list.add(activity);
-        activity_dto_list.add(mockActivity.toDto());
-        activity_dto_list.add(activity.toDto());
-        when(mockActivityRepository.findAll()).thenReturn(activity_list);
+        List<Activity> activityList = new ArrayList<>();
+        List<ActivityDTO> activitydtoList = new ArrayList<>();
+
+        activityList.add(mockActivity);
+        activityList.add(activity);
+        activitydtoList.add(mockActivity.toDto());
+        activitydtoList.add(activity.toDto());
+        when(mockActivityRepository.findAll()).thenReturn(activityList);
 
         ResultActions result = mockMvc.perform(get("/activity/activityList")
                 .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
@@ -191,8 +192,9 @@ public class ActivityControllerTest {
 
         String response = result.andReturn().getResponse().getContentAsString();
 
-        //assertThat(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("\"COX\"]}}", "\"COX\"]}")).isEqualTo(mapper.writeValueAsString(activity_dto_list));
+        //assertThat(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("\"COX\"]}}", "\"COX\"]}")).
+        // isEqualTo(mapper.writeValueAsString(activity_dto_list));
         JSONAssert.assertEquals(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("]}}", "]}"),
-                mapper.writeValueAsString(activity_dto_list), false);
+                mapper.writeValueAsString(activitydtoList), false);
     }
 }
