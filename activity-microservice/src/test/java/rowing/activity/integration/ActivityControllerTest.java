@@ -99,6 +99,8 @@ public class ActivityControllerTest {
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
+
+        //Create a new activity
         Training mockActivity = new Training();
         mockActivity.setId(UUID.randomUUID());
         mockActivity.setOwner(UUID.randomUUID());
@@ -110,6 +112,7 @@ public class ActivityControllerTest {
         positionList.add(Position.COACH);
         positionList.add(Position.COX);
         mockActivity.setPositions(positionList);
+
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/activity/new")
                 .header("Authorization", "Bearer MockedToken")

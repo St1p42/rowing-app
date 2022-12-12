@@ -18,9 +18,13 @@ import java.util.UUID;
 @JsonView(Views.Public.class)
 public class TrainingDTO extends ActivityDTO{
 
+    /**
+     * Empty constructor.
+     */
     public TrainingDTO() {
         super();
     }
+
     public TrainingDTO(ActivityDTO superDTO) {
         super(superDTO);
     }
