@@ -40,7 +40,8 @@ public class ActivityController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public ActivityController(AuthManager authManager, ActivityRepository activityRepository, ActivityService activityService) {
+    public ActivityController(AuthManager authManager, ActivityRepository activityRepository,
+                              ActivityService activityService) {
         this.authManager = authManager;
         this.activityRepository = activityRepository;
         this.activityService = activityService;
@@ -61,6 +62,7 @@ public class ActivityController {
      * Endpoint to create a new activity.
      *
      * @param dto that will contain basic activity information
+     *
      * @return response OK if the activity has been created
      */
     @PostMapping("/new")
@@ -69,11 +71,12 @@ public class ActivityController {
     }
 
     /**
-     * Endpoint to retrieve every activity in the repository in a list of ActivityDTO objects
+     * Endpoint to retrieve every activity in the repository in a list of ActivityDTO objects.
+     *
      * @return response OK if the activities are returned successfully
      */
     @GetMapping("/activityList")
     public ResponseEntity<List<ActivityDTO>> getActivities() {
-       return ResponseEntity.ok(activityService.getActivities());
+        return ResponseEntity.ok(activityService.getActivities());
     }
 }

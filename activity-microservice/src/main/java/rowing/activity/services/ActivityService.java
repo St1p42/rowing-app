@@ -39,7 +39,9 @@ public class ActivityService {
 
     /**
      * Method to create a new activity and add it to the repository.
+     *
      * @param dto that will contain basic activity information
+     *
      * @return the string will be returned if the activity is added successfully
      */
     public String createActivity(ActivityDTO dto) {
@@ -64,15 +66,16 @@ public class ActivityService {
     }
 
     /**
-     * Method to retrieve every activity in the repository in a list of ActivityDTO objects
+     * Method to retrieve every activity in the repository in a list of ActivityDTO objects.
+     *
      * @return list of all activities stored in the database
      */
     public List<ActivityDTO> getActivities() {
         List<Activity> activities = activityRepository.findAll();
-        List<ActivityDTO> activityDTOS = new ArrayList<>();
-        for(Activity activity : activities){
-            activityDTOS.add(activity.toDto());
+        List<ActivityDTO> activityDtos = new ArrayList<>();
+        for (Activity activity : activities) {
+            activityDtos.add(activity.toDto());
         }
-        return activityDTOS;
+        return activityDtos;
     }
 }
