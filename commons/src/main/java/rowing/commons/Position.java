@@ -1,4 +1,4 @@
-package rowing.activity.domain;
+package rowing.commons;
 
 public enum Position {
     COX,
