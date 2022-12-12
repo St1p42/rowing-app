@@ -111,31 +111,32 @@ public class ActivityControllerTest {
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
+
+        //Create a new activity
         Training mockActivity = new Training();
         mockActivity.setId(UUID.randomUUID());
         mockActivity.setOwner(UUID.randomUUID());
-        mockActivity.setName("Test Activity");
         mockActivity.setType("Training");
+        mockActivity.setName("Test Activity");
         mockActivity.setStart(new Date());
 
         List<Position> positionList = new ArrayList<>();
         positionList.add(Position.COACH);
         positionList.add(Position.COX);
         mockActivity.setPositions(positionList);
-        MockMvcResultMatchers.content();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/activity/new")
+                .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(mockActivity.getDto()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken");
+                .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         // Assert
         String response = result.getResponse().getContentAsString();
 
-        assertThat(response).isEqualTo("Activity " + mockActivity.getId() + "was created successfully !");
+        assertThat(response).isEqualTo("Activity " + mockActivity.getId() + " was created successfully !");
 
     }
 

@@ -17,9 +17,6 @@ import rowing.commons.entities.utils.Views;
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = CompetitionDTO.class, name = "CompetitionDTO")
-})
 @JsonView(Views.Public.class)
 public class CompetitionDTO extends ActivityDTO {
 

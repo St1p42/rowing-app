@@ -17,6 +17,6 @@ public class TrainingBuilder implements Builder {
     private Date start;
 
     public Training build() {
-        return new Training(id, owner, name, positions, type, start);
+        return new Training(id, owner, name, type, start, positions);
     }
 }

@@ -14,12 +14,12 @@ import java.util.UUID;
  * Dto for any activity
  */
 @Data
-@NoArgsConstructor
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ActivityDTO.class, name = "ActivityDTO")
+        @JsonSubTypes.Type(value = TrainingDTO.class, name = "TrainingDTO"),
+        @JsonSubTypes.Type(value = CompetitionDTO.class, name = "CompetitionDTO")
 })
 @JsonView(Views.Public.class)
 public class ActivityDTO implements DTO {
@@ -28,7 +28,7 @@ public class ActivityDTO implements DTO {
     private UUID owner;
     private String name;
     private String type;
-    
+
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date start;
     private List<Position> positions;
@@ -51,6 +51,9 @@ public class ActivityDTO implements DTO {
 
     public String getName() {
         return name;
+    }
+
+    public ActivityDTO() {
     }
 
     public ActivityDTO(UUID id, UUID owner, String name, String type, Date start, List<Position> positions) {
