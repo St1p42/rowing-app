@@ -85,7 +85,7 @@ public class DefaultController {
      * @return list of all activities stored in the database
      */
     @GetMapping("/activityList")
-    public ResponseEntity<List<ActivityDTO>> getActivities(){
+    public ResponseEntity<List<ActivityDTO>> getActivities() {
         List<Activity> activities = activityRepository.findAll();
         List<ActivityDTO> activityDTOS = new ArrayList<>();
         for(Activity activity : activities){
