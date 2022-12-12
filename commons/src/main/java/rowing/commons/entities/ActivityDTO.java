@@ -14,21 +14,21 @@ import java.util.UUID;
  * Dto for any activity
  */
 @Data
-@NoArgsConstructor
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ActivityDTO.class, name = "ActivityDTO")
+        @JsonSubTypes.Type(value = TrainingDTO.class, name = "TrainingDTO"),
+        @JsonSubTypes.Type(value = CompetitionDTO.class, name = "CompetitionDTO")
 })
 @JsonView(Views.Public.class)
 public class ActivityDTO implements DTO {
 
     private UUID id;
     private UUID owner;
-    private String type;
     private String name;
-    
+    private String type;
+
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date start;
     private List<Position> positions;
@@ -53,11 +53,14 @@ public class ActivityDTO implements DTO {
         return name;
     }
 
-    public ActivityDTO(UUID id, UUID owner, String type, String name, Date start, List<Position> positions) {
+    public ActivityDTO() {
+    }
+
+    public ActivityDTO(UUID id, UUID owner, String name, String type, Date start, List<Position> positions) {
         this.id = id;
         this.owner = owner;
-        this.type = type;
         this.name = name;
+        this.type = type;
         this.start = start;
         this.positions = positions;
     }

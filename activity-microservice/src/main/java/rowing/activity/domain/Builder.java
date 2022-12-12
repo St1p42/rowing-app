@@ -17,7 +17,7 @@ public interface Builder {
 
     void setStart(Date start);
 
-    void setPositions(List<Position> positons);
+    void setPositions(List<Position> positions);
 
     Activity build();
 }

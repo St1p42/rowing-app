@@ -62,6 +62,8 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
         this.owner = dto.getOwner();
 
         this.type = dto.getType();
+        this.start = dto.getStart();
+        this.positions = dto.getPositions();
     }
 
     /**

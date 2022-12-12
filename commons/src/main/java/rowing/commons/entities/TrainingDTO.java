@@ -11,19 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@AllArgsConstructor
-@Data
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
+@Data
 @ToString(callSuper = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = TrainingDTO.class, name = "TrainingDTO")
-})
 @JsonView(Views.Public.class)
 public class TrainingDTO extends ActivityDTO{
 
-
+    public TrainingDTO() {
+        super();
+    }
     public TrainingDTO(ActivityDTO superDTO) {
         super(superDTO);
     }
