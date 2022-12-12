@@ -8,6 +8,7 @@ import rowing.activity.domain.Builder;
 import rowing.activity.domain.CompetitionBuilder;
 import rowing.activity.domain.Director;
 import rowing.activity.domain.TrainingBuilder;
+import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
 import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
