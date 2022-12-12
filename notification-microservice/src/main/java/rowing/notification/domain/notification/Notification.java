@@ -29,6 +29,8 @@ public class Notification {
      * @return the body of an email in a string format
      */
     public String retrieveBody() {
+        //add this string to the end of each return statement after receiving activity dto
+        //String activityInfo = "";
         if (this.status == NotificationStatus.ACCEPTED) {
             return "You were " + this.status.toString().toLowerCase(Locale.ROOT)
                     + " to the activity!"; // + activity name, time, etc
@@ -39,10 +41,8 @@ public class Notification {
                     + " from the activity.";
         } else if (this.status == NotificationStatus.WITHDRAWN) {
             return "You have successfully " + this.status.toString().toLowerCase(Locale.ROOT)
-                    + " from the activity";
+                    + " from the activity.";
         }
-
-        //default case
         return "You have a notification regarding your activity";
     }
 
@@ -53,6 +53,9 @@ public class Notification {
      * @return String representing an email's subject
      */
     public String retrieveSubject() {
+        if (this.status == null) {
+            return "Your status for the activity is unknown";
+        }
         return "Your status for the activity is " + this.status; //add info about activity
     }
 
