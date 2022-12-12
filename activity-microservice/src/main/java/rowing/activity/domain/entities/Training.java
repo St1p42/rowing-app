@@ -32,6 +32,6 @@ public class Training extends Activity<TrainingDTO> {
      */
     @Override
     public TrainingDTO getDto() {
-        return new TrainingDTO((TrainingDTO) super.toDto());
+        return new TrainingDTO(super.toDto());
     }
 }

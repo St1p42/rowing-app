@@ -66,7 +66,7 @@ test {
 	useJUnitPlatform()
 	jacoco {
 		enabled = true
-		includes = ['nl.tudelft.sem.template.*']
+		includes = ['rowing.*']
 		excludes = []
 	}
 }
@@ -81,7 +81,7 @@ jacocoTestCoverageVerification() {
 		rule {
 			enabled = true
 			element = 'CLASS'
-			includes = ['nl.tudelft.sem.template.*']
+			includes = ['rowing.*']
 
 			limit {
 				counter = 'BRANCH'

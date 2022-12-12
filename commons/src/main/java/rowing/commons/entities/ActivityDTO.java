@@ -1,9 +1,6 @@
 package rowing.commons.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import rowing.commons.Position;
 import rowing.commons.entities.utils.DTO;
@@ -31,6 +28,8 @@ public class ActivityDTO implements DTO {
     private UUID owner;
     private String type;
     private String name;
+    
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date start;
     private List<Position> positions;
 
