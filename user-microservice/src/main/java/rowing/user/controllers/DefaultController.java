@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import rowing.user.authentication.AuthManager;
+import rowing.user.domain.user.UpdateUserDTO;
 import rowing.user.domain.user.User;
-import rowing.user.domain.user.UserDTO;
 import rowing.user.domain.user.UserRepository;
 
 import java.util.Optional;
@@ -37,15 +37,23 @@ public class DefaultController {
     }
 
     /**
-     * Gets example by id.
+     * Gets user
      *
-     * @return the example found in the database with the given id
+     * @return user
      */
-    @GetMapping("/hello")
-    public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getUsername());
+    @GetMapping("user")
+    public ResponseEntity<User> getUser() {
+        String userId = authManager.getUsername();
+        Optional<User> optionalUser = userRepository.findByUserId(userId);
 
+        if (!optionalUser.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        User user = optionalUser.get();
+        return ResponseEntity.ok(user);
     }
+
 
     /**
      * Gets user email.
@@ -67,25 +75,34 @@ public class DefaultController {
      * Updates basic user details :
      * rowing positions, availability, cox certificates
      *
-     * @param basicUserDetailsDTO DTO object containing updated user details
+     * @param updateUserDTO DTO object containing updated user details
      *
      * @return updated user
      */
-    @PutMapping("{userId}")
-    public ResponseEntity<User> createBasicUserDetails(@RequestBody UserDTO basicUserDetailsDTO){
+    @PatchMapping("user")
+    public ResponseEntity<User> updateUser(@RequestBody UpdateUserDTO updateUserDTO){
         String userId = authManager.getUsername();
-        Optional<User> u = userRepository.findByUserId(userId);
-        if (!u.isPresent()) {
+        Optional<User> optionalUser = userRepository.findByUserId(userId);
+
+        if (optionalUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
-        User updateUser = u.get();
 
-        updateUser.createProfileBasic(basicUserDetailsDTO.getRowingPositions(),
-                basicUserDetailsDTO.getAvailability(),
-                basicUserDetailsDTO.getCoxCertificates());
+        User user = optionalUser.get();
 
-        userRepository.save(updateUser);
+        Optional.ofNullable(updateUserDTO.getRowingPositions()).ifPresent(user::setRowingPositions);
+        Optional.ofNullable(updateUserDTO.getAvailability()).ifPresent(user::setAvailability);
+        Optional.ofNullable(updateUserDTO.getEmail()).ifPresent(user::setEmail);
+        Optional.ofNullable(updateUserDTO.getFirstName()).ifPresent(user::setFirstName);
+        Optional.ofNullable(updateUserDTO.getLastName()).ifPresent(user::setLastName);
+        Optional.ofNullable(updateUserDTO.getCoxCertificates()).ifPresent(user::setCoxCertificates);
+        Optional.ofNullable(updateUserDTO.getGender()).ifPresent(user::setGender);
+        Optional.ofNullable(updateUserDTO.getRowingOrganization()).ifPresent(user::setRowingOrganization);
+        Optional.ofNullable(updateUserDTO.getCompetitive()).ifPresent(user::setCompetitive);
 
-        return ResponseEntity.ok(updateUser);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(user);
     }
+
 }

@@ -73,35 +73,6 @@ public class User extends HasEvents {
     }
 
     /**
-     * Craete attributes for basic profile.
-     *
-     * @param rowingPositions - positions allowed to fill
-     * @param availability - availability schedule
-     * @param coxCertificates - certificates
-     */
-    public void createProfileBasic(List<Position> rowingPositions, List<AvailabilityIntervals> availability,
-                                   List<CoxCertificate> coxCertificates) {
-        //TODO validation if necessary
-        this.rowingPositions = rowingPositions;
-        this.availability = availability;
-        this.coxCertificates = coxCertificates;
-    }
-
-    /**
-     * Create attributes for competition for a user.
-     *
-     * @param gender - gender of user
-     * @param rowingOrganization - organization of user
-     * @param competitive - if he wants to participate competitively
-     */
-    public void createProfileCompetitive(Gender gender, String rowingOrganization, boolean competitive) {
-        //TODO validation if necessary
-        this.gender = gender;
-        this.rowingOrganization = rowingOrganization;
-        this.competitive = competitive;
-    }
-
-    /**
      * Equality is only based on the identifier.
      */
     @Override

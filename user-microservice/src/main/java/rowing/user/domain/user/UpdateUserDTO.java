@@ -11,11 +11,7 @@ import lombok.ToString;
 import rowing.user.domain.user.utils.DTO;
 import rowing.user.domain.user.utils.Views;
 
-import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Data
@@ -24,13 +20,11 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = UserDTO.class, name = "UserDTO")
+        @JsonSubTypes.Type(value = UpdateUserDTO.class, name = "UserDTO")
 })
 @JsonView(Views.Public.class)
 
-public class UserDTO implements DTO {
-
-    private UUID userId;
+public class UpdateUserDTO implements DTO {
 
     private List<Position> rowingPositions;
 
