@@ -26,8 +26,8 @@ public class ActivityDTO implements DTO {
 
     private UUID id;
     private UUID owner;
-    private String type;
     private String name;
+    private String type;
     
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date start;
@@ -53,11 +53,11 @@ public class ActivityDTO implements DTO {
         return name;
     }
 
-    public ActivityDTO(UUID id, UUID owner, String type, String name, Date start, List<Position> positions) {
+    public ActivityDTO(UUID id, UUID owner, String name, String type, Date start, List<Position> positions) {
         this.id = id;
         this.owner = owner;
-        this.type = type;
         this.name = name;
+        this.type = type;
         this.start = start;
         this.positions = positions;
     }

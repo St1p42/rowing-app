@@ -6,6 +6,10 @@ import static org.springframework.mock.http.server.reactive.MockServerHttpReques
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +32,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.ResultActions;
 import rowing.activity.domain.entities.Activity;
+import rowing.activity.domain.entities.Competition;
 import rowing.activity.domain.entities.Training;
+import rowing.activity.domain.repositories.ActivityRepository;
+import rowing.commons.Gender;
 import rowing.commons.Position;
+import rowing.commons.entities.ActivityDTO;
+//import com.fasterxml.jackson.*;
 
 import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
@@ -56,6 +65,9 @@ public class ActivityControllerTest {
 
     @Autowired
     private transient AuthManager mockAuthenticationManager;
+
+    @MockBean
+    private transient ActivityRepository mockActivityRepository;
 
     @Autowired
     public ActivityControllerTest(MockMvc mockMvc) {
@@ -125,5 +137,61 @@ public class ActivityControllerTest {
 
         assertThat(response).isEqualTo("Activity " + mockActivity.getId() + "was created successfully !");
 
+    }
+
+    @Test
+    public void returnActivities() throws Exception {
+        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        List<ActivityDTO> activities = new ArrayList<>();
+        List<Activity> mockactivities = new ArrayList<>();
+
+        Training mockActivity = new Training();
+        mockActivity.setId(UUID.randomUUID());
+        mockActivity.setOwner(UUID.randomUUID());
+        mockActivity.setName("Test Activity");
+        mockActivity.setType("Training");
+        mockActivity.setStart(new Date());
+
+        List<Position> positionList = new ArrayList<>();
+        positionList.add(Position.COACH);
+        positionList.add(Position.COX);
+        mockActivity.setPositions(positionList);
+        MockMvcResultMatchers.content();
+
+        Competition activity = new Competition();
+        activity.setId(UUID.randomUUID());
+        activity.setOwner(UUID.randomUUID());
+        activity.setName("Test Activity2");
+        activity.setType("Competition");
+        activity.setStart(new Date());
+        activity.setGender(Gender.MALE);
+
+        List<Position> positionList2 = new ArrayList<>();
+        positionList2.add(Position.PORT);
+        positionList2.add(Position.COX);
+        activity.setPositions(positionList2);
+        MockMvcResultMatchers.content();
+
+        activities.add(mockActivity.toDto());
+        activities.add(activity.toDto());
+        mockactivities.add(mockActivity);
+        mockactivities.add(activity);
+        when(mockActivityRepository.findAll()).thenReturn(mockactivities);
+
+        ResultActions result = mockMvc.perform(get("/activity/activityList")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+        // Assert
+        //result.andExpect(status().isOk());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        String response = result.andReturn().getResponse().getContentAsString();
+
+        //assertThat(response).isEqualTo(mapper.writeValueAsString(activities));
+        JSONAssert.assertEquals(response, mapper.writeValueAsString(activities), false);
     }
 }

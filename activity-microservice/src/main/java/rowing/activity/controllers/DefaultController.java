@@ -17,6 +17,8 @@ import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 import rowing.commons.entities.TrainingDTO;
 
+import java.util.List;
+
 /**
  * Hello World example controller.
  * <p>
@@ -76,5 +78,13 @@ public class DefaultController {
             Competition activity = (Competition) builder.build();
             return ResponseEntity.ok("Activity " + activity.getId() + "created successfully !");
         }
+    }
+
+    /**
+     * @return list of all activities stored in the database
+     */
+    @GetMapping("/activityList")
+    public ResponseEntity<List<Activity>> getActivities(){
+        return ResponseEntity.ok(activityRepository.findAll());
     }
 }
