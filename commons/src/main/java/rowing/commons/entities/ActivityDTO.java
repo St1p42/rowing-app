@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Dto for any activity
+ * Dto for any activity.
  */
 @Data
 @ToString(callSuper = true)
@@ -29,13 +29,14 @@ public class ActivityDTO implements DTO {
     private String name;
     private String type;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date start;
     private List<Position> positions;
 
     /**
-     * Getter for the id
-     * @return
+     * Getter for the id.
+     *
+     * @return the id
      */
     public UUID getId() {
         return id;
@@ -53,9 +54,27 @@ public class ActivityDTO implements DTO {
         return name;
     }
 
+    /**
+     * Empty constructor for ActivityDTO.
+     */
     public ActivityDTO() {
     }
 
+    /**
+     * Constructor for ActivityDTO.
+     *
+     * @param id of the activity
+     *
+     * @param owner of the activity
+     *
+     * @param name of the activity
+     *
+     * @param type of the activity
+     *
+     * @param start time of the activity
+     *
+     * @param positions required for the activity
+     */
     public ActivityDTO(UUID id, UUID owner, String name, String type, Date start, List<Position> positions) {
         this.id = id;
         this.owner = owner;
@@ -65,14 +84,29 @@ public class ActivityDTO implements DTO {
         this.positions = positions;
     }
 
+    /**
+     * Getter for the starting time of the activity.
+     *
+     * @return the starting time of the activity
+     */
     public Date getStart() {
         return start;
     }
 
+    /**
+     * Getter for the list of positions.
+     *
+     * @return the list of positions needed
+     */
     public List<Position> getPositions() {
         return positions;
     }
 
+    /**
+     * A constructor for ActivityDTO.
+     *
+     * @param dto to be used
+     */
     public ActivityDTO(ActivityDTO dto) {
         this.id = dto.getId();
         this.owner = dto.getOwner();
