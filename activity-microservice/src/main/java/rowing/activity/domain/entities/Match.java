@@ -12,16 +12,14 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "activity")
+@Table(name = "matching")
 public class Match {
-    @EmbeddedId
+    @Id
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "activityId")
+    @Column
     private UUID activityId;
 
-    @ManyToMany
     @Column(name = "userId", nullable = false, unique = true)
     private UUID userId;
 

@@ -8,12 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import rowing.commons.Position;
-import rowing.commons.Requirement;
+import rowing.commons.Gender;
 import rowing.commons.entities.utils.Views;
-
-import java.util.Map;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Data
@@ -21,24 +17,27 @@ import java.util.UUID;
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = CompetitionDTO.class, name = "DefiniteGameDTO")
-})
 @JsonView(Views.Public.class)
 public class CompetitionDTO extends ActivityDTO {
 
-    private Requirement requirement;
+    private Gender gender;
+    private String organisation;
 
-    public Requirement getRequirement() {
-        return requirement;
+    public CompetitionDTO(ActivityDTO activity, Gender gender, String organisation) {
+        super(activity);
+        this.gender = gender;
+        this.organisation = organisation;
     }
 
-    public CompetitionDTO(ActivityDTO activity, Requirement requirement) {
-        super(activity);
-        this.requirement = requirement;
+    public Gender getGender() {
+        return gender;
+    }
+
+    public String getOrganisation() {
+        return organisation;
     }
 
     public CompetitionDTO(CompetitionDTO activity) {
-        this(activity, activity.getRequirement());
+        this(activity, activity.getGender(), activity.getOrganisation());
     }
 }

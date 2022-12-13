@@ -14,7 +14,7 @@ public class Director {
         builder.setId(dto.getId());
         builder.setName(dto.getName());
         builder.setOwner(dto.getOwner());
-        builder.setType("T");
+        builder.setType("Training");
         builder.setStart(dto.getStart());
         builder.setPositions(dto.getPositions());
     }
@@ -29,9 +29,10 @@ public class Director {
         builder.setId(dto.getId());
         builder.setName(dto.getName());
         builder.setOwner(dto.getOwner());
-        builder.setType("T");
+        builder.setType("Competition");
         builder.setStart(dto.getStart());
         builder.setPositions(dto.getPositions());
-        builder.setRequirement(dto.getRequirement());
+        builder.setGender(dto.getGender());
+        builder.setOrganisation(dto.getOrganisation());
     }
 }

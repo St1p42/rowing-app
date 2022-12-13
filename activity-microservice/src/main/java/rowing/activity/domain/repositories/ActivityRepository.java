@@ -1,6 +1,8 @@
 package rowing.activity.domain.repositories;
 
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import rowing.activity.domain.entities.Activity;
@@ -14,7 +16,7 @@ public interface ActivityRepository extends JpaRepository<Activity, String> {
     /**
      * Find activity by name.
      */
-    Optional<Activity> findActivityByActivityId(int activityId);
+    Optional<Activity> findActivityById(UUID id);
 
-    boolean existsByActivityId(int activityId);
+    boolean existsById(UUID id);
 }

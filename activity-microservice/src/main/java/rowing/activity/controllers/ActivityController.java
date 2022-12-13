@@ -1,11 +1,9 @@
 package rowing.activity.controllers;
 
-import org.apache.coyote.Response;
+import org.springframework.web.bind.annotation.*;
 import rowing.activity.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import rowing.activity.domain.Builder;
 import rowing.activity.domain.CompetitionBuilder;
 import rowing.activity.domain.Director;
@@ -13,9 +11,13 @@ import rowing.activity.domain.TrainingBuilder;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
 import rowing.activity.domain.entities.Training;
+import rowing.activity.domain.repositories.ActivityRepository;
+import rowing.activity.services.ActivityService;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
-import rowing.commons.entities.TrainingDTO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Hello World example controller.
@@ -24,9 +26,13 @@ import rowing.commons.entities.TrainingDTO;
  * </p>
  */
 @RestController
-public class DefaultController {
+@RequestMapping("/activity")
+public class ActivityController {
 
     private final transient AuthManager authManager;
+    private final transient ActivityRepository activityRepository;
+
+    private final transient ActivityService activityService;
 
     /**
      * Instantiates a new controller.
@@ -34,8 +40,11 @@ public class DefaultController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public DefaultController(AuthManager authManager) {
+    public ActivityController(AuthManager authManager, ActivityRepository activityRepository,
+                              ActivityService activityService) {
         this.authManager = authManager;
+        this.activityRepository = activityRepository;
+        this.activityService = activityService;
     }
 
     /**
@@ -45,7 +54,7 @@ public class DefaultController {
      */
     @GetMapping("/hello")
     public ResponseEntity<String> helloWorld() {
-        return ResponseEntity.ok("Hello " + authManager.getNetId());
+        return ResponseEntity.ok(activityService.hellWorld());
 
     }
 
@@ -53,24 +62,21 @@ public class DefaultController {
      * Endpoint to create a new activity.
      *
      * @param dto that will contain basic activity information
+     *
      * @return response OK if the activity has been created
      */
-    @GetMapping("/new")
-    public ResponseEntity<String> createActivity(ActivityDTO dto) {
-        Builder builder;
-        Director director;
-        if (dto.getType().equals("Training")) {
-            builder = new TrainingBuilder();
-            director = new Director();
-            director.constructTraining((TrainingBuilder) builder, dto);
-            Training activity = (Training) builder.build();
-            return ResponseEntity.ok("Activity " + activity.getId() + "created successfully !");
-        } else {
-            builder = new CompetitionBuilder();
-            director = new Director();
-            director.constructCompetition((CompetitionBuilder) builder, (CompetitionDTO) dto);
-            Competition activity = (Competition) builder.build();
-            return ResponseEntity.ok("Activity " + activity.getId() + "created successfully !");
-        }
+    @PostMapping("/new")
+    public ResponseEntity<String> createActivity(@RequestBody ActivityDTO dto) {
+        return ResponseEntity.ok(activityService.createActivity(dto));
+    }
+
+    /**
+     * Endpoint to retrieve every activity in the repository in a list of ActivityDTO objects.
+     *
+     * @return response OK if the activities are returned successfully
+     */
+    @GetMapping("/activityList")
+    public ResponseEntity<List<ActivityDTO>> getActivities() {
+        return ResponseEntity.ok(activityService.getActivities());
     }
 }
