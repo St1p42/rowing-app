@@ -1,5 +1,16 @@
-
+buildscript {
+    repositories {
+        mavenCentral()
+        //Needed only for SNAPSHOT versions
+        //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+    dependencies {
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
+    }
+}
 plugins {
+    id 'org.springframework.boot' version '2.3.5.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
     // Test coverage
     id 'jacoco'
@@ -16,12 +27,13 @@ plugins {
 
 group = 'rowing'
 version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
     mavenCentral()
 }
-sourceCompatibility = 11
-targetCompatibility = 11
+
 dependencies {
     implementation 'org.projectlombok:lombok:1.18.20'
     implementation 'org.projectlombok:lombok:1.18.20'
@@ -30,17 +42,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
-checkstyle {
-    toolVersion "8.37"
-    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-    ignoreFailures = false
-    maxErrors = 0
-    maxWarnings = 0
-}
-pmd {
-    incrementalAnalysis = true
-    sourceSets = [sourceSets.main]
-}
+
 jar {
     enabled = true
 }
@@ -68,4 +70,15 @@ jacocoTestCoverageVerification() {
             }
         }
     }
+}
+checkstyle {
+    toolVersion "8.37"
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+    maxErrors = 0
+    maxWarnings = 0
+}
+pmd {
+    incrementalAnalysis = true
+    sourceSets = [sourceSets.main]
 }
