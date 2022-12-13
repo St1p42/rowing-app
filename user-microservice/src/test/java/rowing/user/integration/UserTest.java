@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static rowing.user.domain.user.utils.JSONUtils.asJsonString;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @SpringBootTest
@@ -64,7 +64,7 @@ public class UserTest {
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        ResultActions result = mockMvc.perform(get("/user")
+        ResultActions result = mockMvc.perform(get("/user/get-user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
 
@@ -72,7 +72,7 @@ public class UserTest {
         result.andExpect(status().isOk());
         String response = result.andReturn().getResponse().getContentAsString();
 
-        assertThat(response).isEqualTo(asJsonString(originalUser));
+        assertThat(response).isEqualTo(new ObjectMapper().writeValueAsString(originalUser));
     }
 
 
@@ -92,8 +92,8 @@ public class UserTest {
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        ResultActions result = mockMvc.perform(patch("/user")
-                .content(asJsonString(updateUserDTO))
+        ResultActions result = mockMvc.perform(patch("/user/update-user")
+                .content(new ObjectMapper().writeValueAsString(updateUserDTO))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
 
@@ -102,7 +102,7 @@ public class UserTest {
         result.andExpect(status().isOk());
         String response = result.andReturn().getResponse().getContentAsString();
 
-        assertThat(response).isEqualTo(asJsonString(originalUser));
+        assertThat(response).isEqualTo(new ObjectMapper().writeValueAsString(originalUser));
     }
 
     @Test
@@ -122,8 +122,8 @@ public class UserTest {
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        ResultActions result = mockMvc.perform(patch("/user")
-                .content(asJsonString(updateUserDTO))
+        ResultActions result = mockMvc.perform(patch("/user/update-user")
+                .content(new ObjectMapper().writeValueAsString(updateUserDTO))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
 
@@ -132,7 +132,7 @@ public class UserTest {
         result.andExpect(status().isOk());
         String response = result.andReturn().getResponse().getContentAsString();
 
-        assertThat(response).isEqualTo(asJsonString(shouldBeUpdatedToThisUser));
+        assertThat(response).isEqualTo(new ObjectMapper().writeValueAsString(shouldBeUpdatedToThisUser));
     }
 
 
@@ -149,7 +149,7 @@ public class UserTest {
                         "lala", "bogdan@gmail.com")));
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        ResultActions result = mockMvc.perform(get("/get-email-address")
+        ResultActions result = mockMvc.perform(get("/user/get-email-address")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
 
@@ -173,7 +173,7 @@ public class UserTest {
         when(mockUserRepository.findByUserId("bogdan")).thenReturn(Optional.empty());
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        ResultActions result = mockMvc.perform(get("/get-email-address")
+        ResultActions result = mockMvc.perform(get("/user/get-email-address")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
 
