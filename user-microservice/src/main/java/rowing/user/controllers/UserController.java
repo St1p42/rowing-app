@@ -38,7 +38,7 @@ public class UserController {
     }
 
     /**
-     * Gets user
+     * Gets user.
      *
      * @return user
      */
@@ -72,8 +72,7 @@ public class UserController {
         return ResponseEntity.ok(user.getEmail());
     }
 
-    /**
-     * Updates basic user details :
+    /** Updates basic user details :
      * rowing positions, availability, cox certificates
      *
      * @param updateUserDTO DTO object containing updated user details
@@ -81,7 +80,7 @@ public class UserController {
      * @return updated user
      */
     @PatchMapping("/update-user")
-    public ResponseEntity<User> updateUser(@RequestBody UpdateUserDTO updateUserDTO){
+    public ResponseEntity<User> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
         String userId = authManager.getUsername();
         Optional<User> optionalUser = userRepository.findByUserId(userId);
 
