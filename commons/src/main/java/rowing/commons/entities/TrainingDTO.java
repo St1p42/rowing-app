@@ -16,7 +16,7 @@ import java.util.UUID;
 @ToString(callSuper = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonView(Views.Public.class)
-public class TrainingDTO extends ActivityDTO{
+public class TrainingDTO extends ActivityDTO {
 
     /**
      * Empty constructor.
