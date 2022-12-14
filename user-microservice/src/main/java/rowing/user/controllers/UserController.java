@@ -72,8 +72,9 @@ public class UserController {
         return ResponseEntity.ok(user.getEmail());
     }
 
-    /** Updates basic user details :
-     * rowing positions, availability, cox certificates
+    /**
+     * Updates all user details.
+     * If null fields are given for some fields, the old values are kept.
      *
      * @param updateUserDTO DTO object containing updated user details
      *
