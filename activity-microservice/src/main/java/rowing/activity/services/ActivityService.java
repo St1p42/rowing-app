@@ -16,6 +16,8 @@ import rowing.commons.entities.CompetitionDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ActivityService {
@@ -77,5 +79,15 @@ public class ActivityService {
             activityDtos.add(activity.toDto());
         }
         return activityDtos;
+    }
+
+    public ActivityDTO deleteActivity(UUID activityId) throws IllegalArgumentException {
+        Optional<Activity> activity = activityRepository.findActivityById(activityId);
+        if(activity.isPresent()) {
+            ActivityDTO activityDto = activity.get().toDto();
+            activityRepository.delete(activity.get());
+            return activityDto;
+        }
+        throw new IllegalArgumentException();
     }
 }
