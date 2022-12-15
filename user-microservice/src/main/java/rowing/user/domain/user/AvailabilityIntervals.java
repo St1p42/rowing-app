@@ -42,7 +42,7 @@ public class AvailabilityIntervals {
             d2 = convertToTime(endInterval);
             TemporalAccessor accessor = formatter.parse(dayOfWeek);
             d = DayOfWeek.from(accessor);
-        } catch (ParseException | DateTimeException e) {
+        } catch (ParseException | DateTimeException | NullPointerException e) {
             throw new IllegalArgumentException();
         }
 
