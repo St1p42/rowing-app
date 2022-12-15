@@ -71,7 +71,7 @@ public class UserTest {
         // Still include Bearer token as AuthFilter itself is not mocked
         ObjectMapper objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
         RequestBuilder request = MockMvcRequestBuilders
-                    .post("/add-availability")
+                    .post("/user/add-availability")
                     .header("Authorization", "Bearer MockedToken")
                     .accept(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(
@@ -99,7 +99,7 @@ public class UserTest {
         // Still include Bearer token as AuthFilter itself is not mocked
         ObjectMapper objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/add-availability")
+                .post("/user/add-availability")
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
@@ -129,7 +129,7 @@ public class UserTest {
         // Still include Bearer token as AuthFilter itself is not mocked
         ObjectMapper objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/remove-availability")
+                .post("/user/remove-availability")
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
@@ -159,7 +159,7 @@ public class UserTest {
         // Still include Bearer token as AuthFilter itself is not mocked
         ObjectMapper objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/remove-availability")
+                .post("/user/remove-availability")
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
@@ -189,7 +189,7 @@ public class UserTest {
         // Still include Bearer token as AuthFilter itself is not mocked
         ObjectMapper objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/remove-availability")
+                .post("/user/remove-availability")
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
@@ -219,7 +219,7 @@ public class UserTest {
         // Still include Bearer token as AuthFilter itself is not mocked
         ObjectMapper objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/edit-availability")
+                .post("/user/edit-availability")
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new TwoAvailabilitiesModel(
@@ -249,7 +249,7 @@ public class UserTest {
         // Still include Bearer token as AuthFilter itself is not mocked
         ObjectMapper objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/edit-availability")
+                .post("/user/edit-availability")
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new TwoAvailabilitiesModel(
@@ -279,7 +279,7 @@ public class UserTest {
         // Still include Bearer token as AuthFilter itself is not mocked
         ObjectMapper objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/edit-availability")
+                .post("/user/edit-availability")
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new TwoAvailabilitiesModel(
