@@ -1,0 +1,73 @@
+
+plugins {
+    id 'java'
+    // Test coverage
+    id 'jacoco'
+
+    // Code style
+    id 'checkstyle'
+
+    // PMD
+    id 'pmd'
+
+    // PITest
+    id 'info.solidsoft.pitest' version '1.5.2'
+}
+
+group = 'rowing'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.projectlombok:lombok:1.18.20'
+    implementation 'org.projectlombok:lombok:1.18.20'
+    implementation 'org.projectlombok:lombok:1.18.20'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.5'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+jar {
+    enabled = true
+}
+test {
+    useJUnitPlatform()
+    jacoco {
+        enabled = true
+        includes = ['rowing.*']
+        excludes = []
+    }
+}
+
+jacocoTestCoverageVerification() {
+    dependsOn test
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+            includes = ['nl.tudelft.sem.template.*']
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.1
+            }
+        }
+    }
+}
+checkstyle {
+    toolVersion "8.37"
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+    maxErrors = 0
+    maxWarnings = 0
+}
+pmd {
+    incrementalAnalysis = true
+    sourceSets = [sourceSets.main]
+}

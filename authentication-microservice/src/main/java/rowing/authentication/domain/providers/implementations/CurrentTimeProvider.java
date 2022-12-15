@@ -1,8 +1,9 @@
 package rowing.authentication.domain.providers.implementations;
 
-import java.time.Instant;
-import rowing.authentication.domain.providers.TimeProvider;
 import org.springframework.stereotype.Component;
+import rowing.authentication.domain.providers.TimeProvider;
+
+import java.time.Instant;
 
 /**
  * An abstract time provider to make services testable.

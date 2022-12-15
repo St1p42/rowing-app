@@ -2,10 +2,13 @@ package rowing.user.domain.user;
 
 import java.util.*;
 import javax.persistence.*;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import rowing.user.domain.HasEvents;
+
+import javax.persistence.*;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * A DDD entity representing an application user in our domain.
@@ -25,7 +28,7 @@ public class User extends HasEvents {
     @Column(name = "rowingPositions", nullable = true, unique = false)
     @Enumerated(EnumType.STRING)
     @ElementCollection
-    private Set<Position> rowingPositions;
+    private List<Position> rowingPositions;
 
     @Column(name = "availability", nullable = true, unique = false)
     @Convert(converter = AvailabilityIntervalsAttributeConverter.class)
@@ -43,7 +46,7 @@ public class User extends HasEvents {
     @Column(name = "coxCertificates", nullable = true, unique = false)
     @Enumerated(EnumType.STRING)
     @ElementCollection
-    private Set<CoxCertificate> coxCertificates;
+    private List<CoxCertificate> coxCertificates;
 
     @Column(name = "gender", nullable = true, unique = false)
     @Enumerated(EnumType.STRING)

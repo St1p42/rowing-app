@@ -111,7 +111,8 @@ public class AvailabilityService {
                                  String dayNew, String startTimeNew, String endTimeNew, String userId)
             throws AvailabilityNotFoundException, IllegalArgumentException, DateTimeException {
         AvailabilityIntervals intervalOld = new AvailabilityIntervals(dayOld, startTimeOld, endTimeOld);
-        AvailabilityIntervals intervalNew = new AvailabilityIntervals(dayNew, startTimeNew, endTimeNew);
+        AvailabilityIntervals intervalNew;
+        intervalNew = new AvailabilityIntervals(dayNew, startTimeNew, endTimeNew);
         User u = findUserById(userId);
         List<AvailabilityIntervals> intervals = u.getAvailability();
         if (intervals.contains(intervalOld) == true) {

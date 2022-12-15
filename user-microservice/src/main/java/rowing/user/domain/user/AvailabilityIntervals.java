@@ -1,8 +1,6 @@
 package rowing.user.domain.user;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -10,19 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalUnit;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import javassist.LoaderClassPath;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.tomcat.jni.Local;
-
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Locale.forLanguageTag;
 
@@ -44,19 +32,20 @@ public class AvailabilityIntervals {
      */
     public AvailabilityIntervals(String dayOfWeek, String startInterval, String endInterval)
             throws IllegalArgumentException {
-        LocalTime d1 = null;
-        LocalTime d2 = null;
-        DayOfWeek d = null;
+        LocalTime d1;
+        LocalTime d2;
+        DayOfWeek d;
         DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("EEEE")
                 .toFormatter(forLanguageTag("en"));
         try {
-            d1 = convertToDate(startInterval);
-            d2 = convertToDate(endInterval);
+            d1 = convertToTime(startInterval);
+            d2 = convertToTime(endInterval);
             TemporalAccessor accessor = formatter.parse(dayOfWeek);
             d = DayOfWeek.from(accessor);
-        } catch (ParseException | DateTimeException | NullPointerException e) {
+        } catch (ParseException | DateTimeException e) {
             throw new IllegalArgumentException();
         }
+
         long duration = MINUTES.between(d1, d2);
         if (duration <= 0) {
             throw new IllegalArgumentException("Duration should be bigger than 0");
@@ -93,9 +82,10 @@ public class AvailabilityIntervals {
      * @return d - a LocalTime object
      * @throws ParseException - exception if the format is incorrect.
      */
-    public LocalTime convertToDate(String time) throws ParseException {
+    public LocalTime convertToTime(String time) throws ParseException {
         //time += ":00";
-        if (time.length() != 5) {
+        int limit = 5;
+        if (time.length() != limit) {
             throw new ParseException("INCORRECT FORMAT", time.length());
         }
         LocalTime d = LocalTime.parse(time);
