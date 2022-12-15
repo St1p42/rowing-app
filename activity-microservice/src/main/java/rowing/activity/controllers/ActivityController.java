@@ -84,6 +84,12 @@ public class ActivityController {
         return ResponseEntity.ok(activityService.getActivities());
     }
 
+    /**
+     * Enpoint to remove activity based on the activity id.
+     *
+     * @param activityId - the id of the activity to be removed
+     * @return activityDTO - the activity that has been deleted
+     */
     @GetMapping("/{activityId}/delete")
     public ResponseEntity<ActivityDTO> deleteActivity(@PathVariable("activityId") UUID activityId) {
         ActivityDTO activityDTO;

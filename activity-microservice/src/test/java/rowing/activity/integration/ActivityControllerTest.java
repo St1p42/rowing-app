@@ -201,7 +201,6 @@ public class ActivityControllerTest {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
-        UUID activityId = UUID.randomUUID();
         when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
@@ -209,6 +208,7 @@ public class ActivityControllerTest {
         // Still include Bearer token as AuthFilter itself is not mocked
 
         //Create a new activity
+        UUID activityId = UUID.randomUUID();
         Training mockActivity = new Training();
         mockActivity.setId(activityId);
         mockActivity.setOwner(UUID.randomUUID());
@@ -239,7 +239,6 @@ public class ActivityControllerTest {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
-        UUID activityId = UUID.randomUUID();
         when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
@@ -248,7 +247,6 @@ public class ActivityControllerTest {
 
         //Create a new activity
         UUID id1 = UUID.randomUUID();
-        UUID id2 = UUID.randomUUID();
         Training mockActivity = new Training();
         mockActivity.setId(id1);
         mockActivity.setOwner(UUID.randomUUID());
@@ -260,8 +258,9 @@ public class ActivityControllerTest {
         positionList.add(Position.COACH);
         positionList.add(Position.COX);
         mockActivity.setPositions(positionList);
-        when(mockActivityRepository.findActivityById(activityId)).thenReturn(Optional.of(mockActivity));
+        when(mockActivityRepository.findActivityById(id1)).thenReturn(Optional.of(mockActivity));
 
+        UUID id2 = UUID.randomUUID();
         ResultActions result = mockMvc.perform(get("/activity/" + id2 + "/delete")
                 .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
 
