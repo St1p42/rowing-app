@@ -17,6 +17,7 @@ public class Director {
         builder.setType("Training");
         builder.setStart(dto.getStart());
         builder.setPositions(dto.getPositions());
+        builder.setApplicants(dto.getApplicants());
     }
 
     /**
@@ -34,5 +35,6 @@ public class Director {
         builder.setPositions(dto.getPositions());
         builder.setGender(dto.getGender());
         builder.setOrganisation(dto.getOrganisation());
+        builder.setApplicants(builder.getApplicants());
     }
 }

@@ -11,6 +11,7 @@ import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
 import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
+import rowing.activity.domain.repositories.MatchRepository;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 
@@ -21,11 +22,13 @@ import java.util.List;
 public class ActivityService {
     private final transient ActivityRepository activityRepository;
     private final transient AuthManager authManager;
+    private final transient MatchRepository matchRepository;
 
     @Autowired
-    public ActivityService(ActivityRepository activityRepository, AuthManager authManager) {
+    public ActivityService(ActivityRepository activityRepository, AuthManager authManager, MatchRepository matchRepository) {
         this.activityRepository = activityRepository;
         this.authManager = authManager;
+        this.matchRepository = matchRepository;
     }
 
     /**

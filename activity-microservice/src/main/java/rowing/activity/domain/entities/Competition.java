@@ -43,8 +43,8 @@ public class Competition extends Activity<CompetitionDTO> {
      * @param organisation organization requirements
      */
     public Competition(UUID id, UUID owner, String name, String type,
-                       Date start, List<Position> positions, Gender gender, String organisation) {
-        super(id, owner, name, type, start, positions);
+                       Date start, List<Position> positions, Gender gender, String organisation, List<UUID> applicants) {
+        super(id, owner, name, type, start, positions, applicants);
         this.gender = gender;
         this.organisation = organisation;
     }

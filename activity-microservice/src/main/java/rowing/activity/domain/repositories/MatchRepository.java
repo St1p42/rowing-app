@@ -1,10 +1,12 @@
 package rowing.activity.domain.repositories;
 
+import org.h2.engine.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Match;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,4 +19,6 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
     Optional<Activity> findActivityByActivityId(UUID activityId);
 
     boolean existsByActivityId(UUID activityId);
+
+    List<UUID> findAllByActivityId(UUID activityID);
 }
