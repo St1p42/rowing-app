@@ -113,7 +113,9 @@ public class ActivityDTO implements DTO {
      *
      * @return the list of applicant IDs.
      */
-    public List<UUID> getApplicants(){return applicants;}
+    public List<UUID> getApplicants() {
+        return applicants;
+    }
 
     /**
      * A constructor for ActivityDTO.

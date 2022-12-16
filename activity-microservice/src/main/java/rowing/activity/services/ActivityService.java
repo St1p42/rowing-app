@@ -24,6 +24,15 @@ public class ActivityService {
     private final transient AuthManager authManager;
     private final transient MatchRepository matchRepository;
 
+    /**
+     * Constructor for the ActivityService class.
+     *
+     * @param activityRepository that will be used to keep info about activities
+     *
+     * @param authManager that will be used
+     *
+     * @param matchRepository that will be used to match users and activities
+     */
     @Autowired
     public ActivityService(ActivityRepository activityRepository, AuthManager authManager, MatchRepository matchRepository) {
         this.activityRepository = activityRepository;
