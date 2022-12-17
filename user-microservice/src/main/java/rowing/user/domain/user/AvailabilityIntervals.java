@@ -35,6 +35,9 @@ public class AvailabilityIntervals {
         LocalTime d1;
         LocalTime d2;
         DayOfWeek d;
+        if (dayOfWeek == null || startInterval == null || endInterval == null) {
+            throw new IllegalArgumentException();
+        }
         DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("EEEE")
                 .toFormatter(forLanguageTag("en"));
         try {
@@ -42,7 +45,7 @@ public class AvailabilityIntervals {
             d2 = convertToTime(endInterval);
             TemporalAccessor accessor = formatter.parse(dayOfWeek);
             d = DayOfWeek.from(accessor);
-        } catch (ParseException | DateTimeException | NullPointerException e) {
+        } catch (ParseException | DateTimeException e) {
             throw new IllegalArgumentException();
         }
 
