@@ -43,7 +43,7 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
 
     @Column(name = "applicants", nullable = true, unique = false)
     @ElementCollection
-    private List<UUID> applicants;
+    private List<String> applicants;
 
     /**
      * Mapper that maps a dto to an activity.
