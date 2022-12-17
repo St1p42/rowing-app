@@ -1,4 +1,4 @@
-package rowing.user.domain.user;
+package rowing.commons.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -8,8 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import rowing.user.domain.user.utils.DTO;
-import rowing.user.domain.user.utils.Views;
+import rowing.commons.CoxCertificate;
+import rowing.commons.Gender;
+import rowing.commons.Position;
+import rowing.commons.entities.utils.DTO;
+import rowing.commons.entities.utils.Views;
 
 import java.util.List;
 
