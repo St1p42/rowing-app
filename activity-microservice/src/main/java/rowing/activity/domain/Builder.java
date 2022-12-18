@@ -19,5 +19,7 @@ public interface Builder {
 
     void setPositions(List<Position> positions);
 
+    void setApplicants(List<String> applicants);
+
     Activity build();
 }
