@@ -41,6 +41,10 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
     @ElementCollection
     private List<Position> positions;
 
+    @Column(name = "applicants", nullable = true, unique = false)
+    @ElementCollection
+    private List<String> applicants;
+
     /**
      * Mapper that maps a dto to an activity.
      *
@@ -64,6 +68,7 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
         this.type = dto.getType();
         this.start = dto.getStart();
         this.positions = dto.getPositions();
+        this.applicants = dto.getApplicants();
     }
 
     /**
@@ -78,7 +83,8 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
                 this.name,
                 this.type,
                 this.start,
-                this.positions
+                this.positions,
+                this.applicants
                 );
     }
 

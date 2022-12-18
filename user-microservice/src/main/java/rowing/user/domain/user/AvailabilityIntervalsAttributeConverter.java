@@ -1,5 +1,7 @@
 package rowing.user.domain.user;
 
+import rowing.commons.AvailabilityIntervals;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.text.SimpleDateFormat;
