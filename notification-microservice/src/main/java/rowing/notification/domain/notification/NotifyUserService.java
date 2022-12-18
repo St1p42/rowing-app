@@ -1,4 +1,5 @@
 package rowing.notification.domain.notification;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -31,7 +32,15 @@ public class NotifyUserService {
     @Autowired
     RestTemplate restTemplate;
 
-    public void notifyUser(NotificationRequestModel request, String bearerToken){
+    /**
+     * This method calls the endpoint inside the users microservice to receive the user's email address.
+     *  If the email address is found then it continues with the EMAIL strategy, else with the KAFKA strategy.
+
+     * @param request - request that was received
+     *
+     * @param bearerToken - the token that was received containing information about the user
+     */
+    public void notifyUser(NotificationRequestModel request, String bearerToken) {
         //building the request
         String uri = url + ":" + port + emailPath;
         HttpHeaders headers = new HttpHeaders();
@@ -44,7 +53,7 @@ public class NotifyUserService {
         //getting the strategy depending on the response
         Strategy strategy;
         Notification notification;
-        if(!response.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+        if (!response.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
             strategy =
                     strategyFactory.findStrategy(StrategyName.EMAIL);
             notification = new Notification(request, response.getBody());

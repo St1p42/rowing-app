@@ -41,7 +41,8 @@ public class DefaultController {
      * @return if notifying the user was successful
      */
     @PostMapping("/notify")
-    public ResponseEntity notifyUser(@RequestBody NotificationRequestModel request, @RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity notifyUser(@RequestBody NotificationRequestModel request,
+                                     @RequestHeader("Authorization") String bearerToken) {
         try {
             notifyUserService.notifyUser(request, bearerToken);
         } catch (Exception e) {

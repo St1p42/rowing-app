@@ -39,34 +39,44 @@ public class Notification {
      * Constructor for the notification object that is sent through email.
      *
      * @param requestInfo - info containing the status, email and activity id
+     * @param email - the email of the user to be notified
      */
     public Notification(NotificationRequestModel requestInfo, String email) {
-        if(requestInfo == null){
+        if (requestInfo == null) {
             this.notificationStatus = null;
             this.activityId = "Unknown";
             this.destinationEmail = null;
         } else {
             this.notificationStatus = requestInfo.getStatus();
-            if(requestInfo.getActivityId() != null)
+            if (requestInfo.getActivityId() != null) {
                 this.activityId = requestInfo.getActivityId().toString();
-            else
+            } else {
                 this.activityId = "Unknown";
+            }
 
             this.destinationEmail = email;
         }
     }
 
+    /**
+     * Constructor for the notification object that is sent through kafka.
+     *
+     * @param requestInfo - info containing the status, email and activity id
+     * @param username - the username of the user to be notified
+     * @param useKafka - boolean that represents if kafka is to be used
+     */
     public Notification(NotificationRequestModel requestInfo, String username, boolean useKafka) {
-        if(requestInfo == null){
+        if (requestInfo == null) {
             this.notificationStatus = null;
             this.activityId = "Unknown";
             this.username = null;
         } else {
             this.notificationStatus = requestInfo.getStatus();
-            if(requestInfo.getActivityId() != null)
+            if (requestInfo.getActivityId() != null) {
                 this.activityId = requestInfo.getActivityId().toString();
-            else
+            } else {
                 this.activityId = "Unknown";
+            }
 
             this.username = username;
         }
@@ -79,9 +89,10 @@ public class Notification {
      * @return the body of an email in a string format
      */
     public String retrieveBody() {
-        if(notificationStatus == null)
+        if (notificationStatus == null) {
             return defaultBody + activityId;
-        switch (notificationStatus){
+        }
+        switch (notificationStatus) {
             case ACCEPTED:
                 return acceptedBody + activityId;
             case DELETED:
@@ -104,8 +115,9 @@ public class Notification {
      * @return String representing an email's subject
      */
     public String retrieveSubject() {
-        if(notificationStatus == null)
+        if (notificationStatus == null) {
             return subject + "unknown";
+        }
         return subject + notificationStatus; //add info about activity
     }
 

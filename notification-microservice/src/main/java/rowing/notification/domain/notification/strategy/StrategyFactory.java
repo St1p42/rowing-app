@@ -19,9 +19,10 @@ public class StrategyFactory {
     public Strategy findStrategy(StrategyName strategyName) {
         return strategies.get(strategyName);
     }
+
     private void createStrategy(Set<Strategy> strategySet) {
         strategies = new HashMap<>();
         strategySet.forEach(
-                strategy ->strategies.put(strategy.getStrategyName(), strategy));
+                strategy -> strategies.put(strategy.getStrategyName(), strategy));
     }
 }

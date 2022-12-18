@@ -83,16 +83,19 @@ class NotificationTest {
         String answer = "Congratulations, you were accepted to the activity with id: 00000000-0000-0065-0000-000000000002";
         NotificationRequestModel accepted = new NotificationRequestModel(NotificationStatus.ACCEPTED, new UUID(101L, 2L));
         Notification notificationAccepted = new Notification(accepted, "random@gmail.com");
-        ReflectionTestUtils.setField(notificationAccepted, "acceptedBody", "Congratulations, you were accepted to the activity with id: ");
+        ReflectionTestUtils.setField(notificationAccepted, "acceptedBody",
+                "Congratulations, you were accepted to the activity with id: ");
         assertEquals(answer, notificationAccepted.retrieveBody());
     }
 
     @Test
     void retrieveBodyRejected() {
-        String answer = "Unfortunately, you were rejected to participate in this activity with id: 00000000-0000-0065-0000-000000000002";
+        String answer = "Unfortunately, you were rejected to participate in this activity with id: "
+                + "00000000-0000-0065-0000-000000000002";
         NotificationRequestModel rejected = new NotificationRequestModel(NotificationStatus.REJECTED, new UUID(101L, 2L));
         Notification notificationRejected = new Notification(rejected, "random@gmail.com");
-        ReflectionTestUtils.setField(notificationRejected, "rejectedBody", "Unfortunately, you were rejected to participate in this activity with id: ");
+        ReflectionTestUtils.setField(notificationRejected,
+                "rejectedBody", "Unfortunately, you were rejected to participate in this activity with id: ");
         assertEquals(answer, notificationRejected.retrieveBody());
     }
 
@@ -100,8 +103,10 @@ class NotificationTest {
     void retrieveBodyWithdrawn() {
         NotificationRequestModel withdrawn = new NotificationRequestModel(NotificationStatus.WITHDRAWN, new UUID(101L, 2L));
         Notification notificationWithdrawn = new Notification(withdrawn, "random@gmail.com");
-        ReflectionTestUtils.setField(notificationWithdrawn, "withdrawnBody", "You have successfully withdrawn you application from the activity with id: ");
-        String answer = "You have successfully withdrawn you application from the activity with id: 00000000-0000-0065-0000-000000000002";
+        ReflectionTestUtils.setField(notificationWithdrawn,
+                "withdrawnBody", "You have successfully withdrawn your application from the activity with id: ");
+        String answer = "You have successfully withdrawn your"
+                + " application from the activity with id: 00000000-0000-0065-0000-000000000002";
         assertEquals(answer, notificationWithdrawn.retrieveBody());
     }
 
@@ -109,23 +114,28 @@ class NotificationTest {
     void retrieveBodyKicked() {
         NotificationRequestModel kicked = new NotificationRequestModel(NotificationStatus.KICKED, new UUID(101L, 2L));
         Notification notificationKicked = new Notification(kicked, "random@gmail.com");
-        ReflectionTestUtils.setField(notificationKicked, "kickedBody", "Unfortunately, you were kicked from this activity with id: ");
+        ReflectionTestUtils.setField(notificationKicked,
+                "kickedBody", "Unfortunately, you were kicked from this activity with id: ");
         String answer = "Unfortunately, you were kicked from this activity with id: " + kicked.getActivityId();
         assertEquals(answer, notificationKicked.retrieveBody());
     }
 
     @Test
     void retrieveBodyDeleted() {
-        NotificationRequestModel deleted = new NotificationRequestModel(NotificationStatus.DELETED, new UUID(101L, 2L));
+        NotificationRequestModel deleted = new NotificationRequestModel(NotificationStatus.DELETED,
+                new UUID(101L, 2L));
         Notification notificationDeleted = new Notification(deleted, "random@gmail.com");
-        ReflectionTestUtils.setField(notificationDeleted, "deletedBody", "Unfortunately, the owner deleted the activity with id: ");
+        ReflectionTestUtils.setField(notificationDeleted, "deletedBody",
+                "Unfortunately, the owner deleted the activity with id: ");
         String answer = "Unfortunately, the owner deleted the activity with id: " + deleted.getActivityId();
         assertEquals(answer, notificationDeleted.retrieveBody());
     }
+    
     @Test
     void retrieveBodyUnknownStatus() {
         Notification notificationNullStatus = new Notification(null, "random@gmail.com");
-        ReflectionTestUtils.setField(notificationNullStatus, "defaultBody", "You have a notification regarding your activity with id: ");
+        ReflectionTestUtils.setField(notificationNullStatus,
+                "defaultBody", "You have a notification regarding your activity with id: ");
         String answer = "You have a notification regarding your activity with id: Unknown";
         assertEquals(answer, notificationNullStatus.retrieveBody());
     }

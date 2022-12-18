@@ -58,9 +58,10 @@ public class IntegrationTest {
     String token;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         mockServer = MockRestServiceServer.createServer(restTemplate);
     }
+
     @Test
     public void helloWorld() throws Exception {
         // Arrange
