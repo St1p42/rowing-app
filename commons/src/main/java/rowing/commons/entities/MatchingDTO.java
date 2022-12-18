@@ -1,6 +1,8 @@
 package rowing.commons.entities;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.ToString;
 import rowing.commons.NotificationStatus;
@@ -8,8 +10,6 @@ import rowing.commons.Position;
 import rowing.commons.entities.utils.DTO;
 import rowing.commons.entities.utils.Views;
 
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 /**

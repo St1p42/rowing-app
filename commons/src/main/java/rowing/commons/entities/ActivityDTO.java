@@ -1,7 +1,8 @@
 package rowing.commons.entities;
 
 import com.fasterxml.jackson.annotation.*;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
 import rowing.commons.Position;
 import rowing.commons.entities.utils.DTO;
 import rowing.commons.entities.utils.Views;
