@@ -62,7 +62,6 @@ public class ActivityController {
      * Endpoint to create a new activity.
      *
      * @param dto that will contain basic activity information
-     *
      * @return response OK if the activity has been created
      */
     @PostMapping("/new")
