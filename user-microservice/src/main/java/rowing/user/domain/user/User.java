@@ -1,5 +1,7 @@
 package rowing.user.domain.user;
 
+import java.util.*;
+import javax.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import rowing.user.domain.HasEvents;
@@ -30,7 +32,7 @@ public class User extends HasEvents {
 
     @Column(name = "availability", nullable = true, unique = false)
     @Convert(converter = AvailabilityIntervalsAttributeConverter.class)
-    private List<AvailabilityIntervals> availability;
+    private List<AvailabilityIntervals> availability = new ArrayList<>();
 
     @Column(name = "email", nullable = false, unique = false)
     private String email;
@@ -46,7 +48,8 @@ public class User extends HasEvents {
     @ElementCollection
     private List<CoxCertificate> coxCertificates;
 
-    @Column(name = "gender", nullable = false, unique = false)
+    @Column(name = "gender", nullable = true, unique = false)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column(name = "rowingOrganization", nullable = true, unique = false)
