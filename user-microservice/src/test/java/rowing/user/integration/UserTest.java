@@ -12,9 +12,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import rowing.commons.entities.UpdateUserDTO;
 import rowing.user.authentication.AuthManager;
 import rowing.user.authentication.JwtTokenVerifier;
-import rowing.user.domain.user.UpdateUserDTO;
 import rowing.user.domain.user.User;
 import rowing.user.domain.user.UserRepository;
 

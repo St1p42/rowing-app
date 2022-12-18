@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
 public class AvailabilityIntervals {
     private Date startInterval;
     private Date endInterval;
@@ -14,6 +13,9 @@ public class AvailabilityIntervals {
     public AvailabilityIntervals(Date startInterval, Date endInterval) {
         this.startInterval = startInterval;
         this.endInterval = endInterval;
+    }
+
+    public AvailabilityIntervals() {
     }
 
     public int getIntervalLength(AvailabilityIntervals interval) {

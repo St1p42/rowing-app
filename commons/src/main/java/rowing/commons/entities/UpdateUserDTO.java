@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.CoxCertificate;
 import rowing.commons.Gender;
@@ -18,7 +15,6 @@ import rowing.commons.entities.utils.Views;
 import java.util.List;
 
 @AllArgsConstructor
-@Data
 @NoArgsConstructor
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -27,6 +23,9 @@ import java.util.List;
         @JsonSubTypes.Type(value = UpdateUserDTO.class, name = "UserDTO")
 })
 @JsonView(Views.Public.class)
+@Data
+@Getter
+@Setter
 public class UpdateUserDTO implements DTO {
 
     private List<Position> rowingPositions;
