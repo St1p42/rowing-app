@@ -157,6 +157,9 @@ public class ActivityControllerTest {
         positionList.add(Position.COACH);
         positionList.add(Position.COX);
         mockActivity.setPositions(positionList);
+
+        List<String> applicantList = new ArrayList<>();
+        mockActivity.setApplicants(applicantList);
         MockMvcResultMatchers.content();
 
         Competition activity = new Competition();
@@ -171,6 +174,9 @@ public class ActivityControllerTest {
         positionList2.add(Position.PORT);
         positionList2.add(Position.COX);
         activity.setPositions(positionList2);
+
+        List<String> applicantList1 = new ArrayList<>();
+        activity.setApplicants(applicantList1);
         MockMvcResultMatchers.content();
 
         List<Activity> activityList = new ArrayList<>();

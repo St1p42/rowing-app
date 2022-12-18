@@ -34,6 +34,8 @@ public class ActivityDTO implements DTO {
     private Date start;
     private List<Position> positions;
 
+    private  List<String> applicants;
+
     /**
      * Getter for the id.
      *
@@ -75,14 +77,18 @@ public class ActivityDTO implements DTO {
      * @param start time of the activity
      *
      * @param positions required for the activity
+     *
+     * @param applicants for this activity
      */
-    public ActivityDTO(UUID id, UUID owner, String name, String type, Date start, List<Position> positions) {
+    public ActivityDTO(UUID id, UUID owner, String name, String type, Date start,
+                       List<Position> positions, List<String> applicants) {
         this.id = id;
         this.owner = owner;
         this.name = name;
         this.type = type;
         this.start = start;
         this.positions = positions;
+        this.applicants = applicants;
     }
 
     /**
@@ -104,6 +110,15 @@ public class ActivityDTO implements DTO {
     }
 
     /**
+     * Getter for the list of applicants.
+     *
+     * @return the list of applicant IDs.
+     */
+    public List<String> getApplicants() {
+        return applicants;
+    }
+
+    /**
      * A constructor for ActivityDTO.
      *
      * @param dto to be used
@@ -115,5 +130,6 @@ public class ActivityDTO implements DTO {
         this.type = dto.getType();
         this.start = dto.getStart();
         this.positions = dto.getPositions();
+        this.applicants = dto.getApplicants();
     }
 }
