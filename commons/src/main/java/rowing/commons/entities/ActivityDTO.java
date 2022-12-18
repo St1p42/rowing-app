@@ -33,7 +33,7 @@ public class ActivityDTO implements DTO {
     private Date start;
     private List<Position> positions;
 
-    private  List<UUID> applicants;
+    private  List<String> applicants;
 
     /**
      * Getter for the id.
@@ -80,7 +80,7 @@ public class ActivityDTO implements DTO {
      * @param applicants for this activity
      */
     public ActivityDTO(UUID id, UUID owner, String name, String type, Date start,
-                       List<Position> positions, List<UUID> applicants) {
+                       List<Position> positions, List<String> applicants) {
         this.id = id;
         this.owner = owner;
         this.name = name;
@@ -113,7 +113,7 @@ public class ActivityDTO implements DTO {
      *
      * @return the list of applicant IDs.
      */
-    public List<UUID> getApplicants() {
+    public List<String> getApplicants() {
         return applicants;
     }
 

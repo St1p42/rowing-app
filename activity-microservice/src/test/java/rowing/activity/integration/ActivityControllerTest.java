@@ -158,7 +158,7 @@ public class ActivityControllerTest {
         positionList.add(Position.COX);
         mockActivity.setPositions(positionList);
 
-        List<UUID> applicantList = new ArrayList<>();
+        List<String> applicantList = new ArrayList<>();
         mockActivity.setApplicants(applicantList);
         MockMvcResultMatchers.content();
 
@@ -175,7 +175,7 @@ public class ActivityControllerTest {
         positionList2.add(Position.COX);
         activity.setPositions(positionList2);
 
-        List<UUID> applicantList1 = new ArrayList<>();
+        List<String> applicantList1 = new ArrayList<>();
         activity.setApplicants(applicantList1);
         MockMvcResultMatchers.content();
 

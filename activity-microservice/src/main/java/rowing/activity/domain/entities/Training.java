@@ -22,7 +22,7 @@ public class Training extends Activity<TrainingDTO> {
     }
 
     public Training(UUID id, UUID owner, String name, String type,
-                    Date start, List<Position> positions, List<UUID> applicants) {
+                    Date start, List<Position> positions, List<String> applicants) {
         super(id, owner, name, type, start, positions, applicants);
     }
 
