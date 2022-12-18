@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.CoxCertificate;
+import rowing.commons.Gender;
+import rowing.commons.Position;
 import rowing.user.domain.HasEvents;
 
 import javax.persistence.*;
@@ -25,36 +27,36 @@ public class User extends HasEvents {
     @Column(name = "userId", nullable = false, unique = true)
     private String userId;
 
-    @Column(name = "rowingPositions", nullable = true, unique = false)
+    @Column(name = "rowingPositions")
     @Enumerated(EnumType.STRING)
     @ElementCollection
     private List<Position> rowingPositions;
 
-    @Column(name = "availability", nullable = true, unique = false)
+    @Column(name = "availability")
     @Convert(converter = AvailabilityIntervalsAttributeConverter.class)
     private List<AvailabilityIntervals> availability;
 
-    @Column(name = "email", nullable = false, unique = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "firstName", nullable = false, unique = false)
+    @Column(name = "firstName", nullable = false)
     private String firstName;
 
-    @Column(name = "lastName", nullable = false, unique = false)
+    @Column(name = "lastName", nullable = false)
     private String lastName;
 
-    @Column(name = "coxCertificates", nullable = true, unique = false)
+    @Column(name = "coxCertificates")
     @Enumerated(EnumType.STRING)
     @ElementCollection
     private List<CoxCertificate> coxCertificates;
 
-    @Column(name = "gender", nullable = false, unique = false)
+    @Column(name = "gender", nullable = false)
     private Gender gender;
 
-    @Column(name = "rowingOrganization", nullable = true, unique = false)
+    @Column(name = "rowingOrganization")
     private String rowingOrganization;
 
-    @Column(name = "competitive", nullable = true, unique = false)
+    @Column(name = "competitive")
     private Boolean competitive;
 
     /**
