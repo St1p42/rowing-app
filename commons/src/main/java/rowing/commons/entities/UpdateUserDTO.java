@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import rowing.commons.AvailabilityIntervals;
 import rowing.commons.CoxCertificate;
 import rowing.commons.Gender;
 import rowing.commons.Position;
@@ -26,7 +27,6 @@ import java.util.List;
         @JsonSubTypes.Type(value = UpdateUserDTO.class, name = "UserDTO")
 })
 @JsonView(Views.Public.class)
-
 public class UpdateUserDTO implements DTO {
 
     private List<Position> rowingPositions;

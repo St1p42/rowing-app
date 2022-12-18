@@ -8,11 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import rowing.commons.AvailabilityIntervals;
 import rowing.commons.CoxCertificate;
-import rowing.user.domain.user.utils.DTO;
-import rowing.user.domain.user.utils.Views;
+import rowing.commons.Gender;
+import rowing.commons.Position;
+import rowing.commons.entities.utils.DTO;
+import rowing.commons.entities.utils.Views;
 
-import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +28,6 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = UserDTO.class, name = "UserDTO")
 })
 @JsonView(Views.Public.class)
-
 public class UserDTO implements DTO {
 
     private UUID userId;

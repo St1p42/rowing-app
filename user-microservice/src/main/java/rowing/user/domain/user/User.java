@@ -2,6 +2,8 @@ package rowing.user.domain.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rowing.commons.AvailabilityIntervals;
+import rowing.commons.CoxCertificate;
 import rowing.user.domain.HasEvents;
 
 import javax.persistence.*;

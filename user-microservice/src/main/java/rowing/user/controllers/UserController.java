@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import rowing.commons.entities.UpdateUserDTO;
 import rowing.user.authentication.AuthManager;
-import rowing.user.domain.user.UpdateUserDTO;
 import rowing.user.domain.user.User;
 import rowing.user.domain.user.UserRepository;
 

@@ -17,7 +17,7 @@ import java.util.UUID;
 @Data
 @MappedSuperclass
 @NoArgsConstructor
-public abstract class BaseEntity<D extends DTO> {
+public abstract class BaseEntity<D> {
     /**
      * id - random unique uuid assigned to a certain entity.
      */
