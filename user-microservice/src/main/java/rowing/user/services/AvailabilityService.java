@@ -3,21 +3,14 @@ package rowing.user.services;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rowing.commons.AvailabilityIntervals;
 import rowing.user.domain.user.AvailabilityNotFoundException;
 import rowing.user.domain.user.User;
 import rowing.user.domain.user.UserRepository;
-import rowing.user.domain.user.AvailabilityIntervals;
 
 import java.time.DateTimeException;
-import java.time.DayOfWeek;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
-import static java.util.Locale.forLanguageTag;
 
 @Service
 @NoArgsConstructor

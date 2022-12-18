@@ -1,9 +1,8 @@
 package rowing.user.domain;
 
 import org.junit.jupiter.api.Test;
-import rowing.user.domain.user.AvailabilityIntervals;
+import rowing.commons.AvailabilityIntervals;
 
-import java.time.DateTimeException;
 import java.time.DayOfWeek;
 
 import static org.assertj.core.api.Assertions.assertThat;
