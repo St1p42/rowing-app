@@ -42,6 +42,7 @@ import rowing.commons.entities.ActivityDTO;
 //import com.fasterxml.jackson.*;
 
 import javax.print.attribute.standard.Media;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @SpringBootTest
@@ -144,12 +145,16 @@ public class ActivityControllerTest {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
 
+        String date_string = "26-09-3043";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = formatter.parse(date_string);
+
         Training mockActivity = new Training();
         mockActivity.setId(UUID.randomUUID());
         mockActivity.setOwner(UUID.randomUUID());
         mockActivity.setName("Test Activity");
         mockActivity.setType("Training");
-        mockActivity.setStart(new Date());
+        mockActivity.setStart(date);
 
         List<Position> positionList = new ArrayList<>();
         positionList.add(Position.COACH);
@@ -165,7 +170,7 @@ public class ActivityControllerTest {
         activity.setOwner(UUID.randomUUID());
         activity.setName("Test Activity2");
         activity.setType("Competition");
-        activity.setStart(new Date());
+        activity.setStart(date);
         activity.setGender(Gender.MALE);
 
         List<Position> positionList2 = new ArrayList<>();
@@ -183,6 +188,77 @@ public class ActivityControllerTest {
         activityList.add(mockActivity);
         activityList.add(activity);
         activitydtoList.add(mockActivity.toDto());
+        activitydtoList.add(activity.toDto());
+        when(mockActivityRepository.findAll()).thenReturn(activityList);
+
+        ResultActions result = mockMvc.perform(get("/activity/activityList")
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isOk());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        String response = result.andReturn().getResponse().getContentAsString();
+
+        //assertThat(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("\"COX\"]}}", "\"COX\"]}")).
+        // isEqualTo(mapper.writeValueAsString(activity_dto_list));
+        JSONAssert.assertEquals(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("]}}", "]}"),
+                mapper.writeValueAsString(activitydtoList), false);
+    }
+
+    @Test
+    public void activityDeleted() throws Exception {
+        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+
+        String date_string = "26-09-1940";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date date1 = formatter.parse(date_string);
+
+        Training mockActivity = new Training();
+        mockActivity.setId(UUID.randomUUID());
+        mockActivity.setOwner(UUID.randomUUID());
+        mockActivity.setName("Test Activity");
+        mockActivity.setType("Training");
+        mockActivity.setStart(date1);
+
+        List<Position> positionList = new ArrayList<>();
+        positionList.add(Position.COACH);
+        positionList.add(Position.COX);
+        mockActivity.setPositions(positionList);
+
+        List<String> applicantList = new ArrayList<>();
+        mockActivity.setApplicants(applicantList);
+        MockMvcResultMatchers.content();
+
+        String date_string2 = "26-09-3245";
+        SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = formatter2.parse(date_string2);
+
+        Competition activity = new Competition();
+        activity.setId(UUID.randomUUID());
+        activity.setOwner(UUID.randomUUID());
+        activity.setName("Test Activity2");
+        activity.setType("Competition");
+        activity.setStart(date);
+        activity.setGender(Gender.MALE);
+
+        List<Position> positionList2 = new ArrayList<>();
+        positionList2.add(Position.PORT);
+        positionList2.add(Position.COX);
+        activity.setPositions(positionList2);
+
+        List<String> applicantList1 = new ArrayList<>();
+        activity.setApplicants(applicantList1);
+        MockMvcResultMatchers.content();
+
+        List<Activity> activityList = new ArrayList<>();
+        List<ActivityDTO> activitydtoList = new ArrayList<>();
+
+        activityList.add(mockActivity);
+        activityList.add(activity);
         activitydtoList.add(activity.toDto());
         when(mockActivityRepository.findAll()).thenReturn(activityList);
 
