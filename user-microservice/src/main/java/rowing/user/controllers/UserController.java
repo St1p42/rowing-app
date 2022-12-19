@@ -1,5 +1,7 @@
 package rowing.user.controllers;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import rowing.commons.entities.UpdateUserDTO;
 import rowing.user.authentication.AuthManager;
+import rowing.user.domain.user.AvailabilityNotFoundException;
 import rowing.user.domain.user.User;
 import rowing.user.domain.user.UserRepository;
-import rowing.user.domain.user.AvailabilityNotFoundException;
 import rowing.user.models.AvailabilityModel;
 import rowing.user.models.TwoAvailabilitiesModel;
 import rowing.user.services.AvailabilityService;
@@ -70,9 +72,11 @@ public class UserController {
      * @return the email of the user
      */
     @GetMapping("/get-email-address")
-    public ResponseEntity<String> getEmailAddress() {
-        String userId = authManager.getUsername();
+    public ResponseEntity<String> getEmailAddress(@RequestBody String username) {
+        JSONArray array = new JSONArray("[" + username + "]");
+        String userId = (String) ((JSONObject) array.get(0)).get("username");
         Optional<User> u = userRepository.findByUserId(userId);
+        System.out.println(username);
         if (!u.isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }

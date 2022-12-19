@@ -2,9 +2,6 @@ package rowing.user.models;
 
 import lombok.Data;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-
 @Data
 public class AvailabilityModel {
 

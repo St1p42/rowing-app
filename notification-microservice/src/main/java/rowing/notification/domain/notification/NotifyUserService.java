@@ -45,7 +45,8 @@ public class NotifyUserService {
         String uri = url + ":" + port + emailPath;
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(bearerToken);
-        HttpEntity requestHttp = new HttpEntity(headers);
+        String body = "{\"username\":\"" + request.getUsername() + "\"}";
+        HttpEntity requestHttp = new HttpEntity(body, headers);
 
         //sending the request
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, requestHttp, String.class);

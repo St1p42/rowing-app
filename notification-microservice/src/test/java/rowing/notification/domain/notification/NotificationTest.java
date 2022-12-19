@@ -19,7 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NotificationTest {
     @Test
     void subjectAccepted() {
-        NotificationRequestModel accepted = new NotificationRequestModel(NotificationStatus.ACCEPTED, new UUID(101L, 2L));
+        NotificationRequestModel accepted = new NotificationRequestModel("alex",
+                NotificationStatus.ACCEPTED, new UUID(101L, 2L));
         Notification notificationAccepted = new Notification(accepted, "random@gmail.com");
         ReflectionTestUtils.setField(notificationAccepted, "subject", "Your status for the activity is ");
         String answer = "Your status for the activity is ACCEPTED";
@@ -28,7 +29,8 @@ class NotificationTest {
 
     @Test
     void subjectRejected() {
-        NotificationRequestModel rejected = new NotificationRequestModel(NotificationStatus.REJECTED, new UUID(101L, 2L));
+        NotificationRequestModel rejected = new NotificationRequestModel("alex",
+                NotificationStatus.REJECTED, new UUID(101L, 2L));
         Notification notificationRejected = new Notification(rejected, "random@gmail.com");
         ReflectionTestUtils.setField(notificationRejected, "subject", "Your status for the activity is ");
         String answer = "Your status for the activity is REJECTED";
@@ -37,7 +39,8 @@ class NotificationTest {
 
     @Test
     void subjectKicked() {
-        NotificationRequestModel kicked = new NotificationRequestModel(NotificationStatus.KICKED, new UUID(101L, 2L));
+        NotificationRequestModel kicked = new NotificationRequestModel("alex",
+                NotificationStatus.KICKED, new UUID(101L, 2L));
         Notification notificationKicked = new Notification(kicked, "random@gmail.com");
         ReflectionTestUtils.setField(notificationKicked, "subject", "Your status for the activity is ");
         String answer = "Your status for the activity is KICKED";
@@ -46,7 +49,8 @@ class NotificationTest {
 
     @Test
     void subjectDeleted() {
-        NotificationRequestModel deleted = new NotificationRequestModel(NotificationStatus.DELETED, new UUID(101L, 2L));
+        NotificationRequestModel deleted = new NotificationRequestModel("alex",
+                NotificationStatus.DELETED, new UUID(101L, 2L));
         Notification notificationDeleted = new Notification(deleted, "random@gmail.com");
         ReflectionTestUtils.setField(notificationDeleted, "subject", "Your status for the activity is ");
         String answer = "Your status for the activity is DELETED";
@@ -55,7 +59,8 @@ class NotificationTest {
 
     @Test
     void subjectWithdrawn() {
-        NotificationRequestModel withdrawn = new NotificationRequestModel(NotificationStatus.WITHDRAWN, new UUID(101L, 2L));
+        NotificationRequestModel withdrawn = new NotificationRequestModel("alex",
+                NotificationStatus.WITHDRAWN, new UUID(101L, 2L));
         Notification notificationWithdrawn = new Notification(withdrawn, "random@gmail.com");
         ReflectionTestUtils.setField(notificationWithdrawn, "subject", "Your status for the activity is ");
         String answer = "Your status for the activity is WITHDRAWN";
@@ -73,7 +78,8 @@ class NotificationTest {
 
     @Test
     void getDestinationEmail() {
-        NotificationRequestModel accepted = new NotificationRequestModel(NotificationStatus.ACCEPTED, new UUID(101L, 2L));
+        NotificationRequestModel accepted = new NotificationRequestModel("alex",
+                NotificationStatus.ACCEPTED, new UUID(101L, 2L));
         Notification notificationAccepted = new Notification(accepted, "random@gmail.com");
         assertEquals("random@gmail.com", notificationAccepted.getDestinationEmail());
     }
@@ -81,7 +87,8 @@ class NotificationTest {
     @Test
     void retrieveBodyAccepted() {
         String answer = "Congratulations, you were accepted to the activity with id: 00000000-0000-0065-0000-000000000002";
-        NotificationRequestModel accepted = new NotificationRequestModel(NotificationStatus.ACCEPTED, new UUID(101L, 2L));
+        NotificationRequestModel accepted = new NotificationRequestModel("alex",
+                NotificationStatus.ACCEPTED, new UUID(101L, 2L));
         Notification notificationAccepted = new Notification(accepted, "random@gmail.com");
         ReflectionTestUtils.setField(notificationAccepted, "acceptedBody",
                 "Congratulations, you were accepted to the activity with id: ");
@@ -92,7 +99,8 @@ class NotificationTest {
     void retrieveBodyRejected() {
         String answer = "Unfortunately, you were rejected to participate in this activity with id: "
                 + "00000000-0000-0065-0000-000000000002";
-        NotificationRequestModel rejected = new NotificationRequestModel(NotificationStatus.REJECTED, new UUID(101L, 2L));
+        NotificationRequestModel rejected = new NotificationRequestModel("alex",
+                NotificationStatus.REJECTED, new UUID(101L, 2L));
         Notification notificationRejected = new Notification(rejected, "random@gmail.com");
         ReflectionTestUtils.setField(notificationRejected,
                 "rejectedBody", "Unfortunately, you were rejected to participate in this activity with id: ");
@@ -101,7 +109,8 @@ class NotificationTest {
 
     @Test
     void retrieveBodyWithdrawn() {
-        NotificationRequestModel withdrawn = new NotificationRequestModel(NotificationStatus.WITHDRAWN, new UUID(101L, 2L));
+        NotificationRequestModel withdrawn = new NotificationRequestModel("alex",
+                NotificationStatus.WITHDRAWN, new UUID(101L, 2L));
         Notification notificationWithdrawn = new Notification(withdrawn, "random@gmail.com");
         ReflectionTestUtils.setField(notificationWithdrawn,
                 "withdrawnBody", "You have successfully withdrawn your application from the activity with id: ");
@@ -112,7 +121,8 @@ class NotificationTest {
 
     @Test
     void retrieveBodyKicked() {
-        NotificationRequestModel kicked = new NotificationRequestModel(NotificationStatus.KICKED, new UUID(101L, 2L));
+        NotificationRequestModel kicked = new NotificationRequestModel("alex",
+                NotificationStatus.KICKED, new UUID(101L, 2L));
         Notification notificationKicked = new Notification(kicked, "random@gmail.com");
         ReflectionTestUtils.setField(notificationKicked,
                 "kickedBody", "Unfortunately, you were kicked from this activity with id: ");
@@ -122,7 +132,8 @@ class NotificationTest {
 
     @Test
     void retrieveBodyDeleted() {
-        NotificationRequestModel deleted = new NotificationRequestModel(NotificationStatus.DELETED,
+        NotificationRequestModel deleted = new NotificationRequestModel("alex",
+                NotificationStatus.DELETED,
                 new UUID(101L, 2L));
         Notification notificationDeleted = new Notification(deleted, "random@gmail.com");
         ReflectionTestUtils.setField(notificationDeleted, "deletedBody",

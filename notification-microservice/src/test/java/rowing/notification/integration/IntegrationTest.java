@@ -25,8 +25,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,7 +62,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void helloWorld() throws Exception {
+    public void testSendNotification() throws Exception {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
@@ -73,11 +72,13 @@ public class IntegrationTest {
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        NotificationRequestModel requestModel = new NotificationRequestModel(NotificationStatus.ACCEPTED, new UUID(1, 1));
+        NotificationRequestModel requestModel = new NotificationRequestModel("alex",
+                NotificationStatus.ACCEPTED, new UUID(1, 1));
 
         //mocks the Users getEmailAddress endpoint
         mockServer.expect(requestTo(uri + ":8082/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withSuccess("aojica65@gmail.com", MediaType.TEXT_PLAIN));
 
         // calls REST API internally

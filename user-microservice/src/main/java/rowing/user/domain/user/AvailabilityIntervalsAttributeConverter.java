@@ -4,9 +4,7 @@ import rowing.commons.AvailabilityIntervals;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Converter
