@@ -87,10 +87,10 @@ public class ActivityService {
         List<Activity> activities = activityRepository.findAll();
         List<ActivityDTO> activityDtos = new ArrayList<>();
         for (Activity activity : activities) {
-            if(activity.getStart().after(currentDate)){
+
+            if (activity.getStart().after(currentDate)) {
                 activityDtos.add(activity.toDto());
-            }
-            else{
+            } else {
                 activityRepository.delete(activity);
             }
         }

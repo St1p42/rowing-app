@@ -145,9 +145,9 @@ public class ActivityControllerTest {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
 
-        String date_string = "26-09-3043";
+        String dateString = "26-09-3043";
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-        Date date = formatter.parse(date_string);
+        Date date = formatter.parse(dateString);
 
         Training mockActivity = new Training();
         mockActivity.setId(UUID.randomUUID());
@@ -213,9 +213,9 @@ public class ActivityControllerTest {
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
 
-        String date_string = "26-09-1940";
+        String dateString = "26-09-1940";
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-        Date date1 = formatter.parse(date_string);
+        Date date1 = formatter.parse(dateString);
 
         Training mockActivity = new Training();
         mockActivity.setId(UUID.randomUUID());
@@ -233,9 +233,9 @@ public class ActivityControllerTest {
         mockActivity.setApplicants(applicantList);
         MockMvcResultMatchers.content();
 
-        String date_string2 = "26-09-3245";
+        String dateString2 = "26-09-3245";
         SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
-        Date date = formatter2.parse(date_string2);
+        Date date = formatter2.parse(dateString2);
 
         Competition activity = new Competition();
         activity.setId(UUID.randomUUID());
