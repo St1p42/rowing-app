@@ -3,6 +3,7 @@ package rowing.user.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.entities.UpdateUserDTO;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import rowing.user.authentication.AuthManager;
 import rowing.user.authentication.JwtTokenVerifier;
 import rowing.user.domain.user.User;
 import rowing.user.domain.user.UserRepository;
+import rowing.user.models.AvailabilityModel;
+import rowing.user.models.TwoAvailabilitiesModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,8 +36,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import rowing.user.models.AvailabilityModel;
-import rowing.user.models.TwoAvailabilitiesModel;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -391,9 +392,11 @@ public class UserTest {
                         "lala", "bogdan@gmail.com")));
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
+        String json = new JSONObject().put("username", "bogdan").toString();
         ResultActions result = mockMvc.perform(get("/user/get-email-address")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken"));
+                .header("Authorization", "Bearer MockedToken")
+                .content(json));
 
         // Assert
         result.andExpect(status().isOk());
@@ -415,9 +418,11 @@ public class UserTest {
         when(mockUserRepository.findByUserId("bogdan")).thenReturn(Optional.empty());
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
+        String json = new JSONObject().put("username", "bogdan").toString();
         ResultActions result = mockMvc.perform(get("/user/get-email-address")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken"));
+                .header("Authorization", "Bearer MockedToken")
+                .content(json));
 
         // Assert
         result.andExpect(status().isNotFound());
