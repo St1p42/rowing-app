@@ -41,6 +41,8 @@ dependencies {
 
 	implementation project(':commons')
     implementation 'org.json:json:20220924'
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation project(path: ':authentication-microservice')
     compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -74,8 +76,18 @@ test {
 	useJUnitPlatform()
 	jacoco {
 		enabled = true
-		includes = ['nl.tudelft.sem.template.*']
+		includes = ['rowing.*']
 		excludes = []
+	}
+
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = false
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir('reports/jacoco/test/html')
 	}
 }
 
@@ -89,7 +101,7 @@ jacocoTestCoverageVerification() {
 		rule {
 			enabled = true
 			element = 'CLASS'
-			includes = ['nl.tudelft.sem.template.*']
+			includes = ['rowing.*']
 
 			limit {
 				counter = 'BRANCH'

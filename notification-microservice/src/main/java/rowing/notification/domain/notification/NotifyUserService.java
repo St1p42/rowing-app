@@ -3,7 +3,10 @@ package rowing.notification.domain.notification;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rowing.commons.requestModels.NotificationRequestModel;
@@ -50,23 +53,24 @@ public class NotifyUserService {
         String body = "{\"username\":\"" + request.getUsername() + "\"}";
         HttpEntity requestHttp = new HttpEntity(body, headers);
 
-        //sending the request
-        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, requestHttp, String.class);
-
         //getting the strategy depending on the response
         Strategy strategy;
         Notification notification;
-        if (!response.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+
+        //sending the request
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, requestHttp, String.class);
+            System.out.println(response);
             strategy =
                     strategyFactory.findStrategy(StrategyName.EMAIL);
             notification = new Notification(request, response.getBody());
-        } else {
+            strategy.notifyUser(notification);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             strategy =
                     strategyFactory.findStrategy(StrategyName.KAFKA);
             notification = new Notification(request, authManager.getUsername(), true);
+            strategy.notifyUser(notification);
         }
-
-        // you can now call the methods defined in strategy.
-        strategy.notifyUser(notification);
     }
 }
