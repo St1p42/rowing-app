@@ -2,9 +2,14 @@ package rowing.user.domain.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rowing.commons.AvailabilityIntervals;
+import rowing.commons.CoxCertificate;
+import rowing.commons.Gender;
+import rowing.commons.Position;
 import rowing.user.domain.HasEvents;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,38 +26,39 @@ public class User extends HasEvents {
      */
     @Id
     @Column(name = "userId", nullable = false, unique = true)
-    private int userId;
+    private String userId;
 
-    @Column(name = "rowingPositions", nullable = true, unique = false)
+    @Column(name = "rowingPositions")
     @Enumerated(EnumType.STRING)
     @ElementCollection
     private List<Position> rowingPositions;
 
-    @Column(name = "availability", nullable = true, unique = false)
+    @Column(name = "availability")
     @Convert(converter = AvailabilityIntervalsAttributeConverter.class)
-    private List<AvailabilityIntervals> availability;
+    private List<AvailabilityIntervals> availability = new ArrayList<>();
 
-    @Column(name = "email", nullable = false, unique = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "firstName", nullable = false, unique = false)
+    @Column(name = "firstName", nullable = false)
     private String firstName;
 
-    @Column(name = "lastName", nullable = false, unique = false)
+    @Column(name = "lastName", nullable = false)
     private String lastName;
 
-    @Column(name = "coxCertificates", nullable = true, unique = false)
+    @Column(name = "coxCertificates")
     @Enumerated(EnumType.STRING)
     @ElementCollection
     private List<CoxCertificate> coxCertificates;
 
-    @Column(name = "gender", nullable = false, unique = false)
+    @Column(name = "gender", nullable = true, unique = false)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "rowingOrganization", nullable = true, unique = false)
+    @Column(name = "rowingOrganization")
     private String rowingOrganization;
 
-    @Column(name = "competitive", nullable = true, unique = false)
+    @Column(name = "competitive")
     private Boolean competitive;
 
     /**
@@ -63,42 +69,13 @@ public class User extends HasEvents {
      * @param lastName - the last name of the user
      * @param email - the email of the user to send notifications to
      */
-    public User(int userId, String firstName, String lastName, String email) {
+    public User(String userId, String firstName, String lastName, String email) {
         //TODO validation if necessary
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         //this.recordThat(new UserWasCreatedEvent(username));
-    }
-
-    /**
-     * Craete attributes for basic profile.
-     *
-     * @param rowingPositions - positions allowed to fill
-     * @param availability - availability schedule
-     * @param coxCertificates - certificates
-     */
-    public void createProfileBasic(List<Position> rowingPositions, List<AvailabilityIntervals> availability,
-                                   List<CoxCertificate> coxCertificates) {
-        //TODO validation if necessary
-        this.rowingPositions = rowingPositions;
-        this.availability = availability;
-        this.coxCertificates = coxCertificates;
-    }
-
-    /**
-     * Create attributes for competition for a user.
-     *
-     * @param gender - gender of user
-     * @param rowingOrganization - organization of user
-     * @param competitive - if he wants to participate competitively
-     */
-    public void createProfileCompetitive(Gender gender, String rowingOrganization, boolean competitive) {
-        //TODO validation if necessary
-        this.gender = gender;
-        this.rowingOrganization = rowingOrganization;
-        this.competitive = competitive;
     }
 
     /**
@@ -113,7 +90,7 @@ public class User extends HasEvents {
             return false;
         }
         User appUser = (User) o;
-        return userId == (appUser.userId);
+        return userId.equals(appUser.userId);
     }
 
     @Override
