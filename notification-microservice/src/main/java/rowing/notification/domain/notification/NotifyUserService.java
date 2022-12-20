@@ -38,7 +38,7 @@ public class NotifyUserService {
 
      * @param request - request that was received
      *
-     * @param bearerToken - the token that was received containing information about the user
+     * @param bearerToken - the token that was received containing information about the user.
      */
     public void notifyUser(NotificationRequestModel request, String bearerToken) {
         //building the request
