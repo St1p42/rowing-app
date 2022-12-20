@@ -4,5 +4,5 @@ include 'authentication-microservice'
 include 'activity-microservice'
 include 'notification-microservice'
 include 'user-microservice'
+include 'kafka-template'
 include 'commons'
-
