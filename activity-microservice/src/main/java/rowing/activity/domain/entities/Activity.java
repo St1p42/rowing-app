@@ -37,6 +37,9 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
     @Column(name = "date", nullable = false, unique = false)
     private Date start;
 
+    @Column(name = "location", nullable = false, unique = false)
+    private String location;
+
     @Column(name = "positions", nullable = true, unique = false)
     @ElementCollection
     private List<Position> positions;
@@ -67,6 +70,7 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
 
         this.type = dto.getType();
         this.start = dto.getStart();
+        this.location = dto.getLocation();
         this.positions = dto.getPositions();
         this.applicants = dto.getApplicants();
     }
@@ -83,6 +87,7 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
                 this.name,
                 this.type,
                 this.start,
+                this.location,
                 this.positions,
                 this.applicants
                 );

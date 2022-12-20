@@ -17,10 +17,12 @@ import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.services.ActivityService;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
+import rowing.commons.entities.UpdateUserDTO;
 
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -98,5 +100,21 @@ public class ActivityController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
         }
         return ResponseEntity.ok(activityDTO);
+    }
+
+    /** Endpoint to update the activity.
+     * @param activityId - the id of the activity to be updated
+     * @param dto - the activityDTO that contains the new information
+     * @return activityDTO - the activity that has been updated
+     */
+    @PatchMapping("/{activityId}/update-activity")
+    public ResponseEntity<ActivityDTO> updateUser(@PathVariable("activityId") UUID activityId, ActivityDTO dto) {
+        ActivityDTO updatedActivityDTO;
+        try {
+            updatedActivityDTO = activityService.updateActivity(activityId, dto);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
+        }
+        return ResponseEntity.ok(updatedActivityDTO);
     }
 }
