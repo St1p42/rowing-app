@@ -189,7 +189,7 @@ public class ActivityService {
                 throw new IllegalArgumentException("User is not available for this activity !");
             }
             if (activityPresent instanceof Competition) {   // Checking competition requirements
-                Competition competition = (Competition) activityPresent; 
+                Competition competition = (Competition) activityPresent;
                 if (!match.getCompetitive()) {
                     throw new IllegalArgumentException("User is not competitive!");
                 }
@@ -244,4 +244,28 @@ public class ActivityService {
         return "User " + model.getUserId() + " is accepted successfully";
     }
 
+
+    /**
+     * Method to update an activity in the repository.
+     * Fields that can be updated are: name, start, location.
+     *
+     * @param activityId - the UUID corresponding to the activity that will be updated
+     * @param updateActivityDto - the activityDto containing the information which the activity will be updated with
+     * @return activityDto - the activityDto corresponding to the updated activity
+     * @throws IllegalArgumentException - if the activity is not found in the database
+     */
+    public ActivityDTO updateActivity(UUID activityId, ActivityDTO updateActivityDto) throws IllegalArgumentException {
+        Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
+        if (optionalActivity.isPresent()) {
+            Activity activity = optionalActivity.get();
+
+            Optional.ofNullable(updateActivityDto.getName()).ifPresent(activity::setName);
+            Optional.ofNullable(updateActivityDto.getStart()).ifPresent(activity::setStart);
+            Optional.ofNullable(updateActivityDto.getLocation()).ifPresent(activity::setLocation);
+
+            ActivityDTO activityDto = activity.toDto();
+            return activityDto;
+        }
+        throw new IllegalArgumentException();
+    }
 }
