@@ -11,10 +11,7 @@ import lombok.ToString;
 import rowing.user.domain.user.utils.DTO;
 import rowing.user.domain.user.utils.Views;
 
-import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -42,7 +39,7 @@ public class UserDTO implements DTO {
 
     private String lastName;
 
-    private List<CoxCertificate> coxCertificates;
+    private List<String> coxCertificates;
 
     private Gender gender;
 

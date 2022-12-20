@@ -36,7 +36,7 @@ public class UpdateUserDTO implements DTO {
 
     private String lastName;
 
-    private List<CoxCertificate> coxCertificates;
+    private List<String> coxCertificates;
 
     private Gender gender;
 
