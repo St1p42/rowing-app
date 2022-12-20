@@ -1,5 +1,6 @@
 package rowing.notification.domain.notification;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -12,6 +13,7 @@ import rowing.notification.domain.notification.strategy.StrategyFactory;
 import rowing.notification.domain.notification.strategy.StrategyName;
 
 
+@Data
 @Service
 public class NotifyUserService {
     @Autowired

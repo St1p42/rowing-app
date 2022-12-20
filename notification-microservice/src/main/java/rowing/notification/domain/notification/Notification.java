@@ -1,11 +1,13 @@
 package rowing.notification.domain.notification;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import rowing.commons.NotificationStatus;
 import rowing.commons.requestModels.NotificationRequestModel;
 
 //write tests for this class
 //later add the activity information to this class and change retrieveText respectively
+@Data
 public class Notification {
     private String activityId;
     private NotificationStatus notificationStatus;
@@ -34,6 +36,8 @@ public class Notification {
     private String username;
     private boolean useKafka = false;
 
+    String unknown = "Unknown";
+
 
     /**
      * Constructor for the notification object that is sent through email.
@@ -43,15 +47,13 @@ public class Notification {
      */
     public Notification(NotificationRequestModel requestInfo, String email) {
         if (requestInfo == null) {
-            this.notificationStatus = null;
-            this.activityId = "Unknown";
-            this.destinationEmail = null;
+            this.activityId = unknown;
         } else {
             this.notificationStatus = requestInfo.getStatus();
             if (requestInfo.getActivityId() != null) {
                 this.activityId = requestInfo.getActivityId().toString();
             } else {
-                this.activityId = "Unknown";
+                this.activityId = unknown;
             }
 
             this.destinationEmail = email;
@@ -67,15 +69,13 @@ public class Notification {
      */
     public Notification(NotificationRequestModel requestInfo, String username, boolean useKafka) {
         if (requestInfo == null) {
-            this.notificationStatus = null;
-            this.activityId = "Unknown";
-            this.username = null;
+            this.activityId = unknown;
         } else {
             this.notificationStatus = requestInfo.getStatus();
             if (requestInfo.getActivityId() != null) {
                 this.activityId = requestInfo.getActivityId().toString();
             } else {
-                this.activityId = "Unknown";
+                this.activityId = unknown;
             }
 
             this.username = username;
