@@ -1,5 +1,8 @@
 package rowing.commons;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.text.ParseException;
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
@@ -8,8 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Locale.forLanguageTag;
 

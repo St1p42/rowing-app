@@ -1,7 +1,5 @@
 package rowing.user.domain.user;
 
-import java.util.*;
-import javax.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import rowing.commons.AvailabilityIntervals;
@@ -11,6 +9,7 @@ import rowing.commons.Position;
 import rowing.user.domain.HasEvents;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 

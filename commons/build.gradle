@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
     implementation 'org.projectlombok:lombok:1.18.24'
+    implementation 'org.json:json:20220924'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.5'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'

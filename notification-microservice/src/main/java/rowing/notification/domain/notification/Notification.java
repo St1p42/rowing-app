@@ -1,26 +1,86 @@
 package rowing.notification.domain.notification;
 
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import rowing.commons.NotificationStatus;
-
-import java.util.Locale;
+import rowing.commons.requestModels.NotificationRequestModel;
 
 //write tests for this class
 //later add the activity information to this class and change retrieveText respectively
+@Data
 public class Notification {
-    private transient NotificationStatus status;
+    private String activityId;
+    private NotificationStatus notificationStatus;
     private transient String destinationEmail;
+    @Value("${body.notification.accepted}")
+    private String acceptedBody;
 
+    @Value("${body.notification.rejected}")
+    private String rejectedBody;
+
+    @Value("${body.notification.deleted}")
+    private String deletedBody;
+
+    @Value("${body.notification.kicked}")
+    private String kickedBody;
+
+    @Value("${body.notification.withdrawn}")
+    private String withdrawnBody;
+
+    @Value("${body.notification.default}")
+    private String defaultBody;
+
+    @Value("${subject.notification}")
+    private String subject;
+
+    private String username;
+    private boolean useKafka = false;
+
+    String unknown = "Unknown";
 
 
     /**
-     * Constructor for the notification object.
+     * Constructor for the notification object that is sent through email.
      *
-     * @param status - status of the user regarding the activity he applied to
-     * @param destinationEmail - an email of the user who should receive the notification
+     * @param requestInfo - info containing the status, email and activity id
+     * @param email - the email of the user to be notified
      */
-    public Notification(NotificationStatus status, String destinationEmail) {
-        this.status = status;
-        this.destinationEmail = destinationEmail;
+    public Notification(NotificationRequestModel requestInfo, String email) {
+        if (requestInfo == null) {
+            this.activityId = unknown;
+        } else {
+            this.notificationStatus = requestInfo.getStatus();
+            if (requestInfo.getActivityId() != null) {
+                this.activityId = requestInfo.getActivityId().toString();
+            } else {
+                this.activityId = unknown;
+            }
+
+            this.destinationEmail = email;
+        }
+    }
+
+    /**
+     * Constructor for the notification object that is sent through kafka.
+     *
+     * @param requestInfo - info containing the status, email and activity id
+     * @param username - the username of the user to be notified
+     * @param useKafka - boolean that represents if kafka is to be used
+     */
+    public Notification(NotificationRequestModel requestInfo, String username, boolean useKafka) {
+        if (requestInfo == null) {
+            this.activityId = unknown;
+        } else {
+            this.notificationStatus = requestInfo.getStatus();
+            if (requestInfo.getActivityId() != null) {
+                this.activityId = requestInfo.getActivityId().toString();
+            } else {
+                this.activityId = unknown;
+            }
+
+            this.username = username;
+        }
+        this.useKafka = useKafka;
     }
 
     /**
@@ -29,21 +89,23 @@ public class Notification {
      * @return the body of an email in a string format
      */
     public String retrieveBody() {
-        //add this string to the end of each return statement after receiving activity dto
-        //String activityInfo = "";
-        if (this.status == NotificationStatus.ACCEPTED) {
-            return "You were " + this.status.toString().toLowerCase(Locale.ROOT)
-                    + " to the activity!"; // + activity name, time, etc
-        } else if (this.status == NotificationStatus.DELETED
-                || this.status == NotificationStatus.REJECTED
-                || this.status == NotificationStatus.KICKED) {
-            return "Unfortunately, you were " + this.status.toString().toLowerCase(Locale.ROOT)
-                    + " from the activity.";
-        } else if (this.status == NotificationStatus.WITHDRAWN) {
-            return "You have successfully " + this.status.toString().toLowerCase(Locale.ROOT)
-                    + " from the activity.";
+        if (notificationStatus == null) {
+            return defaultBody + activityId;
         }
-        return "You have a notification regarding your activity";
+        switch (notificationStatus) {
+            case ACCEPTED:
+                return acceptedBody + activityId;
+            case DELETED:
+                return deletedBody + activityId;
+            case REJECTED:
+                return rejectedBody + activityId;
+            case KICKED:
+                return kickedBody + activityId;
+            case WITHDRAWN:
+                return withdrawnBody + activityId;
+            default:
+                return defaultBody + activityId;
+        }
     }
 
     /**
@@ -53,10 +115,10 @@ public class Notification {
      * @return String representing an email's subject
      */
     public String retrieveSubject() {
-        if (this.status == null) {
-            return "Your status for the activity is unknown";
+        if (notificationStatus == null) {
+            return subject + "unknown";
         }
-        return "Your status for the activity is " + this.status; //add info about activity
+        return subject + notificationStatus; //add info about activity
     }
 
     /**
