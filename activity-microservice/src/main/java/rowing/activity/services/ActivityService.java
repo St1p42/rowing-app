@@ -15,10 +15,7 @@ import rowing.activity.domain.repositories.MatchRepository;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ActivityService {
@@ -85,10 +82,17 @@ public class ActivityService {
      * @return list of all activities stored in the database
      */
     public List<ActivityDTO> getActivities() {
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = calendar.getTime();
         List<Activity> activities = activityRepository.findAll();
         List<ActivityDTO> activityDtos = new ArrayList<>();
         for (Activity activity : activities) {
-            activityDtos.add(activity.toDto());
+
+            if (activity.getStart().after(currentDate)) {
+                activityDtos.add(activity.toDto());
+            } else {
+                activityRepository.delete(activity);
+            }
         }
         return activityDtos;
     }
