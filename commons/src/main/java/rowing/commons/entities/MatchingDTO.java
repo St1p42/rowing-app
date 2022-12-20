@@ -24,7 +24,7 @@ public class MatchingDTO implements DTO {
 
     private UUID id;
     private UUID activityId;
-    private UUID userId;
+    private String userId;
     private Position position;
     private NotificationStatus status;
 
@@ -50,7 +50,7 @@ public class MatchingDTO implements DTO {
      *
      * @param status of the user for participating in this activity
      */
-    public MatchingDTO(UUID id, UUID activityId, UUID userId, Position position, NotificationStatus status) {
+    public MatchingDTO(UUID id, UUID activityId, String userId, Position position, NotificationStatus status) {
         this.id = id;
         this.activityId = activityId;
         this.userId = userId;
