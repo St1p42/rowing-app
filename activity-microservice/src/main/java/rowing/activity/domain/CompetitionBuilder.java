@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 public class CompetitionBuilder implements Builder {
     private UUID id;
-    private UUID owner;
+    private String owner;
     private String name;
     private List<Position> positions;
     private String type;

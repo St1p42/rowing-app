@@ -42,7 +42,7 @@ public class Competition extends Activity<CompetitionDTO> {
      * @param gender gender requirements
      * @param organisation organization requirements
      */
-    public Competition(UUID id, UUID owner, String name, String type,
+    public Competition(UUID id, String owner, String name, String type,
                        Date start, List<Position> positions, Gender gender, String organisation, List<String> applicants) {
         super(id, owner, name, type, start, positions, applicants);
         this.gender = gender;

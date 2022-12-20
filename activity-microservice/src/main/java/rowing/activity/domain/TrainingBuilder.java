@@ -10,7 +10,7 @@ import java.util.*;
 @Data
 public class TrainingBuilder implements Builder {
     private UUID id;
-    private UUID owner;
+    private String owner;
     private String name;
     private List<Position> positions;
     private String type;

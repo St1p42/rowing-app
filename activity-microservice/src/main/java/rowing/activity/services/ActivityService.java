@@ -9,9 +9,11 @@ import rowing.activity.domain.Director;
 import rowing.activity.domain.TrainingBuilder;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
+import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
+import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 
@@ -113,4 +115,42 @@ public class ActivityService {
         }
         throw new IllegalArgumentException();
     }
+
+    /**
+     * Returns the activity with the specified id from the database.
+     *
+     * @param activityId - the UUID corresponding to the activity
+     * @return activityDto - the activityDto corresponding to the deleted activity
+     * @throws IllegalArgumentException - if the activity is not found in the database
+     */
+    public ActivityDTO getActivity(UUID activityId) throws IllegalArgumentException {
+        Optional<Activity> activity = activityRepository.findActivityById(activityId);
+        if (activity.isPresent()) {
+            ActivityDTO activityDto = activity.get().toDto();
+            return activityDto;
+        }
+        throw new IllegalArgumentException();
+    }
+
+
+    /**
+     * Returns the activity with the specified id from the database.
+     *
+     * @param activityId - the UUID corresponding to the activity
+     * @return activityDto - the activityDto corresponding to the deleted activity
+     * @throws IllegalArgumentException - if the activity is not found in the database
+     */
+    public String signUp(String userName, UUID activityId) throws IllegalArgumentException {
+        Optional<Activity> activity = activityRepository.findActivityById(activityId);
+        if (activity.isPresent()) {
+            List<Match> signUps = matchRepository.findAllByActivityId(activityId);
+            for (Match signup : signUps)
+                if (signup.getUserName().equals(userName))
+                    throw new IllegalArgumentException("User already signed up for this activity !\n");
+            matchRepository.save(new Match(userName, activityId));
+            return "User " + userName + "signed up for activity : " + activityId.toString();
+        }
+        throw new IllegalArgumentException("Activity does not existent !\n");
+    }
+
 }

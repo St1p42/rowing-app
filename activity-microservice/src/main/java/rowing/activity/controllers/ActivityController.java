@@ -99,4 +99,16 @@ public class ActivityController {
         }
         return ResponseEntity.ok(activityDTO);
     }
+
+
+    @GetMapping("/{activityId}/sign")
+    public ResponseEntity<String> signUpActivity(@PathVariable("activityId") UUID activityId, String userName) {
+        String response = "";
+        try {
+            response = activityService.signUp(userName, activityId);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
+        }
+        return ResponseEntity.ok(response);
+    }
 }

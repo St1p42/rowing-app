@@ -3,6 +3,7 @@ package rowing.activity.domain.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 import rowing.commons.Position;
 
 import javax.persistence.*;
@@ -20,10 +21,13 @@ public class Match {
     @Column
     private UUID activityId;
 
-    @Column(name = "userId", nullable = false, unique = true)
-    private UUID userId;
+    @Column(name = "userName", nullable = false, unique = true)
+    private String userName;
 
-    @Column(name = "position", nullable = false, unique = true)
-    private Position position;
 
+    public Match (String userName, UUID activityId) {
+        this.id = UUID.randomUUID();
+        this.activityId = activityId;
+        this.userName = userName;
+    }
 }

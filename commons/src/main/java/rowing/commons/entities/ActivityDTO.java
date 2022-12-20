@@ -25,7 +25,7 @@ import java.util.UUID;
 public class ActivityDTO implements DTO {
 
     private UUID id;
-    private UUID owner;
+    private String owner;
     private String name;
     private String type;
 
@@ -44,7 +44,7 @@ public class ActivityDTO implements DTO {
         return id;
     }
 
-    public UUID getOwner() {
+    public String getOwner() {
         return owner;
     }
 
@@ -79,7 +79,7 @@ public class ActivityDTO implements DTO {
      *
      * @param applicants for this activity
      */
-    public ActivityDTO(UUID id, UUID owner, String name, String type, Date start,
+    public ActivityDTO(UUID id, String owner, String name, String type, Date start,
                        List<Position> positions, List<String> applicants) {
         this.id = id;
         this.owner = owner;

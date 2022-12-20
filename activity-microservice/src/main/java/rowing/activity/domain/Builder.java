@@ -13,7 +13,7 @@ public interface Builder {
 
     void setType(String type);
 
-    void setOwner(UUID owner);
+    void setOwner(String owner);
 
     void setStart(Date start);
 

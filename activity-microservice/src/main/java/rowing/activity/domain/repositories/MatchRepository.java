@@ -16,9 +16,11 @@ import java.util.UUID;
 @Repository
 public interface MatchRepository extends JpaRepository<Match, UUID> {
 
-    Optional<Activity> findActivityByActivityId(UUID activityId);
+    Optional<Match> findActivityByActivityId(UUID activityId);
+
+    Optional<Match> findUserByUserId(UUID userId);
 
     boolean existsByActivityId(UUID activityId);
 
-    List<UUID> findAllByActivityId(UUID activityID);
+    List<Match> findAllByActivityId(UUID activityID);
 }
