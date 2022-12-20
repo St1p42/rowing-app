@@ -61,7 +61,7 @@ class NotificationTest {
     void constructorLocationChanged() {
         Date date = new Date();
         NotificationRequestModel changes = new NotificationRequestModel("alex",
-                NotificationStatus.CHANGES, new UUID(101L, 2L),"Delft");
+                NotificationStatus.CHANGES, new UUID(101L, 2L), "Delft");
         Notification notificationChanges = new Notification(changes, "random@gmail.com");
         ReflectionTestUtils.setField(notificationChanges, "changesSubject",
                 "The activity you have signed up for has some changes");
@@ -131,7 +131,7 @@ class NotificationTest {
     void subjectChanges() {
         Date date = new Date();
         NotificationRequestModel changes = new NotificationRequestModel("alex",
-                NotificationStatus.CHANGES, new UUID(101L, 2L),"Delft");
+                NotificationStatus.CHANGES, new UUID(101L, 2L), "Delft");
         Notification notificationChanges = new Notification(changes, "random@gmail.com");
         ReflectionTestUtils.setField(notificationChanges, "changesSubject",
                 "The activity you have signed up for has some changes");
@@ -226,7 +226,7 @@ class NotificationTest {
     @Test
     void retrieveBodyLocationChange() {
         NotificationRequestModel changes = new NotificationRequestModel("alex",
-                NotificationStatus.CHANGES, new UUID(101L, 2L),"Delft");
+                NotificationStatus.CHANGES, new UUID(101L, 2L), "Delft");
         Notification notificationChanges = new Notification(changes, "random@gmail.com");
         ReflectionTestUtils.setField(notificationChanges, "changesSubject",
                 "The activity you have signed up for has some changes");
