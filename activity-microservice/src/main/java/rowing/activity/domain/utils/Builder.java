@@ -1,4 +1,4 @@
-package rowing.activity.domain;
+package rowing.activity.domain.utils;
 
 import rowing.activity.domain.entities.Activity;
 import rowing.commons.Position;

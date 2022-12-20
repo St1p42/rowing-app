@@ -2,6 +2,7 @@ package rowing.activity.domain;
 
 import lombok.Data;
 import rowing.activity.domain.entities.Competition;
+import rowing.activity.domain.utils.Builder;
 import rowing.commons.Gender;
 import rowing.commons.Position;
 

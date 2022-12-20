@@ -6,20 +6,11 @@ import org.springframework.web.server.ResponseStatusException;
 import rowing.activity.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import rowing.activity.domain.Builder;
-import rowing.activity.domain.CompetitionBuilder;
-import rowing.activity.domain.Director;
-import rowing.activity.domain.TrainingBuilder;
-import rowing.activity.domain.entities.Activity;
-import rowing.activity.domain.entities.Competition;
-import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.services.ActivityService;
 import rowing.commons.entities.ActivityDTO;
-import rowing.commons.entities.CompetitionDTO;
+import rowing.commons.entities.MatchingDTO;
 
-import javax.websocket.server.PathParam;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -100,12 +91,17 @@ public class ActivityController {
         return ResponseEntity.ok(activityDTO);
     }
 
-
+    /**
+     * Endpoint that lets the user connect to the activity using the id.
+     *
+     * @param match dto containing information regarding the signup process
+     * @return response if the sign up was successful or not
+     */
     @GetMapping("/{activityId}/sign")
-    public ResponseEntity<String> signUpActivity(@PathVariable("activityId") UUID activityId, String userName) {
+    public ResponseEntity<String> signUpActivity(@PathVariable UUID activityId, @RequestBody MatchingDTO match) {
         String response = "";
         try {
-            response = activityService.signUp(userName, activityId);
+            response = activityService.signUp(match);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
         }

@@ -1,8 +1,8 @@
 package rowing.activity.domain;
 
 import lombok.Data;
-import org.springframework.data.util.Pair;
 import rowing.activity.domain.entities.Training;
+import rowing.activity.domain.utils.Builder;
 import rowing.commons.Position;
 
 import java.util.*;

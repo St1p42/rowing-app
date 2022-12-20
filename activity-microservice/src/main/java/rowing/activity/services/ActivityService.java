@@ -3,7 +3,7 @@ package rowing.activity.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rowing.activity.authentication.AuthManager;
-import rowing.activity.domain.Builder;
+import rowing.activity.domain.utils.Builder;
 import rowing.activity.domain.CompetitionBuilder;
 import rowing.activity.domain.Director;
 import rowing.activity.domain.TrainingBuilder;
@@ -13,9 +13,9 @@ import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
-import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
+import rowing.commons.entities.MatchingDTO;
 
 import java.util.*;
 
@@ -87,16 +87,16 @@ public class ActivityService {
         Calendar calendar = Calendar.getInstance();
         Date currentDate = calendar.getTime();
         List<Activity> activities = activityRepository.findAll();
-        List<ActivityDTO> activityDtos = new ArrayList<>();
+        List<ActivityDTO> activityDTOs = new ArrayList<>();
         for (Activity activity : activities) {
 
             if (activity.getStart().after(currentDate)) {
-                activityDtos.add(activity.toDto());
+                activityDTOs.add(activity.toDto());
             } else {
                 activityRepository.delete(activity);
             }
         }
-        return activityDtos;
+        return activityDTOs;
     }
 
     /**
@@ -136,19 +136,39 @@ public class ActivityService {
     /**
      * Returns the activity with the specified id from the database.
      *
-     * @param activityId - the UUID corresponding to the activity
-     * @return activityDto - the activityDto corresponding to the deleted activity
-     * @throws IllegalArgumentException - if the activity is not found in the database
+     * @param match dto that contains information about the singUp / match process
+     * @return String - the response corresponding to the signUp result
+     * @throws IllegalArgumentException - if the activity is not found in the database or user is not compatible
      */
-    public String signUp(String userName, UUID activityId) throws IllegalArgumentException {
-        Optional<Activity> activity = activityRepository.findActivityById(activityId);
+    public String signUp(MatchingDTO match) throws IllegalArgumentException {
+        Optional<Activity> activity = activityRepository.findActivityById(match.getActivityId());
         if (activity.isPresent()) {
-            List<Match> signUps = matchRepository.findAllByActivityId(activityId);
-            for (Match signup : signUps)
-                if (signup.getUserName().equals(userName))
+            Activity activityPresent = activity.get();
+            List<String> signUps = activityPresent.getApplicants();
+            for (String userId : signUps) { // Checking if a user is already signed up for this
+                if (userId.equals(match.getUserId())) {
                     throw new IllegalArgumentException("User already signed up for this activity !\n");
-            matchRepository.save(new Match(userName, activityId));
-            return "User " + userName + "signed up for activity : " + activityId.toString();
+                }
+            }
+            if (activityPresent instanceof Competition) {
+                Competition competition = (Competition) activityPresent; 
+                if (!match.getCompetitive()) { // Checking competition requirements
+                    throw new IllegalArgumentException("User is not competitive!");
+                }
+                if (competition.getGender() != null
+                        && (competition.getGender() != match.getGender())) {
+                    throw new IllegalArgumentException("User does not fit gender requirements !");
+                }
+                if (competition.getOrganisation() != null
+                        && (competition.getOrganisation().equals(match.getOrganisation()))) {
+                    throw new IllegalArgumentException("User does not fit gender requirements !");
+                }
+            }
+
+            activityPresent.addApplicant(match.getUserId());
+            activityRepository.save(activityPresent);
+
+            return "User " + match.getUserId() + "signed up for activity : " + match.getActivityId().toString();
         }
         throw new IllegalArgumentException("Activity does not existent !\n");
     }
