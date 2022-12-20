@@ -17,6 +17,8 @@ import rowing.commons.entities.CompetitionDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ActivityService {
@@ -89,5 +91,22 @@ public class ActivityService {
             activityDtos.add(activity.toDto());
         }
         return activityDtos;
+    }
+
+    /**
+     * Deletes the activity with the specified id from the database.
+     *
+     * @param activityId - the UUID corresponding to the activity
+     * @return activityDto - the activityDto corresponding to the deleted activity
+     * @throws IllegalArgumentException - if the activity is not found in the database
+     */
+    public ActivityDTO deleteActivity(UUID activityId) throws IllegalArgumentException {
+        Optional<Activity> activity = activityRepository.findActivityById(activityId);
+        if (activity.isPresent()) {
+            ActivityDTO activityDto = activity.get().toDto();
+            activityRepository.delete(activity.get());
+            return activityDto;
+        }
+        throw new IllegalArgumentException();
     }
 }
