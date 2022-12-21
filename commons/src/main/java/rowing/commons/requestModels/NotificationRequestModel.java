@@ -30,6 +30,7 @@ public class NotificationRequestModel {
 
     /**
      * Constructor for notificationRequestModel for any status except date changed and location changed.
+     *
      * @param status the status of the notification
      * @param activityId the id of the activity
      */
@@ -41,6 +42,7 @@ public class NotificationRequestModel {
 
     /**
      * Constructor for notificationRequestModel for a location changed.
+     *
      * @param status the status of the notification
      * @param activityId the id of the activity
      * @param location the new location of the activity
@@ -53,7 +55,8 @@ public class NotificationRequestModel {
     }
 
     /**
-     * Constructor for notificationRequestModel for date changed
+     * Constructor for notificationRequestModel for date changed.
+     *
      * @param status the status of the notification
      * @param activityId the id of the activity
      * @param date the new date of the activity

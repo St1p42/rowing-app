@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import rowing.commons.NotificationStatus;
 import rowing.commons.requestModels.NotificationRequestModel;
 
+import java.util.Date;
+
 //write tests for this class
 //later add the activity information to this class and change retrieveText respectively
 @Data
@@ -12,6 +14,9 @@ public class Notification {
     private String activityId;
     private NotificationStatus notificationStatus;
     private transient String destinationEmail;
+    private String newLocation;
+    private String newDate;
+
     @Value("${body.notification.accepted}")
     private String acceptedBody;
 
@@ -30,8 +35,14 @@ public class Notification {
     @Value("${body.notification.default}")
     private String defaultBody;
 
-    @Value("${subject.notification}")
+    @Value("${subject.notification.general}")
     private String subject;
+
+    @Value("${subject.notification.activityChanges}")
+    private String changesSubject;
+
+    @Value("${body.notification.activityChanges}")
+    private String changesBody;
 
     private String username;
     private boolean useKafka = false;
@@ -46,14 +57,21 @@ public class Notification {
      * @param email - the email of the user to be notified
      */
     public Notification(NotificationRequestModel requestInfo, String email) {
-        if (requestInfo == null) {
-            this.activityId = unknown;
+        if (requestInfo == null || requestInfo.getActivityId() == null) {
+            this.activityId = "Unknown";
         } else {
             this.notificationStatus = requestInfo.getStatus();
-            if (requestInfo.getActivityId() != null) {
-                this.activityId = requestInfo.getActivityId().toString();
+            this.activityId = requestInfo.getActivityId().toString();
+            if (requestInfo.getDate() != null) {
+                this.newDate = requestInfo.getDate().toString();
             } else {
-                this.activityId = unknown;
+                this.newDate = "The date has not changed since the last update.";
+            }
+
+            if (requestInfo.getLocation() != null) {
+                this.newLocation = requestInfo.getLocation();
+            } else {
+                this.newLocation = "The location has not changed since the last update.";
             }
 
             this.destinationEmail = email;
@@ -68,14 +86,21 @@ public class Notification {
      * @param useKafka - boolean that represents if kafka is to be used
      */
     public Notification(NotificationRequestModel requestInfo, String username, boolean useKafka) {
-        if (requestInfo == null) {
-            this.activityId = unknown;
+        if (requestInfo == null || requestInfo.getActivityId() == null) {
+            this.activityId = "Unknown";
         } else {
             this.notificationStatus = requestInfo.getStatus();
-            if (requestInfo.getActivityId() != null) {
-                this.activityId = requestInfo.getActivityId().toString();
+            this.activityId = requestInfo.getActivityId().toString();
+            if (requestInfo.getDate() != null) {
+                this.newDate = requestInfo.getDate().toString();
             } else {
-                this.activityId = unknown;
+                this.newDate = "The date has not changed since the last update.";
+            }
+
+            if (requestInfo.getLocation() != null) {
+                this.newLocation = requestInfo.getLocation();
+            } else {
+                this.newDate = "The location has not changed since the last update.";
             }
 
             this.username = username;
@@ -103,6 +128,9 @@ public class Notification {
                 return kickedBody + activityId;
             case WITHDRAWN:
                 return withdrawnBody + activityId;
+            case CHANGES:
+                return changesBody + activityId + ":\n"
+                        + "Date: " + newDate + "\nLocation: " + newLocation;
             default:
                 return defaultBody + activityId;
         }
@@ -117,6 +145,9 @@ public class Notification {
     public String retrieveSubject() {
         if (notificationStatus == null) {
             return subject + "unknown";
+        }
+        if (notificationStatus == NotificationStatus.CHANGES) {
+            return changesSubject;
         }
         return subject + notificationStatus; //add info about activity
     }
