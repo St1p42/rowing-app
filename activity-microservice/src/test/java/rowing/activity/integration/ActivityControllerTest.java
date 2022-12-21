@@ -5,10 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.BeforeEach;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -43,8 +46,13 @@ import rowing.commons.Gender;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.MatchingDTO;
+import rowing.commons.entities.UserDTO;
+import rowing.commons.models.UserDTORequestModel;
 //import com.fasterxml.jackson.*;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -76,6 +84,9 @@ public class ActivityControllerTest {
     private transient MatchRepository mockMatchRepository;
 
     @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
     public ActivityControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
@@ -89,6 +100,9 @@ public class ActivityControllerTest {
     UUID trainingId;
     UUID competitionId;
     List<AvailabilityIntervals> availability;
+    UserDTO exampleUser;
+    List<String> coxCertificates;
+
 
     /**
      * Function that inits the basic activity.
@@ -141,6 +155,10 @@ public class ActivityControllerTest {
         match = new MatchingDTO(UUID.randomUUID(), null,
                 "Admin", Position.COX, Gender.MALE, true, "TUDelft",
                 availability, null);
+
+        exampleUser = new UserDTO("Efe", new ArrayList<>(Arrays.asList(Position.PORT, Position.COACH)),
+                availability, "extra.unluyurt@gmail.com", "Efe", "Unluyurt",
+                coxCertificates, Gender.MALE, "TU DELFT", true);
     }
 
     @Test
@@ -399,5 +417,32 @@ public class ActivityControllerTest {
         // Assert
         String response = result.getResponse().getContentAsString();
         assertThat(response).isEqualTo("User is not available for this activity !");
+    }
+
+    @Test
+    public void userAcceptedSuccessfully() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+//        when(restTemplate.exchange("http://localhost:8082/notify",
+//                HttpMethod.POST, requestEntity, String.class)))
+        Activity training = amateurTraining;
+        UUID id = UUID.randomUUID();
+        training.setId(id);
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+        UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
+
+        when(mockActivityRepository.findActivityById(id)).thenReturn(Optional.of(training));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/" + id + "/accept")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(model))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + "Efe"
+                + " is accepted successfully");
     }
 }

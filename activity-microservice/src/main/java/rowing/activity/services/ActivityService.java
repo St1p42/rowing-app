@@ -27,6 +27,7 @@ import rowing.commons.entities.MatchingDTO;
 import rowing.commons.entities.UserDTO;
 import rowing.commons.entities.utils.JsonUtil;
 import rowing.commons.models.NotificationRequestModel;
+import rowing.commons.models.UserDTORequestModel;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -210,11 +211,19 @@ public class ActivityService {
         throw new IllegalArgumentException("Activity does not exist !");
     }
 
-    public String acceptUser(Activity activity, UserDTO user, Position position) throws JsonProcessingException {
-        activity.getPositions().remove(position);
+    /**
+     * Accepts the user to the activity, saves the match to the matching repo, and sends a notification to the user.
+     *
+     * @param activity that the owner wants to accept the user for
+     * @param model the UserDTORequestModel keeping the information about the selected user and position
+     * @return a String that notifies that the user is created successfully.
+     * @throws JsonProcessingException if there is a problem occurs when converting the NotificationRequestModel object to Json
+     */
+    public String acceptUser(Activity activity, UserDTORequestModel model) throws JsonProcessingException {
+        activity.getPositions().remove(model.getPositionSelected());
         Match<MatchingDTO> match = new Match<>(new MatchingDTO(UUID.randomUUID(), activity.getId(),
-                user.getUserId(), position, user.getGender(),
-                user.getCompetitive(),user.getRowingOrganization(), user.getAvailability(), NotificationStatus.ACCEPTED));
+                model.getUserId(), model.getPositionSelected(), model.getGender(),
+                model.getCompetitive(), model.getRowingOrganization(), model.getAvailability(), NotificationStatus.ACCEPTED));
 
         matchRepository.save(match);
         activityRepository.save(activity);
@@ -223,7 +232,7 @@ public class ActivityService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
 
-        NotificationRequestModel request = new NotificationRequestModel(user.getUserId(),
+        NotificationRequestModel request = new NotificationRequestModel(model.getUserId(),
                 NotificationStatus.ACCEPTED, activity.getId());
 
         String body = JsonUtil.serialize(request);
@@ -232,7 +241,7 @@ public class ActivityService {
                 "http://localhost:8082/notify",
                 HttpMethod.POST, requestEntity, String.class);
 
-        return "User " + user.getUserId() + " is accepted successfully";
+        return "User " + model.getUserId() + " is accepted successfully";
     }
 
 }

@@ -16,6 +16,7 @@ import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.MatchingDTO;
 import rowing.commons.entities.UserDTO;
+import rowing.commons.models.UserDTORequestModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -119,9 +120,17 @@ public class ActivityController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Endpoint for accepting a specific user to an activity with the chosen position.
+     *
+     * @param activityId the id of the activity
+     * @param model the UserDTORequestModel keeping the information about the selected user and position
+     * @return a ResponseEntity of string to notify what happened
+     * @throws JsonProcessingException if there is a problem occurs when converting the NotificationRequestModel object to Json
+     */
     @PostMapping("/{activityId}/accept")
     public ResponseEntity<String> acceptUser(@PathVariable("activityId") UUID activityId,
-                                             @RequestBody UserDTO user, @RequestBody Position position) throws JsonProcessingException {
+                                             @RequestBody UserDTORequestModel model) throws JsonProcessingException {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
         if (!optionalActivity.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist !");
@@ -133,18 +142,18 @@ public class ActivityController {
         if (matchRepository.existsByActivityId(activityId)) {
             List<Match> matches = matchRepository.findAllByActivityId(activityId);
             for (Match match : matches) {
-                if (match.getUserId().equals(user.getUserId())) {
+                if (match.getUserId().equals(model.getUserId())) {
                     return ResponseEntity.badRequest().body("This user is already participating in the activity");
                 }
             }
         }
-        if(!activity.getApplicants().contains(user.getUserId())){
+        if(!activity.getApplicants().contains(model.getUserId())){
             return ResponseEntity.badRequest().body("This user didn't apply to this activity");
         }
-        if(!activity.getPositions().contains(position)){
+        if(!activity.getPositions().contains(model.getPositionSelected())){
             return ResponseEntity.badRequest().body("This position is already full");
         }
 
-        return ResponseEntity.ok(activityService.acceptUser(activity, user, position));
+        return ResponseEntity.ok(activityService.acceptUser(activity, model));
     }
 }
