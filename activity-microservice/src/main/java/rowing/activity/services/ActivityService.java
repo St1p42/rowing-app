@@ -259,9 +259,17 @@ public class ActivityService {
         if (optionalActivity.isPresent()) {
             Activity activity = optionalActivity.get();
 
+            NotificationRequestModel notificationRequestModel = new NotificationRequestModel(activity.getOwner(),
+                    NotificationStatus.CHANGES,
+                    activity.getId());
+
             Optional.ofNullable(updateActivityDto.getName()).ifPresent(activity::setName);
             Optional.ofNullable(updateActivityDto.getStart()).ifPresent(activity::setStart);
+            Optional.ofNullable(updateActivityDto.getStart()).ifPresent(notificationRequestModel::setDate);
             Optional.ofNullable(updateActivityDto.getLocation()).ifPresent(activity::setLocation);
+            Optional.ofNullable(updateActivityDto.getLocation()).ifPresent(notificationRequestModel::setLocation);
+
+            activityRepository.save(activity);
 
             ActivityDTO activityDto = activity.toDto();
             return activityDto;

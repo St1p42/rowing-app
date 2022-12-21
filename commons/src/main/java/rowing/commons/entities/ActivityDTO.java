@@ -83,7 +83,7 @@ public class ActivityDTO implements DTO {
      *
      * @param applicants for this activity
      */
-    public ActivityDTO(UUID id, String owner, String name, String type, Date start, String location
+    public ActivityDTO(UUID id, String owner, String name, String type, Date start, String location,
                        List<Position> positions, List<String> applicants) {
         this.id = id;
         this.owner = owner;
