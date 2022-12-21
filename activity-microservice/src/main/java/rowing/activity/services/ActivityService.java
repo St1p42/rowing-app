@@ -92,12 +92,20 @@ public class ActivityService {
         Date currentDate = calendar.getTime();
         List<Activity> activities = activityRepository.findAll();
         List<ActivityDTO> activityDTOs = new ArrayList<>();
+
+        List<UUID> uuids = new ArrayList<>();
         for (Activity activity : activities) {
 
             if (activity.getStart().after(currentDate)) {
                 activityDTOs.add(activity.toDto());
             } else {
+                uuids.add(activity.getId());
                 activityRepository.delete(activity);
+            }
+        }
+        for(UUID id : uuids){
+            if(matchRepository.existsByActivityId(id)){
+                matchRepository.deleteAll(matchRepository.findAllByActivityId(id));
             }
         }
         return activityDTOs;
