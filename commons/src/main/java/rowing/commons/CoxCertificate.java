@@ -11,7 +11,7 @@ import java.util.List;
 public class CoxCertificate {
 
     private String name;
-    private List<String> isSupersededBy;
+    private List<String> supersedes;
 
     /**
      * Create cox certificate.
@@ -22,21 +22,21 @@ public class CoxCertificate {
      */
     public CoxCertificate(String name, List<String> isSupersededBy) throws IllegalArgumentException {
         if (name == null || name.length() == 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Name of the certificate cannot be empty");
         }
         if (Certificates.existByName(name) == true) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("A certificate with this name already exists");
         }
         this.name = name;
         if (isSupersededBy == null) {
-            this.isSupersededBy = isSupersededBy;
+            this.supersedes = supersedes;
         } else {
             for (String certificate : isSupersededBy) {
                 if (Certificates.existByName(certificate) == false) {
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Certificate is not recognized");
                 }
             }
-            this.isSupersededBy = isSupersededBy;
+            this.supersedes = isSupersededBy;
         }
     }
 
@@ -44,12 +44,12 @@ public class CoxCertificate {
         return this.name;
     }
 
-    public List<String> getIsSupersededBy() {
-        return this.isSupersededBy;
+    public List<String> getSupersedes() {
+        return this.supersedes;
     }
 
     @Override
     public String toString() {
-        return this.name + ";" + this.isSupersededBy;
+        return this.name + ";" + this.supersedes;
     }
 }

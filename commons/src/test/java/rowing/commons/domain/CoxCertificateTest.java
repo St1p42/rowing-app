@@ -23,7 +23,7 @@ public class CoxCertificateTest {
     public void testCoxCertificateOk() {
         CoxCertificate c = new CoxCertificate("C8", null);
         assertThat(c.getName()).isEqualTo("C8");
-        assertThat(c.getIsSupersededBy()).isNull();
+        assertThat(c.getSupersedes()).isNull();
     }
 
     @Test
@@ -31,7 +31,7 @@ public class CoxCertificateTest {
         List<String> supersede = new ArrayList<>(Arrays.asList("C4", "4+", "8+"));
         CoxCertificate c = new CoxCertificate("C12", supersede);
         assertThat(c.getName()).isEqualTo("C12");
-        assertThat(c.getIsSupersededBy()).isEqualTo(supersede);
+        assertThat(c.getSupersedes()).isEqualTo(supersede);
     }
 
     @Test
