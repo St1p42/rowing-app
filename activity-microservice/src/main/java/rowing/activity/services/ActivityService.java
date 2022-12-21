@@ -127,7 +127,7 @@ public class ActivityService {
      * @param availability list of intervals that could fit our activity start time
      * @return true or false
      */
-    public boolean checkAvailability(Activity activity, List<AvailabilityIntervals> availability) {
+    public static boolean checkAvailability(Activity activity, List<AvailabilityIntervals> availability) {
         Calendar cal = Calendar.getInstance();  // Checking availability
         cal.setTime(activity.getStart());
         var day = cal.get(Calendar.DAY_OF_WEEK);
