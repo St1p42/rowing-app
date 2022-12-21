@@ -1,4 +1,4 @@
-package rowing.commons.requestModels;
+package rowing.commons.models;
 
 import org.junit.jupiter.api.Test;
 import rowing.commons.NotificationStatus;
