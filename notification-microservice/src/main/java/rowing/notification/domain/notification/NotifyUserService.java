@@ -8,12 +8,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import rowing.commons.NotificationStatus;
 import rowing.commons.requestModels.NotificationRequestModel;
 import rowing.notification.authentication.AuthManager;
 import rowing.notification.domain.notification.strategy.Strategy;
 import rowing.notification.domain.notification.strategy.StrategyFactory;
 import rowing.notification.domain.notification.strategy.StrategyName;
+
+import javax.naming.ConfigurationException;
 
 
 @Data
@@ -31,8 +35,8 @@ public class NotifyUserService {
     @Value("${uri.users.getemailpath}")
     private String emailPath;
 
-    @Autowired
-    private AuthManager authManager;
+    @Value("${microserviceJWT}")
+    String token;
 
     @Autowired
     RestTemplate restTemplate;
@@ -42,14 +46,27 @@ public class NotifyUserService {
      *  If the email address is found then it continues with the EMAIL strategy, else with the KAFKA strategy.
 
      * @param request - request that was received
-     *
-     * @param bearerToken - the token that was received containing information about the user
      */
-    public void notifyUser(NotificationRequestModel request, String bearerToken) {
+    public void notifyUser(NotificationRequestModel request) throws ConfigurationException {
+        // data validation
+        if (request == null || request.getUsername() == null
+                || request.getActivityId() == null || request.getStatus() == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (request.getStatus().equals(NotificationStatus.CHANGES)
+                && (request.getDate() == null && request.getLocation() == null)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (url == null || port == null || emailPath == null || token == null) {
+            throw new ConfigurationException("uri or token not configured properly");
+        }
+
         //building the request
         String uri = url + ":" + port + emailPath;
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(bearerToken);
+        headers.setBearerAuth(token);
         String body = "{\"username\":\"" + request.getUsername() + "\"}";
         HttpEntity requestHttp = new HttpEntity(body, headers);
 
@@ -65,12 +82,18 @@ public class NotifyUserService {
                     strategyFactory.findStrategy(StrategyName.EMAIL);
             notification = new Notification(request, response.getBody());
             strategy.notifyUser(notification);
+        } catch (RestClientException e) {
+            if (e.getMessage().contains("404")) {
+                System.out.println(e.getMessage());
+                strategy =
+                        strategyFactory.findStrategy(StrategyName.KAFKA);
+                notification = new Notification(request, request.getUsername(), true);
+                strategy.notifyUser(notification);
+            } else {
+                throw e;
+            }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            strategy =
-                    strategyFactory.findStrategy(StrategyName.KAFKA);
-            notification = new Notification(request, authManager.getUsername(), true);
-            strategy.notifyUser(notification);
+            throw e;
         }
     }
 }

@@ -151,4 +151,20 @@ class NotificationTest {
         assertEquals(answer, notificationNullStatus.retrieveBody());
     }
 
+    @Test
+    void requestInfoNull() {
+        Notification notificationNullStatus = new Notification(null, "random", true);
+        assertEquals("Unknown", notificationNullStatus.getActivityId());
+    }
+
+    @Test
+    void activityIdNull() {
+        NotificationRequestModel accepted = new NotificationRequestModel("alex",
+                NotificationStatus.ACCEPTED, null);
+        Notification notificationAccepted = new Notification(accepted, "random@gmail.com");
+        assertEquals("Unknown", notificationAccepted.getActivityId());
+
+        notificationAccepted = new Notification(accepted, "random", true);
+        assertEquals("Unknown", notificationAccepted.getActivityId());
+    }
 }
