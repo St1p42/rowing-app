@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import rowing.commons.requestModels.NotificationRequestModel;
+import rowing.commons.models.NotificationRequestModel;
 import rowing.notification.authentication.AuthManager;
 import rowing.notification.domain.notification.NotifyUserService;
 

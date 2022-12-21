@@ -24,22 +24,22 @@ import javax.naming.ConfigurationException;
 @Service
 public class NotifyUserService {
     @Autowired
-    private StrategyFactory strategyFactory;
+    private transient StrategyFactory strategyFactory;
 
     @Value("${uri.users.url}")
-    private String url;
+    private transient String url;
 
     @Value("${uri.users.port}")
-    private String port;
+    private transient String port;
 
     @Value("${uri.users.getemailpath}")
-    private String emailPath;
+    private transient String emailPath;
 
     @Value("${microserviceJWT}")
     String token;
 
     @Autowired
-    RestTemplate restTemplate;
+    transient RestTemplate restTemplate;
 
     /**
      * This method calls the endpoint inside the users microservice to receive the user's email address.

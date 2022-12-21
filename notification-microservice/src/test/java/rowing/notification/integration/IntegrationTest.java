@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.client.RestTemplate;
 import rowing.commons.NotificationStatus;
 import rowing.commons.entities.utils.JsonUtil;
-import rowing.commons.requestModels.NotificationRequestModel;
+import rowing.commons.models.NotificationRequestModel;
 import rowing.notification.authentication.AuthManager;
 import rowing.notification.authentication.JwtTokenVerifier;
 
@@ -81,7 +81,37 @@ public class IntegrationTest {
         mockServer.expect(requestTo(uri + ":8082/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
-                .andRespond(withSuccess("aojica65@gmail.com", MediaType.TEXT_PLAIN));
+                .andRespond(withSuccess("halitgulamov@gmail.com", MediaType.TEXT_PLAIN));
+
+        // calls REST API internally
+        ResultActions result = mockMvc.perform(post("/notify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(requestModel)));
+
+        // Assert
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    public void testSendNotificationChanges() throws Exception {
+        // Arrange
+        // Notice how some custom parts of authorisation need to be mocked.
+        // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
+        when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+
+        // Act
+        // Still include Bearer token as AuthFilter itself is not mocked
+        NotificationRequestModel requestModel = new NotificationRequestModel("alex",
+                NotificationStatus.CHANGES, new UUID(1, 1), "Delft");
+
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withSuccess("halitgulamov@gmail.com", MediaType.TEXT_PLAIN));
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
