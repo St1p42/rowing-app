@@ -34,7 +34,9 @@ import rowing.activity.domain.Director;
 import rowing.activity.domain.TrainingBuilder;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
+import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.repositories.ActivityRepository;
+import rowing.activity.domain.repositories.MatchRepository;
 import rowing.activity.domain.utils.Builder;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.Gender;
@@ -70,6 +72,9 @@ public class ActivityControllerTest {
     @MockBean
     private transient ActivityRepository mockActivityRepository;
 
+    @MockBean
+    private transient MatchRepository mockMatchRepository;
+
     @Autowired
     public ActivityControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
@@ -83,6 +88,7 @@ public class ActivityControllerTest {
     MatchingDTO match;
     UUID trainingId;
     UUID competitionId;
+    List<AvailabilityIntervals> availability;
 
     /**
      * Function that inits the basic activity.
@@ -129,7 +135,7 @@ public class ActivityControllerTest {
                 amateurCompetitionDate,  Gender.MALE, "TUDelft", positionList, applicantList);
         amateurCompetition = competitionBuilder.build();
 
-        List<AvailabilityIntervals> availability = new ArrayList<AvailabilityIntervals>();
+        availability = new ArrayList<AvailabilityIntervals>();
         availability.add(new AvailabilityIntervals("wednesday", "14:05", "14:06"));
         availability.add(new AvailabilityIntervals("thursday", "16:05", "16:06"));
         match = new MatchingDTO(UUID.randomUUID(), null,
@@ -200,9 +206,9 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void activityDeleted() throws Exception {
+    public void activityExpired() throws Exception {
 
-        String dateString2 = "26-09-3245";
+        String dateString2 = "26-09-1884";
         SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
         Date date = formatter2.parse(dateString2);
 
@@ -227,7 +233,6 @@ public class ActivityControllerTest {
 
         activityList.add(amateurTraining);
         activityList.add(activity);
-        activityDTOList.add(activity.toDto());
         activityDTOList.add(amateurTraining.toDto());
         when(mockActivityRepository.findAll()).thenReturn(activityList);
 
