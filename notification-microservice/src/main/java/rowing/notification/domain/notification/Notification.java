@@ -55,18 +55,11 @@ public class Notification {
      * @param email - the email of the user to be notified
      */
     public Notification(NotificationRequestModel requestInfo, String email) {
-        if (requestInfo == null) {
-            this.notificationStatus = null;
+        if (requestInfo == null || requestInfo.getActivityId() == null) {
             this.activityId = "Unknown";
-            this.destinationEmail = null;
         } else {
             this.notificationStatus = requestInfo.getStatus();
-            if (requestInfo.getActivityId() != null) {
-                this.activityId = requestInfo.getActivityId().toString();
-            } else {
-                this.activityId = "Unknown";
-            }
-
+            this.activityId = requestInfo.getActivityId().toString();
             if (requestInfo.getDate() != null) {
                 this.newDate = requestInfo.getDate().toString();
             } else {
@@ -91,18 +84,11 @@ public class Notification {
      * @param useKafka - boolean that represents if kafka is to be used
      */
     public Notification(NotificationRequestModel requestInfo, String username, boolean useKafka) {
-        if (requestInfo == null) {
-            this.notificationStatus = null;
+        if (requestInfo == null || requestInfo.getActivityId() == null) {
             this.activityId = "Unknown";
-            this.username = null;
         } else {
             this.notificationStatus = requestInfo.getStatus();
-            if (requestInfo.getActivityId() != null) {
-                this.activityId = requestInfo.getActivityId().toString();
-            } else {
-                this.activityId = "Unknown";
-            }
-
+            this.activityId = requestInfo.getActivityId().toString();
             if (requestInfo.getDate() != null) {
                 this.newDate = requestInfo.getDate().toString();
             } else {

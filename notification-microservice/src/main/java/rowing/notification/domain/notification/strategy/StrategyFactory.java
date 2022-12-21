@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Component
 public class StrategyFactory {
-    private Map<StrategyName, Strategy> strategies;
+    private transient Map<StrategyName, Strategy> strategies;
 
     @Autowired
     public StrategyFactory(Set<Strategy> strategySet) {

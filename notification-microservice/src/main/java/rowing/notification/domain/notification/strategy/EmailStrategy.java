@@ -8,7 +8,7 @@ import rowing.notification.domain.notification.Notification;
 @Component
 public class EmailStrategy implements Strategy {
     @Autowired
-    EmailService emailService;
+    transient EmailService emailService;
 
     @Override
     public StrategyName getStrategyName() {
