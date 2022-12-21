@@ -21,7 +21,7 @@ public class Training extends Activity<TrainingDTO> {
         super(dto);
     }
 
-    public Training(UUID id, UUID owner, String name, String type,
+    public Training(UUID id, String owner, String name, String type,
                     Date start, String location, List<Position> positions, List<String> applicants) {
         super(id, owner, name, type, start, location, positions, applicants);
     }

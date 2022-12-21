@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import rowing.commons.requestModels.NotificationRequestModel;
+import rowing.commons.models.NotificationRequestModel;
 import rowing.notification.authentication.AuthManager;
 import rowing.notification.domain.notification.strategy.Strategy;
 import rowing.notification.domain.notification.strategy.StrategyFactory;

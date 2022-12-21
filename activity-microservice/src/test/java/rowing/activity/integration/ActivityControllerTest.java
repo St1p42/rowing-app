@@ -2,13 +2,11 @@ package rowing.activity.integration;
 
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.junit.jupiter.api.BeforeEach;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -23,7 +21,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import rowing.activity.authentication.AuthManager;
 import rowing.activity.authentication.JwtTokenVerifier;
 import org.junit.jupiter.api.Test;
@@ -32,16 +29,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.ResultActions;
+import rowing.activity.domain.CompetitionBuilder;
+import rowing.activity.domain.Director;
+import rowing.activity.domain.TrainingBuilder;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
-import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
+import rowing.activity.domain.utils.Builder;
+import rowing.commons.AvailabilityIntervals;
 import rowing.commons.Gender;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
+import rowing.commons.entities.MatchingDTO;
 //import com.fasterxml.jackson.*;
 
-import javax.print.attribute.standard.Media;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -74,60 +76,74 @@ public class ActivityControllerTest {
         this.objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
     }
 
-    @Test
-    public void helloWorld() throws Exception {
+    Activity amateurTraining;
+    Activity amateurCompetition;
+    Date amateurTrainingDate;
+    Date amateurCompetitionDate;
+    MatchingDTO match;
+    UUID trainingId;
+    UUID competitionId;
+
+    /**
+     * Function that inits the basic activity.
+     *
+     * @throws ParseException exception for wrong format
+     */
+    @BeforeEach
+    public void init() throws ParseException {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
         when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        ResultActions result = mockMvc.perform(get("/activity/hello")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken"));
 
-        // Assert
-        result.andExpect(status().isOk());
+        String dateString = "26-09-3043 14:05:05";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        amateurTrainingDate = formatter.parse(dateString);
+        trainingId = UUID.randomUUID();
 
-        String response = result.andReturn().getResponse().getContentAsString();
+        dateString = "27-09-3043 16:05:05"; // Creating new competition details
+        formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        amateurCompetitionDate = formatter.parse(dateString);
+        competitionId = UUID.randomUUID();
 
-        assertThat(response).isEqualTo("Hello ExampleUser");
+        Builder trainingBuilder = new TrainingBuilder();
+        Director director = new Director();
 
+        List<Position> positionList = new ArrayList<>();
+        positionList.add(Position.COACH);
+        positionList.add(Position.COX);
+        List<String> applicantList = new ArrayList<>();
+
+        director.constructTraining((TrainingBuilder) trainingBuilder, UUID.randomUUID(),
+                "Admin", "Amateur Training", "Training",
+                amateurTrainingDate, positionList, applicantList);
+        amateurTraining = trainingBuilder.build();
+
+        Builder competitionBuilder = new CompetitionBuilder();
+        director.constructCompetition((CompetitionBuilder) competitionBuilder, UUID.randomUUID(),
+                "Admin", "Amateur Competition", "Competition",
+                amateurCompetitionDate,  Gender.MALE, "TUDelft", positionList, applicantList);
+        amateurCompetition = competitionBuilder.build();
+
+        List<AvailabilityIntervals> availability = new ArrayList<AvailabilityIntervals>();
+        availability.add(new AvailabilityIntervals("wednesday", "14:05", "14:06"));
+        availability.add(new AvailabilityIntervals("thursday", "16:05", "16:06"));
+        match = new MatchingDTO(UUID.randomUUID(), null,
+                "Admin", Position.COX, Gender.MALE, true, "TUDelft",
+                availability, null);
     }
 
     @Test
     public void newActivity() throws Exception {
 
-        // Arrange
-        // Notice how some custom parts of authorisation need to be mocked.
-        // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-
-        // Act
-        // Still include Bearer token as AuthFilter itself is not mocked
-
-        //Create a new activity
-        Training mockActivity = new Training();
-        mockActivity.setId(UUID.randomUUID());
-        mockActivity.setOwner(UUID.randomUUID());
-        mockActivity.setType("Training");
-        mockActivity.setName("Test Activity");
-        mockActivity.setStart(new Date());
-
-        List<Position> positionList = new ArrayList<>();
-        positionList.add(Position.COACH);
-        positionList.add(Position.COX);
-        mockActivity.setPositions(positionList);
-
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/activity/new")
                 .header("Authorization", "Bearer MockedToken")
-                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(mockActivity.getDto()))
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(amateurTraining.getDto()))
                 .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -135,42 +151,19 @@ public class ActivityControllerTest {
         // Assert
         String response = result.getResponse().getContentAsString();
 
-        assertThat(response).isEqualTo("Activity " + mockActivity.getId() + " was created successfully !");
+        assertThat(response).isEqualTo("Activity " + amateurTraining.getId() + " was created successfully !");
 
     }
 
     @Test
     public void returnActivities() throws Exception {
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-
-        String dateString = "26-09-3043";
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-        Date date = formatter.parse(dateString);
-
-        Training mockActivity = new Training();
-        mockActivity.setId(UUID.randomUUID());
-        mockActivity.setOwner(UUID.randomUUID());
-        mockActivity.setName("Test Activity");
-        mockActivity.setType("Training");
-        mockActivity.setStart(date);
-
-        List<Position> positionList = new ArrayList<>();
-        positionList.add(Position.COACH);
-        positionList.add(Position.COX);
-        mockActivity.setPositions(positionList);
-
-        List<String> applicantList = new ArrayList<>();
-        mockActivity.setApplicants(applicantList);
-        MockMvcResultMatchers.content();
 
         Competition activity = new Competition();
         activity.setId(UUID.randomUUID());
-        activity.setOwner(UUID.randomUUID());
+        activity.setOwner("Admin");
         activity.setName("Test Activity2");
         activity.setType("Competition");
-        activity.setStart(date);
+        activity.setStart(amateurTrainingDate);
         activity.setGender(Gender.MALE);
 
         List<Position> positionList2 = new ArrayList<>();
@@ -180,15 +173,14 @@ public class ActivityControllerTest {
 
         List<String> applicantList1 = new ArrayList<>();
         activity.setApplicants(applicantList1);
-        MockMvcResultMatchers.content();
 
         List<Activity> activityList = new ArrayList<>();
-        List<ActivityDTO> activitydtoList = new ArrayList<>();
+        List<ActivityDTO> activityDTOList = new ArrayList<>();
 
-        activityList.add(mockActivity);
+        activityList.add(amateurTraining);
         activityList.add(activity);
-        activitydtoList.add(mockActivity.toDto());
-        activitydtoList.add(activity.toDto());
+        activityDTOList.add(amateurTraining.toDto());
+        activityDTOList.add(activity.toDto());
         when(mockActivityRepository.findAll()).thenReturn(activityList);
 
         ResultActions result = mockMvc.perform(get("/activity/activityList")
@@ -204,34 +196,11 @@ public class ActivityControllerTest {
         //assertThat(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("\"COX\"]}}", "\"COX\"]}")).
         // isEqualTo(mapper.writeValueAsString(activity_dto_list));
         JSONAssert.assertEquals(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("]}}", "]}"),
-                mapper.writeValueAsString(activitydtoList), false);
+                mapper.writeValueAsString(activityDTOList), false);
     }
 
     @Test
     public void activityDeleted() throws Exception {
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-
-        String dateString = "26-09-1940";
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-        Date date1 = formatter.parse(dateString);
-
-        Training mockActivity = new Training();
-        mockActivity.setId(UUID.randomUUID());
-        mockActivity.setOwner(UUID.randomUUID());
-        mockActivity.setName("Test Activity");
-        mockActivity.setType("Training");
-        mockActivity.setStart(date1);
-
-        List<Position> positionList = new ArrayList<>();
-        positionList.add(Position.COACH);
-        positionList.add(Position.COX);
-        mockActivity.setPositions(positionList);
-
-        List<String> applicantList = new ArrayList<>();
-        mockActivity.setApplicants(applicantList);
-        MockMvcResultMatchers.content();
 
         String dateString2 = "26-09-3245";
         SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
@@ -239,7 +208,7 @@ public class ActivityControllerTest {
 
         Competition activity = new Competition();
         activity.setId(UUID.randomUUID());
-        activity.setOwner(UUID.randomUUID());
+        activity.setOwner("Admin");
         activity.setName("Test Activity2");
         activity.setType("Competition");
         activity.setStart(date);
@@ -252,14 +221,14 @@ public class ActivityControllerTest {
 
         List<String> applicantList1 = new ArrayList<>();
         activity.setApplicants(applicantList1);
-        MockMvcResultMatchers.content();
 
         List<Activity> activityList = new ArrayList<>();
-        List<ActivityDTO> activitydtoList = new ArrayList<>();
+        List<ActivityDTO> activityDTOList = new ArrayList<>();
 
-        activityList.add(mockActivity);
+        activityList.add(amateurTraining);
         activityList.add(activity);
-        activitydtoList.add(activity.toDto());
+        activityDTOList.add(activity.toDto());
+        activityDTOList.add(amateurTraining.toDto());
         when(mockActivityRepository.findAll()).thenReturn(activityList);
 
         ResultActions result = mockMvc.perform(get("/activity/activityList")
@@ -272,39 +241,22 @@ public class ActivityControllerTest {
 
         String response = result.andReturn().getResponse().getContentAsString();
 
-        //assertThat(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("\"COX\"]}}", "\"COX\"]}")).
+        // assertThat(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("\"COX\"]}}", "\"COX\"]}")).
         // isEqualTo(mapper.writeValueAsString(activity_dto_list));
         JSONAssert.assertEquals(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("]}}", "]}"),
-                mapper.writeValueAsString(activitydtoList), false);
+                mapper.writeValueAsString(activityDTOList), false);
     }
 
     @Test
     public void deleteActivity() throws Exception {
-        // Arrange
-        // Notice how some custom parts of authorisation need to be mocked.
-        // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-        // Act
-        // Still include Bearer token as AuthFilter itself is not mocked
-
         //Create a new activity
-        UUID activityId = UUID.randomUUID();
-        Training mockActivity = new Training();
-        mockActivity.setId(activityId);
-        mockActivity.setOwner(UUID.randomUUID());
-        mockActivity.setType("Training");
-        mockActivity.setName("Test Activity");
-        mockActivity.setStart(new Date());
-
         List<Position> positionList = new ArrayList<>();
         positionList.add(Position.COACH);
         positionList.add(Position.COX);
-        mockActivity.setPositions(positionList);
-        when(mockActivityRepository.findActivityById(activityId)).thenReturn(Optional.of(mockActivity));
+        amateurTraining.setPositions(positionList);
+        when(mockActivityRepository.findActivityById(trainingId)).thenReturn(Optional.of(amateurTraining));
 
-        ResultActions result = mockMvc.perform(get("/activity/" + activityId + "/delete")
+        ResultActions result = mockMvc.perform(get("/activity/" + trainingId + "/delete")
                 .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isOk());
@@ -313,39 +265,134 @@ public class ActivityControllerTest {
 
         String response = result.andReturn().getResponse().getContentAsString();
 
-        JSONAssert.assertEquals(response, mapper.writeValueAsString(mockActivity.toDto()), false);
+        JSONAssert.assertEquals(response, mapper.writeValueAsString(amateurTraining.toDto()), false);
     }
 
     @Test
     public void deleteActivityException() throws Exception {
-        // Arrange
-        // Notice how some custom parts of authorisation need to be mocked.
-        // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
-        when(mockAuthenticationManager.getNetId()).thenReturn("ExampleUser");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-        // Act
-        // Still include Bearer token as AuthFilter itself is not mocked
-
-        //Create a new activity
-        UUID id1 = UUID.randomUUID();
-        Training mockActivity = new Training();
-        mockActivity.setId(id1);
-        mockActivity.setOwner(UUID.randomUUID());
-        mockActivity.setType("Training");
-        mockActivity.setName("Test Activity");
-        mockActivity.setStart(new Date());
-
-        List<Position> positionList = new ArrayList<>();
-        positionList.add(Position.COACH);
-        positionList.add(Position.COX);
-        mockActivity.setPositions(positionList);
-        when(mockActivityRepository.findActivityById(id1)).thenReturn(Optional.of(mockActivity));
+        when(mockActivityRepository.findActivityById(trainingId)).thenReturn(Optional.of(amateurTraining));
 
         UUID id2 = UUID.randomUUID();
         ResultActions result = mockMvc.perform(get("/activity/" + id2 + "/delete")
                 .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testSignUpTraining() throws Exception {
+
+        match.setActivityId(trainingId); // Make sure to set for the activity you want to sign up for
+        when(mockActivityRepository.findActivityById(trainingId)).thenReturn(Optional.of(amateurTraining));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", trainingId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + match.getUserId()
+                + " signed up for activity : " + match.getActivityId().toString());
+    }
+
+    @Test
+    public void testSignUpCompetition() throws Exception {
+        match.setActivityId(competitionId);
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + match.getUserId()
+                + " signed up for activity : " + match.getActivityId().toString());
+    }
+
+    @Test
+    public void testSignUpCompetitionGenderException() throws Exception {
+        match.setActivityId(competitionId);
+        match.setGender(Gender.FEMALE);
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User does not fit gender requirements !");
+    }
+
+    @Test
+    public void testSignUpCompetitionOrganisationException() throws Exception {
+        match.setActivityId(competitionId);
+        match.setOrganisation("TUEindhoven");
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User is not part of the organisation !");
+    }
+
+    @Test
+    public void testSignUpCompetitionCompetitiveException() throws Exception {
+        match.setActivityId(competitionId);
+        match.setCompetitive(false);
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User is not competitive!");
+    }
+
+    @Test
+    public void testSignUpAvailabilityException() throws Exception {
+        match.setActivityId(competitionId);
+        List<AvailabilityIntervals> newAvailability = new ArrayList<AvailabilityIntervals>();
+        newAvailability.add(new AvailabilityIntervals("monday", "12:00", "12:05"));
+        match.setAvailability(newAvailability);
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User is not available for this activity !");
     }
 }

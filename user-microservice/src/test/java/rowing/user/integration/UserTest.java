@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.entities.UpdateUserDTO;
+import rowing.commons.CoxCertificate;
 import rowing.user.authentication.AuthManager;
 import rowing.user.authentication.JwtTokenVerifier;
 import rowing.user.domain.user.User;
@@ -378,6 +379,62 @@ public class UserTest {
         assertThat(response).isEqualTo(new ObjectMapper().writeValueAsString(shouldBeUpdatedToThisUser));
     }
 
+    @Test
+    public void testAddCertificateToUser() throws Exception {
+        User originalUser = new User("bogdan", "lala", "lala", "bogdan@gmail.com");
+
+        // Arrange
+        // Notice how some custom parts of authorisation need to be mocked.
+        // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
+        when(mockAuthenticationManager.getUsername()).thenReturn("bogdan");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("bogdan");
+        when(mockUserRepository.findByUserId("bogdan")).thenReturn(Optional.of(originalUser));
+
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO(null, null, "joyce@gmail.com", null,
+                null, Arrays.asList("C4"), null, null, null);
+        User shouldBeUpdatedToThisUser = new User("bogdan", "lala", "lala", "joyce@gmail.com");
+        shouldBeUpdatedToThisUser.setCoxCertificates(Arrays.asList("C4"));
+        // Act
+        // Still include Bearer token as AuthFilter itself is not mocked
+        ResultActions result = mockMvc.perform(patch("/user/update-user")
+                .content(new ObjectMapper().writeValueAsString(updateUserDTO))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+
+        // Assert
+        result.andExpect(status().isOk());
+        String response = result.andReturn().getResponse().getContentAsString();
+
+        assertThat(response).isEqualTo(new ObjectMapper().writeValueAsString(shouldBeUpdatedToThisUser));
+    }
+
+    @Test
+    public void testAddIncorrectCertificateToUser() throws Exception {
+        User originalUser = new User("bogdan", "lala", "lala", "bogdan@gmail.com");
+
+        // Arrange
+        // Notice how some custom parts of authorisation need to be mocked.
+        // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
+        when(mockAuthenticationManager.getUsername()).thenReturn("bogdan");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("bogdan");
+        when(mockUserRepository.findByUserId("bogdan")).thenReturn(Optional.of(originalUser));
+
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO(null, null, "joyce@gmail.com",
+                null, null, Arrays.asList("C12"), null, null, null);
+        // Act
+        // Still include Bearer token as AuthFilter itself is not mocked
+        ResultActions result = mockMvc.perform(patch("/user/update-user")
+                .content(new ObjectMapper().writeValueAsString(updateUserDTO))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken"));
+
+
+        // Assert
+        result.andExpect(status().isOk());
+    }
 
     @Test
     public void getUserEmail() throws Exception {

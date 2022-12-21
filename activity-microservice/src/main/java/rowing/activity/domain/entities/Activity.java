@@ -26,7 +26,7 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
     private UUID id;
 
     @Column(name = "owner", nullable = false, unique = false)
-    private UUID owner;
+    private String owner;
 
     @Column(name = "name", nullable = false, unique = false)
     private String name;
@@ -70,7 +70,6 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
 
         this.type = dto.getType();
         this.start = dto.getStart();
-        this.location = dto.getLocation();
         this.positions = dto.getPositions();
         this.applicants = dto.getApplicants();
     }

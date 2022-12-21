@@ -3,9 +3,7 @@ package rowing.notification.domain.notification;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import rowing.commons.NotificationStatus;
-import rowing.commons.requestModels.NotificationRequestModel;
-
-import java.util.Date;
+import rowing.commons.models.NotificationRequestModel;
 
 //write tests for this class
 //later add the activity information to this class and change retrieveText respectively
