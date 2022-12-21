@@ -2,9 +2,7 @@ package rowing.notification.domain.notification;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import rowing.commons.requestModels.NotificationRequestModel;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

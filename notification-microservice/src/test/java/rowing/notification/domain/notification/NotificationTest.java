@@ -66,7 +66,7 @@ class NotificationTest {
                 "The activity you have signed up for has some changes");
         ReflectionTestUtils.setField(notificationChanges, "changesBody",
                 "There are some updates regarding the activity with id ");
-        String subject = "The activity you have signed up for has some changes";
+        String subject = "The activity you have signed up for has some changes ";
         String body = notificationChanges.getChangesBody() + "00000000-0000-0065-0000-000000000002:\n"
                 + "Date: " + "The date has not changed since the last update."
                 + "\nLocation: Delft";
@@ -134,7 +134,7 @@ class NotificationTest {
         Notification notificationChanges = new Notification(changes, "random@gmail.com");
         ReflectionTestUtils.setField(notificationChanges, "changesSubject",
                 "The activity you have signed up for has some changes");
-        String subject = "The activity you have signed up for has some changes";
+        String subject = "The activity you have signed up for has some changes ";
         assertEquals(subject, notificationChanges.retrieveSubject());
     }
 

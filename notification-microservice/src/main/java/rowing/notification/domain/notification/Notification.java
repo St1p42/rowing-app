@@ -2,12 +2,14 @@ package rowing.notification.domain.notification;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import rowing.commons.NotificationStatus;
 import rowing.commons.models.NotificationRequestModel;
 
 //write tests for this class
 //later add the activity information to this class and change retrieveText respectively
 @Data
+@PropertySource("application.properties")
 public class Notification {
     private String activityId;
     private NotificationStatus notificationStatus;
@@ -56,7 +58,7 @@ public class Notification {
      */
     public Notification(NotificationRequestModel requestInfo, String email) {
         if (requestInfo == null || requestInfo.getActivityId() == null) {
-            this.activityId = "Unknown";
+            this.activityId = unknown;
         } else {
             this.notificationStatus = requestInfo.getStatus();
             this.activityId = requestInfo.getActivityId().toString();
@@ -85,7 +87,7 @@ public class Notification {
      */
     public Notification(NotificationRequestModel requestInfo, String username, boolean useKafka) {
         if (requestInfo == null || requestInfo.getActivityId() == null) {
-            this.activityId = "Unknown";
+            this.activityId = unknown;
         } else {
             this.notificationStatus = requestInfo.getStatus();
             this.activityId = requestInfo.getActivityId().toString();
@@ -145,9 +147,9 @@ public class Notification {
             return subject + "unknown";
         }
         if (notificationStatus == NotificationStatus.CHANGES) {
-            return changesSubject;
+            return changesSubject + ' ';
         }
-        return subject + notificationStatus; //add info about activity
+        return subject + notificationStatus;
     }
 
     /**
