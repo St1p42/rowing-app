@@ -1,5 +1,6 @@
 package rowing.activity.services;
 
+import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rowing.activity.authentication.AuthManager;
@@ -13,10 +14,12 @@ import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
+import rowing.commons.AvailabilityIntervals;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 import rowing.commons.entities.MatchingDTO;
 
+import java.time.DayOfWeek;
 import java.util.*;
 
 @Service
@@ -142,17 +145,35 @@ public class ActivityService {
      */
     public String signUp(MatchingDTO match) throws IllegalArgumentException {
         Optional<Activity> activity = activityRepository.findActivityById(match.getActivityId());
+
         if (activity.isPresent()) {
-            Activity activityPresent = activity.get();
+            Activity activityPresent = activity.get(); // Checking if a user is already signed up for this
             List<String> signUps = activityPresent.getApplicants();
-            for (String userId : signUps) { // Checking if a user is already signed up for this
+            for (String userId : signUps) {
                 if (userId.equals(match.getUserId())) {
                     throw new IllegalArgumentException("User already signed up for this activity !\n");
                 }
             }
-            if (activityPresent instanceof Competition) {
+
+
+            Calendar cal = Calendar.getInstance();  // Checking availability
+            cal.setTime(activityPresent.getStart());
+            var day = cal.get(Calendar.DAY_OF_WEEK);
+            var hour =  cal.getTime();
+            boolean available = false;
+            for (AvailabilityIntervals interval : match.getAvailability()) {
+                if (interval.getDay().getValue() == day
+                        && interval.getStartInterval().getHour() <= cal.get(Calendar.HOUR_OF_DAY)
+                        && interval.getEndInterval().getHour() >= cal.get(Calendar.HOUR_OF_DAY)) {
+                    available = true;
+                }
+            }
+            if (!available) {
+                throw new IllegalArgumentException("User is not available for this activity!\n");
+            }
+            if (activityPresent instanceof Competition) {   // Checking competition requirements
                 Competition competition = (Competition) activityPresent; 
-                if (!match.getCompetitive()) { // Checking competition requirements
+                if (!match.getCompetitive()) {
                     throw new IllegalArgumentException("User is not competitive!");
                 }
                 if (competition.getGender() != null
@@ -165,7 +186,7 @@ public class ActivityService {
                 }
             }
 
-            activityPresent.addApplicant(match.getUserId());
+            activityPresent.addApplicant(match.getUserId()); // If all is fine we add the applicant
             activityRepository.save(activityPresent);
 
             return "User " + match.getUserId() + "signed up for activity : " + match.getActivityId().toString();
