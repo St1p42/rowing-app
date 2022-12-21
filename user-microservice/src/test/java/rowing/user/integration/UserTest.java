@@ -27,6 +27,7 @@ import rowing.user.domain.user.UserRepository;
 import rowing.user.models.AvailabilityModel;
 import rowing.user.models.TwoAvailabilitiesModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
