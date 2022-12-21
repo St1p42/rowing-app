@@ -47,9 +47,8 @@ public class User extends HasEvents {
     private String lastName;
 
     @Column(name = "coxCertificates")
-    @Enumerated(EnumType.STRING)
     @ElementCollection
-    private List<CoxCertificate> coxCertificates;
+    private List<String> coxCertificates;
 
     @Column(name = "gender", nullable = true, unique = false)
     @Enumerated(EnumType.STRING)
@@ -70,12 +69,54 @@ public class User extends HasEvents {
      * @param email - the email of the user to send notifications to
      */
     public User(String userId, String firstName, String lastName, String email) {
-        //TODO validation if necessary
         this.userId = userId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+        setFirstName(firstName);
+        setLastName(lastName);
+        setEmail(email);
         //this.recordThat(new UserWasCreatedEvent(username));
+    }
+
+    public void setAvailability(List<AvailabilityIntervals> availability) throws IllegalArgumentException {
+        if(availability == null)
+            return;
+        this.availability = new ArrayList<>();
+        for(AvailabilityIntervals a : availability){
+            this.availability.add(new AvailabilityIntervals(a.getDay().toString(), a.getStartInterval().toString(), a.getEndInterval().toString()));
+        }
+    }
+
+    public void setEmail(String email) throws IllegalArgumentException {
+        if(email == null || email.length() <= 6 || !email.contains("@") || !email.contains("."))
+            throw new IllegalArgumentException("Email has not valid format");
+        this.email = email;
+    }
+
+    public void setFirstName(String firstName) throws IllegalArgumentException {
+        if(firstName == null || firstName.length() <= 1 || !firstName.matches("^[a-zA-Z]*$")){
+            throw new IllegalArgumentException("First Name should be longer than 1 character and should contain only letters");
+        }
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) throws IllegalArgumentException {
+        if(lastName == null || lastName.length() <= 1 || !lastName.matches("^[a-zA-Z]*$")){
+            throw new IllegalArgumentException("Last Name should be longer than 1 character and should contain only letters");
+        }
+        this.lastName = lastName;
+    }
+
+    /*public void setCoxCertificates(List<String> coxCertificates){
+        for(String name : coxCertificates){
+            if(Certificates.existByName(name) == false)
+                throw new IllegalArgumentException("Certificates are not recognized");
+        }
+        this.coxCertificates = coxCertificates;
+    } */
+
+    public void setRowingOrganization(String rowingOrganization){
+        if(rowingOrganization.length() <= 2)
+            throw new IllegalArgumentException("Rowing organization must be at least 3 characters long");
+        this.rowingOrganization = rowingOrganization;
     }
 
     /**
