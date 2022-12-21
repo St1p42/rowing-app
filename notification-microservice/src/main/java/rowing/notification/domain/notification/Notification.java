@@ -47,6 +47,8 @@ public class Notification {
     private String username;
     private boolean useKafka = false;
 
+    String unknown = "Unknown";
+
 
     /**
      * Constructor for the notification object that is sent through email.
