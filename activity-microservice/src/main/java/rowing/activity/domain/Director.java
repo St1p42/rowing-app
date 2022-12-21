@@ -1,16 +1,47 @@
 package rowing.activity.domain;
 
+import rowing.activity.domain.entities.Competition;
+import rowing.commons.Gender;
+import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 public class Director {
+
     /**
-     * Function that will set training activity settings in order to build.
+     * Constructor for the competition out of raw attributes.
+     *
+     * @param builder that will build
+     * @param id of the activity
+     * @param name of the activity
+     * @param owner of the activity
+     * @param type training in our case
+     * @param start time the competition starts
+     * @param positions list of positions to be filled
+     * @param applicants list of applicants names
+     */
+    public void constructTraining(TrainingBuilder builder, UUID id, String name, String owner, String type,
+                                  Date start, List<Position> positions, List<String> applicants) {
+        builder.setId(id);
+        builder.setName(name);
+        builder.setOwner(owner);
+        builder.setType(type);
+        builder.setStart(start);
+        builder.setPositions(positions);
+        builder.setApplicants(applicants);
+    }
+
+    /**
+     * Function that will set training activity settings in order to build from a DTO.
      *
      * @param builder that will build the activity
      * @param dto the dto that contains the information regarding activity parameters
      */
-    public void constructTraining(TrainingBuilder builder, ActivityDTO dto) {
+    public void constructTrainingDTO(TrainingBuilder builder, ActivityDTO dto) {
         builder.setId(dto.getId());
         builder.setName(dto.getName());
         builder.setOwner(dto.getOwner());
@@ -21,12 +52,40 @@ public class Director {
     }
 
     /**
-     * Function that will set competition activity settings in order to build.
+     * Constructor for the competition out of raw attributes.
+     *
+     * @param builder that will build
+     * @param id of the activity
+     * @param name of the activity
+     * @param owner of the activity
+     * @param type competition in our case
+     * @param start time the competition starts
+     * @param gender non-null if it's gender locked
+     * @param organisation non-null if it's organisation restrictive
+     * @param positions list of positions to be filled
+     * @param applicants list of applicants names
+     */
+    public void constructCompetition(CompetitionBuilder builder, UUID id, String name, String owner, String type,
+                                     Date start, Gender gender, String organisation,
+                                     List<Position> positions, List<String> applicants) {
+        builder.setId(id);
+        builder.setName(name);
+        builder.setOwner(owner);
+        builder.setType(type);
+        builder.setStart(start);
+        builder.setGender(gender);
+        builder.setOrganisation(organisation);
+        builder.setPositions(positions);
+        builder.setApplicants(applicants);
+    }
+
+    /**
+     * Function that will set competition activity settings in order to build from a DTO.
      *
      * @param builder that will build the activity
      * @param dto the dto that contains the information regarding activity parameters
      */
-    public void constructCompetition(CompetitionBuilder builder, CompetitionDTO dto) {
+    public void constructCompetitionDTO(CompetitionBuilder builder, CompetitionDTO dto) {
         builder.setId(dto.getId());
         builder.setName(dto.getName());
         builder.setOwner(dto.getOwner());

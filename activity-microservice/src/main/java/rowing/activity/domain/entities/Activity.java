@@ -25,23 +25,23 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
     @Column(name = "id", nullable = false, unique = true)
     private UUID id;
 
-    @Column(name = "owner", nullable = false, unique = false)
-    private UUID owner;
+    @Column(name = "owner", nullable = false)
+    private String owner;
 
-    @Column(name = "name", nullable = false, unique = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "type", nullable = true, unique = false)
+    @Column(name = "type")
     private String type;
 
-    @Column(name = "date", nullable = false, unique = false)
+    @Column(name = "date", nullable = false)
     private Date start;
 
-    @Column(name = "positions", nullable = true, unique = false)
+    @Column(name = "positions")
     @ElementCollection
     private List<Position> positions;
 
-    @Column(name = "applicants", nullable = true, unique = false)
+    @Column(name = "applicants")
     @ElementCollection
     private List<String> applicants;
 
@@ -69,6 +69,15 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
         this.start = dto.getStart();
         this.positions = dto.getPositions();
         this.applicants = dto.getApplicants();
+    }
+
+    /**
+     * Function that puts an user on the application list.
+     *
+     * @param userName name of the user we add to the applicant list
+     */
+    public void addApplicant(String userName) {
+        this.applicants.add(userName);
     }
 
     /**
