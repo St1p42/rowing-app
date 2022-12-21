@@ -238,6 +238,7 @@ class NotificationTest {
         notificationAccepted = new Notification(accepted, "random", true);
         assertEquals("Unknown", notificationAccepted.getActivityId());
     }
+    
     @Test
     void retrieveBodyLocationChange() {
         NotificationRequestModel changes = new NotificationRequestModel("alex",
