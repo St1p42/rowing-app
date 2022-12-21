@@ -185,7 +185,7 @@ public class ActivityService {
 
             return "User " + match.getUserId() + " signed up for activity : " + match.getActivityId().toString();
         }
-        throw new IllegalArgumentException("Activity does not existent !\n");
+        throw new IllegalArgumentException("Activity does not exist !");
     }
 
 }

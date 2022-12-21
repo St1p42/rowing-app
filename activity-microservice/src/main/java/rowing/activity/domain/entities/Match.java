@@ -32,15 +32,6 @@ public class Match<T extends MatchingDTO> extends BaseEntity<T> {
     @Column(name = "position", nullable = false)
     private Position position;
 
-    @Column(name = "gender", nullable = false)
-    private Gender gender;
-
-    @Column(name = "competitive", nullable = false)
-    private Boolean competitive;
-
-    @Column(name = "organisation", nullable = false)
-    private String organisation;
-
     /**
      * Constructor from a dto.
      *
@@ -82,9 +73,9 @@ public class Match<T extends MatchingDTO> extends BaseEntity<T> {
                 this.activityId,
                 this.userId,
                 this.position,
-                this.gender,
-                this.competitive,
-                this.organisation,
+                Gender.OTHERS,
+                false,
+                "",
                 null,
                 NotificationStatus.ACCEPTED
         );
