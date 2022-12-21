@@ -30,7 +30,7 @@ import java.util.UUID;
 @JsonView(Views.Public.class)
 public class UserDTO implements DTO {
 
-    private UUID userId;
+    private String userId;
 
     private List<Position> rowingPositions;
 

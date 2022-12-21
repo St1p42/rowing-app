@@ -1,8 +1,12 @@
 package rowing.activity.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import rowing.activity.authentication.AuthManager;
 import rowing.activity.domain.utils.Builder;
 import rowing.activity.domain.CompetitionBuilder;
@@ -15,9 +19,14 @@ import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
 import rowing.commons.AvailabilityIntervals;
+import rowing.commons.NotificationStatus;
+import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 import rowing.commons.entities.MatchingDTO;
+import rowing.commons.entities.UserDTO;
+import rowing.commons.entities.utils.JsonUtil;
+import rowing.commons.models.NotificationRequestModel;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -29,6 +38,11 @@ public class ActivityService {
     private final transient ActivityRepository activityRepository;
     private final transient AuthManager authManager;
     private final transient MatchRepository matchRepository;
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${microserviceJWT}")
+    String token;
 
     /**
      * Constructor for the ActivityService class.
@@ -52,7 +66,7 @@ public class ActivityService {
      * @return the example found in the database with the given id
      */
     public String hellWorld() {
-        return "Hello " + authManager.getNetId();
+        return "Hello " + authManager.getUsername();
     }
 
     /**
@@ -194,6 +208,31 @@ public class ActivityService {
             return "User " + match.getUserId() + " signed up for activity : " + match.getActivityId().toString();
         }
         throw new IllegalArgumentException("Activity does not exist !");
+    }
+
+    public String acceptUser(Activity activity, UserDTO user, Position position) throws JsonProcessingException {
+        activity.getPositions().remove(position);
+        Match<MatchingDTO> match = new Match<>(new MatchingDTO(UUID.randomUUID(), activity.getId(),
+                user.getUserId(), position, user.getGender(),
+                user.getCompetitive(),user.getRowingOrganization(), user.getAvailability(), NotificationStatus.ACCEPTED));
+
+        matchRepository.save(match);
+        activityRepository.save(activity);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        NotificationRequestModel request = new NotificationRequestModel(user.getUserId(),
+                NotificationStatus.ACCEPTED, activity.getId());
+
+        String body = JsonUtil.serialize(request);
+        HttpEntity requestEntity = new HttpEntity(body, headers);
+        ResponseEntity responseEntity = restTemplate.exchange(
+                "http://localhost:8082/notify",
+                HttpMethod.POST, requestEntity, String.class);
+
+        return "User " + user.getUserId() + " is accepted successfully";
     }
 
 }
