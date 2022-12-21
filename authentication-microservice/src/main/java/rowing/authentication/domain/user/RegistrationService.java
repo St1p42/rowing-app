@@ -24,7 +24,8 @@ public class RegistrationService {
     private String registrationPath;
 
     @Autowired
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
+
     private final transient CredentialRepository credentialRepository;
     private final transient PasswordHashingService passwordHashingService;
 
@@ -60,14 +61,14 @@ public class RegistrationService {
         credentialRepository.save(user);
 
         //building the request
-        String uri = url + ":" + port + registrationPath;
+        String uri = url + ":" + "8082" + registrationPath;
         HttpHeaders headers = new HttpHeaders();
         String body = "{\"userId\":\"" + user.getUsername() + "\"}";
         HttpEntity requestHttp = new HttpEntity(body, headers);
 
         //sending the request
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestHttp, String.class);
-
+        System.out.println(response.getStatusCode());
         return user;
 
     }
