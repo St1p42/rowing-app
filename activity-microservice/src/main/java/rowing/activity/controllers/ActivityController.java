@@ -1,6 +1,8 @@
 package rowing.activity.controllers;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import rowing.activity.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,10 @@ import rowing.activity.services.ActivityService;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 
+import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Hello World example controller.
@@ -62,7 +66,6 @@ public class ActivityController {
      * Endpoint to create a new activity.
      *
      * @param dto that will contain basic activity information
-     *
      * @return response OK if the activity has been created
      */
     @PostMapping("/new")
@@ -78,5 +81,22 @@ public class ActivityController {
     @GetMapping("/activityList")
     public ResponseEntity<List<ActivityDTO>> getActivities() {
         return ResponseEntity.ok(activityService.getActivities());
+    }
+
+    /**
+     * Enpoint to remove activity based on the activity id.
+     *
+     * @param activityId - the id of the activity to be removed
+     * @return activityDTO - the activity that has been deleted
+     */
+    @GetMapping("/{activityId}/delete")
+    public ResponseEntity<ActivityDTO> deleteActivity(@PathVariable("activityId") UUID activityId) {
+        ActivityDTO activityDTO;
+        try {
+            activityDTO = activityService.deleteActivity(activityId);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
+        }
+        return ResponseEntity.ok(activityDTO);
     }
 }

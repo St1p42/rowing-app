@@ -26,7 +26,7 @@ plugins {
 	id 'info.solidsoft.pitest' version '1.5.2'
 }
 
-group = 'nl.tudelft.cse.sem.template'
+group = 'rowing'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -38,8 +38,12 @@ repositories {
 dependencies {
 
 	implementation project(':commons')
-	compileOnly 'org.projectlombok:lombok:1.18.24'
+	implementation 'org.projectlombok:lombok:1.18.24'
+	implementation 'org.json:json:20220924'
+	//compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+	implementation('org.json:json:')
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
@@ -66,7 +70,7 @@ test {
 	useJUnitPlatform()
 	jacoco {
 		enabled = true
-		includes = ['nl.tudelft.sem.template.*']
+		includes = ['rowing.*']
 		excludes = []
 	}
 }
@@ -81,7 +85,7 @@ jacocoTestCoverageVerification() {
 		rule {
 			enabled = true
 			element = 'CLASS'
-			includes = ['nl.tudelft.sem.template.*']
+			includes = ['rowing.*']
 
 			limit {
 				counter = 'BRANCH'
@@ -110,7 +114,7 @@ pitest {
 	//adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
 	junit5PluginVersion = '0.12'
 
-	targetClasses = ['nl.tudelft.sem.template.*']  //by default "${project.group}.*"
+	targetClasses = ['rowing.*']  //by default "${project.group}.*"
 	pitestVersion = '1.5.1' //not needed when a default PIT version should be used
 	threads = 4
 	outputFormats = ['XML', 'HTML']

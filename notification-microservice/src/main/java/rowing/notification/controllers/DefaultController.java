@@ -5,13 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import rowing.commons.NotificationStatus;
+import rowing.commons.requestModels.NotificationRequestModel;
 import rowing.notification.authentication.AuthManager;
-import rowing.notification.domain.notification.EmailService;
-import rowing.notification.domain.notification.Notification;
-import rowing.notification.models.NotificationRequestModel;
+import rowing.notification.domain.notification.NotifyUserService;
 
 /**
  * Hello World example controller.
@@ -22,7 +21,7 @@ import rowing.notification.models.NotificationRequestModel;
 @RestController
 public class DefaultController {
     @Autowired
-    private transient EmailService senderService;
+    private transient NotifyUserService notifyUserService;
 
     private final transient AuthManager authManager;
 
@@ -37,17 +36,15 @@ public class DefaultController {
     }
 
     /**
-     * Gets example by id.
+     * Notifies the user.
      *
-     * @return the example found in the database with the given id
+     * @return if notifying the user was successful
      */
     @PostMapping("/notify")
-    public ResponseEntity notifyUser(@RequestBody NotificationRequestModel request) {
+    public ResponseEntity notifyUser(@RequestBody NotificationRequestModel request,
+                                     @RequestHeader("Authorization") String bearerToken) {
         try {
-            NotificationStatus status = request.getStatus();
-            Notification notification = new Notification(status,
-                    request.getEmail());
-            senderService.sendEmail(notification);
+            notifyUserService.notifyUser(request, bearerToken);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString());
         }

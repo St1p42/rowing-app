@@ -11,21 +11,32 @@ import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
 import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
+import rowing.activity.domain.repositories.MatchRepository;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ActivityService {
     private final transient ActivityRepository activityRepository;
     private final transient AuthManager authManager;
+    private final transient MatchRepository matchRepository;
 
+    /**
+     * Constructor for the ActivityService class.
+     *
+     * @param activityRepository that will be used to keep info about activities
+     *
+     * @param authManager that will be used
+     *
+     * @param matchRepository that will be used to match users and activities
+     */
     @Autowired
-    public ActivityService(ActivityRepository activityRepository, AuthManager authManager) {
+    public ActivityService(ActivityRepository activityRepository, AuthManager authManager, MatchRepository matchRepository) {
         this.activityRepository = activityRepository;
         this.authManager = authManager;
+        this.matchRepository = matchRepository;
     }
 
     /**
@@ -71,11 +82,35 @@ public class ActivityService {
      * @return list of all activities stored in the database
      */
     public List<ActivityDTO> getActivities() {
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = calendar.getTime();
         List<Activity> activities = activityRepository.findAll();
         List<ActivityDTO> activityDtos = new ArrayList<>();
         for (Activity activity : activities) {
-            activityDtos.add(activity.toDto());
+
+            if (activity.getStart().after(currentDate)) {
+                activityDtos.add(activity.toDto());
+            } else {
+                activityRepository.delete(activity);
+            }
         }
         return activityDtos;
+    }
+
+    /**
+     * Deletes the activity with the specified id from the database.
+     *
+     * @param activityId - the UUID corresponding to the activity
+     * @return activityDto - the activityDto corresponding to the deleted activity
+     * @throws IllegalArgumentException - if the activity is not found in the database
+     */
+    public ActivityDTO deleteActivity(UUID activityId) throws IllegalArgumentException {
+        Optional<Activity> activity = activityRepository.findActivityById(activityId);
+        if (activity.isPresent()) {
+            ActivityDTO activityDto = activity.get().toDto();
+            activityRepository.delete(activity.get());
+            return activityDto;
+        }
+        throw new IllegalArgumentException();
     }
 }

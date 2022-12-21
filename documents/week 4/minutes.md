@@ -1,4 +1,4 @@
-# Second Meeting Minutes
+# Third Meeting Minutes
 ## Meeting Information
 **Meeting Date/Time:** 06.12.2022, 14:45-15:15  
 **Meeting Purpose:**  Review and Planning  
