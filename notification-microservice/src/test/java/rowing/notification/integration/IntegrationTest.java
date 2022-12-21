@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.client.RestTemplate;
 import rowing.commons.NotificationStatus;
 import rowing.commons.entities.utils.JsonUtil;
-import rowing.commons.requestModels.NotificationRequestModel;
+import rowing.commons.models.NotificationRequestModel;
 import rowing.notification.authentication.AuthManager;
 import rowing.notification.authentication.JwtTokenVerifier;
 

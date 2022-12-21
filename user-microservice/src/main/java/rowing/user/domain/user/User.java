@@ -46,10 +46,9 @@ public class User extends HasEvents {
     @Column(name = "lastName", nullable = false)
     private String lastName;
 
-    @Column(name = "coxCertificates")
-    @Enumerated(EnumType.STRING)
+    @Column(name = "coxCertificates", nullable = true, unique = false)
     @ElementCollection
-    private List<CoxCertificate> coxCertificates;
+    private List<String> coxCertificates;
 
     @Column(name = "gender", nullable = true, unique = false)
     @Enumerated(EnumType.STRING)

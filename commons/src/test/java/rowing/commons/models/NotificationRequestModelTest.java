@@ -1,4 +1,4 @@
-package rowing.commons.requestModels;
+package rowing.commons.models;
 
 import org.junit.jupiter.api.Test;
 import rowing.commons.NotificationStatus;
@@ -11,8 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class NotificationRequestModelTest {
     @Test
-    void constructorTest(){
-        NotificationRequestModel req = new NotificationRequestModel("alex", NotificationStatus.ACCEPTED, new UUID(101L, 2L));
+    void constructorTest() {
+        NotificationRequestModel req = new NotificationRequestModel("alex",
+                NotificationStatus.ACCEPTED, new UUID(101L, 2L));
         assertNotNull(req);
         assertEquals(NotificationStatus.ACCEPTED, req.getStatus());
         assertNotNull(req.getActivityId());
@@ -20,8 +21,9 @@ class NotificationRequestModelTest {
     }
 
     @Test
-    void constructor1Test(){
-        NotificationRequestModel req = new NotificationRequestModel("alex", NotificationStatus.ACCEPTED, new UUID(101L, 2L), "Delft");
+    void constructor1Test() {
+        NotificationRequestModel req = new NotificationRequestModel("alex",
+                NotificationStatus.ACCEPTED, new UUID(101L, 2L), "Delft");
         assertNotNull(req);
         assertEquals(NotificationStatus.ACCEPTED, req.getStatus());
         assertNotNull(req.getActivityId());
@@ -30,8 +32,9 @@ class NotificationRequestModelTest {
     }
 
     @Test
-    void constructor2Test(){
-        NotificationRequestModel req = new NotificationRequestModel("alex", NotificationStatus.ACCEPTED, new UUID(101L, 2L), new Date());
+    void constructor2Test() {
+        NotificationRequestModel req = new NotificationRequestModel("alex",
+                NotificationStatus.ACCEPTED, new UUID(101L, 2L), new Date());
         assertNotNull(req);
         assertEquals(NotificationStatus.ACCEPTED, req.getStatus());
         assertNotNull(req.getActivityId());
