@@ -102,15 +102,18 @@ public class ActivityControllerTest {
         amateurTraining.setName("Amateur Training");
         amateurTraining.setType("Training");
         amateurTraining.setStart(amateurTrainingDate);
-    }
-
-    @Test
-    public void newActivity() throws Exception {
 
         List<Position> positionList = new ArrayList<>();
         positionList.add(Position.COACH);
         positionList.add(Position.COX);
         amateurTraining.setPositions(positionList);
+
+        List<String> applicantList = new ArrayList<>();
+        amateurTraining.setApplicants(applicantList);
+    }
+
+    @Test
+    public void newActivity() throws Exception {
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/activity/new")
@@ -129,14 +132,6 @@ public class ActivityControllerTest {
 
     @Test
     public void returnActivities() throws Exception {
-
-        List<Position> positionList = new ArrayList<>();
-        positionList.add(Position.COACH);
-        positionList.add(Position.COX);
-        amateurTraining.setPositions(positionList);
-
-        List<String> applicantList = new ArrayList<>();
-        amateurTraining.setApplicants(applicantList);
 
         Competition activity = new Competition();
         activity.setId(UUID.randomUUID());
@@ -182,14 +177,6 @@ public class ActivityControllerTest {
     @Test
     public void activityDeleted() throws Exception {
 
-        List<Position> positionList = new ArrayList<>();
-        positionList.add(Position.COACH);
-        positionList.add(Position.COX);
-        amateurTraining.setPositions(positionList);
-
-        List<String> applicantList = new ArrayList<>();
-        amateurTraining.setApplicants(applicantList);
-
         String dateString2 = "26-09-3245";
         SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
         Date date = formatter2.parse(dateString2);
@@ -216,6 +203,7 @@ public class ActivityControllerTest {
         activityList.add(amateurTraining);
         activityList.add(activity);
         activityDTOList.add(activity.toDto());
+        activityDTOList.add(amateurTraining.toDto());
         when(mockActivityRepository.findAll()).thenReturn(activityList);
 
         ResultActions result = mockMvc.perform(get("/activity/activityList")

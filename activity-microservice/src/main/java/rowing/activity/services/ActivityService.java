@@ -135,6 +135,28 @@ public class ActivityService {
         throw new IllegalArgumentException();
     }
 
+    /**
+     * Function that checks wether a schedule is available for an activity.
+     *
+     * @param activity that needs to fit in the availability
+     * @param availability list of intervals that could fit our activity start time
+     * @return true or false
+     */
+    public boolean checkAvailability(Activity activity, List<AvailabilityIntervals> availability) {
+        Calendar cal = Calendar.getInstance();  // Checking availability
+        cal.setTime(activity.getStart());
+        var day = cal.get(Calendar.DAY_OF_WEEK);
+        var hour =  cal.getTime();
+        boolean available = false;
+        for (AvailabilityIntervals interval : availability) {
+            if (interval.getDay().getValue() == day
+                    && interval.getStartInterval().getHour() <= cal.get(Calendar.HOUR_OF_DAY)
+                    && interval.getEndInterval().getHour() >= cal.get(Calendar.HOUR_OF_DAY)) {
+                available = true;
+            }
+        }
+        return available;
+    }
 
     /**
      * Returns the activity with the specified id from the database.
@@ -155,22 +177,10 @@ public class ActivityService {
                 }
             }
 
-
-            Calendar cal = Calendar.getInstance();  // Checking availability
-            cal.setTime(activityPresent.getStart());
-            var day = cal.get(Calendar.DAY_OF_WEEK);
-            var hour =  cal.getTime();
-            boolean available = false;
-            for (AvailabilityIntervals interval : match.getAvailability()) {
-                if (interval.getDay().getValue() == day
-                        && interval.getStartInterval().getHour() <= cal.get(Calendar.HOUR_OF_DAY)
-                        && interval.getEndInterval().getHour() >= cal.get(Calendar.HOUR_OF_DAY)) {
-                    available = true;
-                }
-            }
-            if (!available) {
+            if (!checkAvailability(activityPresent, match.getAvailability())) {
                 throw new IllegalArgumentException("User is not available for this activity!\n");
             }
+
             if (activityPresent instanceof Competition) {   // Checking competition requirements
                 Competition competition = (Competition) activityPresent; 
                 if (!match.getCompetitive()) {
