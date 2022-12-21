@@ -63,7 +63,7 @@ public class MatchingDTO implements DTO {
      *
      * @param matchingDTO to be used
      */
-    public MatchingDTO(MatchingDTO matchingDTO){
+    public MatchingDTO(MatchingDTO matchingDTO) {
         this.id = matchingDTO.getId();
         this.position = matchingDTO.getPosition();
         this.activityId = matchingDTO.getActivityId();
