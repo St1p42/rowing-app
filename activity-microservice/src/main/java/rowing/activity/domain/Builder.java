@@ -17,6 +17,8 @@ public interface Builder {
 
     void setStart(Date start);
 
+    void setLocation(String location);
+
     void setPositions(List<Position> positions);
 
     void setApplicants(List<String> applicants);
