@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 import rowing.commons.AvailabilityIntervals;
-import rowing.commons.CoxCertificate;
 import rowing.commons.Gender;
 import rowing.commons.Position;
 import rowing.commons.entities.utils.DTO;

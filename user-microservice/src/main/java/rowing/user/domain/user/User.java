@@ -6,6 +6,7 @@ import rowing.commons.AvailabilityIntervals;
 import rowing.commons.CoxCertificate;
 import rowing.commons.Gender;
 import rowing.commons.Position;
+import rowing.commons.entities.UserDTO;
 import rowing.user.domain.HasEvents;
 
 import javax.persistence.*;
@@ -59,6 +60,16 @@ public class User extends HasEvents {
 
     @Column(name = "competitive")
     private Boolean competitive;
+
+    /**
+     * Creates a user.
+     *
+     * @param userId - the unique identifier of the user
+     */
+    public User(String userId) {
+        this.userId = userId;
+        //this.recordThat(new UserWasCreatedEvent(username));
+    }
 
     /**
      * Creates user with must fill attributes.
@@ -137,5 +148,18 @@ public class User extends HasEvents {
     @Override
     public int hashCode() {
         return Objects.hash(userId);
+    }
+
+    public UserDTO toDTO() {
+        return new UserDTO(userId,
+                rowingPositions,
+                availability,
+                email,
+                firstName,
+                lastName,
+                coxCertificates,
+                gender,
+                rowingOrganization,
+                competitive);
     }
 }
