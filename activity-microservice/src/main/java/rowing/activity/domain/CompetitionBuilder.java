@@ -17,12 +17,13 @@ public class CompetitionBuilder implements Builder {
     private String name;
     private String type;
     private Date start;
+    private String location;
     private Gender gender;
     private String organisation;
     private List<Position> positions;
     private List<String> applicants;
 
     public Competition build() {
-        return new Competition(id, owner, name, type, start, gender, organisation, positions, applicants);
+        return new Competition(id, owner, name, type, start, location, gender, organisation, positions, applicants);
     }
 }
