@@ -97,13 +97,14 @@ public class ActivityController {
      * @param match dto containing information regarding the signup process
      * @return response if the sign up was successful or not
      */
-    @GetMapping("/{activityId}/sign")
-    public ResponseEntity<String> signUpActivity(@PathVariable UUID activityId, @RequestBody MatchingDTO match) {
+    @PostMapping("/sign/{activityId}")
+    public ResponseEntity<String> signUpActivity(@RequestBody MatchingDTO match, @PathVariable UUID activityId) {
         String response = "";
         try {
             response = activityService.signUp(match);
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+            //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
         }
         return ResponseEntity.ok(response);
     }

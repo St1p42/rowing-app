@@ -20,6 +20,8 @@ import rowing.commons.entities.CompetitionDTO;
 import rowing.commons.entities.MatchingDTO;
 
 import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -63,18 +65,17 @@ public class ActivityService {
     public String createActivity(ActivityDTO dto) {
         Builder builder;
         Director director;
-        System.out.print("\n\n\n\n\n\nDTO TYPE :" + dto.getType() + "\n\n\n\n\n\n");
         if (dto.getType().equals("Training")) {
             builder = new TrainingBuilder();
             director = new Director();
-            director.constructTraining((TrainingBuilder) builder, dto);
+            director.constructTrainingDTO((TrainingBuilder) builder, dto);
             Training activity = (Training) builder.build();
             activityRepository.save(activity);
             return "Activity " + activity.getId() + " was created successfully !";
         } else {
             builder = new CompetitionBuilder();
             director = new Director();
-            director.constructCompetition((CompetitionBuilder) builder, (CompetitionDTO) dto);
+            director.constructCompetitionDTO((CompetitionBuilder) builder, (CompetitionDTO) dto);
             Competition activity = (Competition) builder.build();
             activityRepository.save(activity);
             return "Activity " + activity.getId() + "created successfully !";
@@ -120,22 +121,6 @@ public class ActivityService {
     }
 
     /**
-     * Returns the activity with the specified id from the database.
-     *
-     * @param activityId - the UUID corresponding to the activity
-     * @return activityDto - the activityDto corresponding to the deleted activity
-     * @throws IllegalArgumentException - if the activity is not found in the database
-     */
-    public ActivityDTO getActivity(UUID activityId) throws IllegalArgumentException {
-        Optional<Activity> activity = activityRepository.findActivityById(activityId);
-        if (activity.isPresent()) {
-            ActivityDTO activityDto = activity.get().toDto();
-            return activityDto;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    /**
      * Function that checks wether a schedule is available for an activity.
      *
      * @param activity that needs to fit in the availability
@@ -146,12 +131,12 @@ public class ActivityService {
         Calendar cal = Calendar.getInstance();  // Checking availability
         cal.setTime(activity.getStart());
         var day = cal.get(Calendar.DAY_OF_WEEK);
-        var hour =  cal.getTime();
+        var time = LocalTime.ofInstant(cal.getTime().toInstant(), ZoneId.systemDefault());
         boolean available = false;
+
         for (AvailabilityIntervals interval : availability) {
             if (interval.getDay().getValue() == day
-                    && interval.getStartInterval().getHour() <= cal.get(Calendar.HOUR_OF_DAY)
-                    && interval.getEndInterval().getHour() >= cal.get(Calendar.HOUR_OF_DAY)) {
+                    && interval.getStartInterval().isBefore(time) && interval.getEndInterval().isAfter(time)) {
                 available = true;
             }
         }
@@ -166,8 +151,8 @@ public class ActivityService {
      * @throws IllegalArgumentException - if the activity is not found in the database or user is not compatible
      */
     public String signUp(MatchingDTO match) throws IllegalArgumentException {
-        Optional<Activity> activity = activityRepository.findActivityById(match.getActivityId());
 
+        Optional<Activity> activity = activityRepository.findActivityById(match.getActivityId());
         if (activity.isPresent()) {
             Activity activityPresent = activity.get(); // Checking if a user is already signed up for this
             List<String> signUps = activityPresent.getApplicants();
@@ -178,9 +163,8 @@ public class ActivityService {
             }
 
             if (!checkAvailability(activityPresent, match.getAvailability())) {
-                throw new IllegalArgumentException("User is not available for this activity!\n");
+                throw new IllegalArgumentException("User is not available for this activity !");
             }
-
             if (activityPresent instanceof Competition) {   // Checking competition requirements
                 Competition competition = (Competition) activityPresent; 
                 if (!match.getCompetitive()) {
@@ -191,15 +175,15 @@ public class ActivityService {
                     throw new IllegalArgumentException("User does not fit gender requirements !");
                 }
                 if (competition.getOrganisation() != null
-                        && (competition.getOrganisation().equals(match.getOrganisation()))) {
-                    throw new IllegalArgumentException("User does not fit gender requirements !");
+                        && (!competition.getOrganisation().equals(match.getOrganisation()))) {
+                    throw new IllegalArgumentException("User is not part of the organisation !");
                 }
             }
 
             activityPresent.addApplicant(match.getUserId()); // If all is fine we add the applicant
             activityRepository.save(activityPresent);
 
-            return "User " + match.getUserId() + "signed up for activity : " + match.getActivityId().toString();
+            return "User " + match.getUserId() + " signed up for activity : " + match.getActivityId().toString();
         }
         throw new IllegalArgumentException("Activity does not existent !\n");
     }

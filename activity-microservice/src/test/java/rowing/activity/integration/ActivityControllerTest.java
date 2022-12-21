@@ -29,13 +29,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.ResultActions;
+import rowing.activity.domain.CompetitionBuilder;
+import rowing.activity.domain.Director;
+import rowing.activity.domain.TrainingBuilder;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
-import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
+import rowing.activity.domain.utils.Builder;
+import rowing.commons.AvailabilityIntervals;
 import rowing.commons.Gender;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
+import rowing.commons.entities.MatchingDTO;
 //import com.fasterxml.jackson.*;
 
 import java.text.ParseException;
@@ -72,8 +77,12 @@ public class ActivityControllerTest {
     }
 
     Activity amateurTraining;
+    Activity amateurCompetition;
     Date amateurTrainingDate;
-    UUID activityId;
+    Date amateurCompetitionDate;
+    MatchingDTO match;
+    UUID trainingId;
+    UUID competitionId;
 
     /**
      * Function that inits the basic activity.
@@ -91,25 +100,41 @@ public class ActivityControllerTest {
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
 
-        String dateString = "26-09-3043";
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        String dateString = "26-09-3043 14:05:05";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         amateurTrainingDate = formatter.parse(dateString);
-        activityId = UUID.randomUUID();
+        trainingId = UUID.randomUUID();
 
-        amateurTraining = new Training();
-        amateurTraining.setId(UUID.randomUUID());
-        amateurTraining.setOwner("Admin");
-        amateurTraining.setName("Amateur Training");
-        amateurTraining.setType("Training");
-        amateurTraining.setStart(amateurTrainingDate);
+        dateString = "27-09-3043 16:05:05"; // Creating new competition details
+        formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        amateurCompetitionDate = formatter.parse(dateString);
+        competitionId = UUID.randomUUID();
+
+        Builder trainingBuilder = new TrainingBuilder();
+        Director director = new Director();
 
         List<Position> positionList = new ArrayList<>();
         positionList.add(Position.COACH);
         positionList.add(Position.COX);
-        amateurTraining.setPositions(positionList);
-
         List<String> applicantList = new ArrayList<>();
-        amateurTraining.setApplicants(applicantList);
+
+        director.constructTraining((TrainingBuilder) trainingBuilder, UUID.randomUUID(),
+                "Admin", "Amateur Training", "Training",
+                amateurTrainingDate, positionList, applicantList);
+        amateurTraining = trainingBuilder.build();
+
+        Builder competitionBuilder = new CompetitionBuilder();
+        director.constructCompetition((CompetitionBuilder) competitionBuilder, UUID.randomUUID(),
+                "Admin", "Amateur Competition", "Competition",
+                amateurCompetitionDate,  Gender.MALE, "TUDelft", positionList, applicantList);
+        amateurCompetition = competitionBuilder.build();
+
+        List<AvailabilityIntervals> availability = new ArrayList<AvailabilityIntervals>();
+        availability.add(new AvailabilityIntervals("wednesday", "14:05", "14:06"));
+        availability.add(new AvailabilityIntervals("thursday", "16:05", "16:06"));
+        match = new MatchingDTO(UUID.randomUUID(), null,
+                "Admin", Position.COX, Gender.MALE, true, "TUDelft",
+                availability, null);
     }
 
     @Test
@@ -229,9 +254,9 @@ public class ActivityControllerTest {
         positionList.add(Position.COACH);
         positionList.add(Position.COX);
         amateurTraining.setPositions(positionList);
-        when(mockActivityRepository.findActivityById(activityId)).thenReturn(Optional.of(amateurTraining));
+        when(mockActivityRepository.findActivityById(trainingId)).thenReturn(Optional.of(amateurTraining));
 
-        ResultActions result = mockMvc.perform(get("/activity/" + activityId + "/delete")
+        ResultActions result = mockMvc.perform(get("/activity/" + trainingId + "/delete")
                 .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isOk());
@@ -245,17 +270,129 @@ public class ActivityControllerTest {
 
     @Test
     public void deleteActivityException() throws Exception {
-
-        List<Position> positionList = new ArrayList<>();
-        positionList.add(Position.COACH);
-        positionList.add(Position.COX);
-        amateurTraining.setPositions(positionList);
-        when(mockActivityRepository.findActivityById(activityId)).thenReturn(Optional.of(amateurTraining));
+        when(mockActivityRepository.findActivityById(trainingId)).thenReturn(Optional.of(amateurTraining));
 
         UUID id2 = UUID.randomUUID();
         ResultActions result = mockMvc.perform(get("/activity/" + id2 + "/delete")
                 .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testSignUpTraining() throws Exception {
+
+        match.setActivityId(trainingId); // Make sure to set for the activity you want to sign up for
+        when(mockActivityRepository.findActivityById(trainingId)).thenReturn(Optional.of(amateurTraining));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", trainingId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + match.getUserId()
+                + " signed up for activity : " + match.getActivityId().toString());
+    }
+
+    @Test
+    public void testSignUpCompetition() throws Exception {
+        match.setActivityId(competitionId);
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + match.getUserId()
+                + " signed up for activity : " + match.getActivityId().toString());
+    }
+
+    @Test
+    public void testSignUpCompetitionGenderException() throws Exception {
+        match.setActivityId(competitionId);
+        match.setGender(Gender.FEMALE);
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User does not fit gender requirements !");
+    }
+
+    @Test
+    public void testSignUpCompetitionOrganisationException() throws Exception {
+        match.setActivityId(competitionId);
+        match.setOrganisation("TUEindhoven");
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User is not part of the organisation !");
+    }
+
+    @Test
+    public void testSignUpCompetitionCompetitiveException() throws Exception {
+        match.setActivityId(competitionId);
+        match.setCompetitive(false);
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User is not competitive!");
+    }
+
+    @Test
+    public void testSignUpAvailabilityException() throws Exception {
+        match.setActivityId(competitionId);
+        List<AvailabilityIntervals> newAvailability = new ArrayList<AvailabilityIntervals>();
+        newAvailability.add(new AvailabilityIntervals("monday", "12:00", "12:05"));
+        match.setAvailability(newAvailability);
+        when(mockActivityRepository.findActivityById(competitionId)).thenReturn(Optional.of(amateurCompetition));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(match))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User is not available for this activity !");
     }
 }
