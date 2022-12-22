@@ -21,5 +21,7 @@ public interface Builder {
 
     void setApplicants(List<String> applicants);
 
+    void setBoatType(String boatType);
+
     Activity build();
 }

@@ -12,12 +12,15 @@ import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
 import rowing.activity.services.ActivityService;
+import rowing.commons.Certificates;
+import rowing.commons.CoxCertificate;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.MatchingDTO;
 import rowing.commons.entities.UserDTO;
 import rowing.commons.models.UserDTORequestModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -150,11 +153,41 @@ public class ActivityController {
                 }
             }
         }
+        if(!model.getRowingPositions().contains(model.getPositionSelected())){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The user didn't apply for this position");
+        }
         if (!activity.getApplicants().contains(model.getUserId())) {
-            return ResponseEntity.badRequest().body("This user didn't apply to this activity");
+            return ResponseEntity.badRequest().body("This user didn't apply for this activity");
         }
         if (!activity.getPositions().contains(model.getPositionSelected())) {
             return ResponseEntity.badRequest().body("This position is already full");
+        }
+        if(model.getPositionSelected().equals(Position.COX)){
+            List<String> certificates = model.getCoxCertificates();
+            List<CoxCertificate> coxCertificates = new ArrayList<>();
+            for(String s : certificates){
+                if(Certificates.existByName(s)){
+                    coxCertificates.add(Certificates.getCertificate(s));
+                }
+            }
+            boolean exists = false;
+            for(CoxCertificate certificate : coxCertificates){
+                if(certificate.getName().equals(activity.getBoatType())){
+                    exists = true;
+                    break;
+                }
+                if(certificate.getSupersedes() != null) {
+                    for (String supersede : certificate.getSupersedes()) {
+                        if (supersede.equals(activity.getBoatType())) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(!exists){
+                return ResponseEntity.badRequest().body("The user don't have a certificate for this boat type!");
+            }
         }
 
         return ResponseEntity.ok(activityService.acceptUser(activity, model));
@@ -190,7 +223,7 @@ public class ActivityController {
             }
         }
         if (!activity.getApplicants().contains(model.getUserId())) {
-            return ResponseEntity.badRequest().body("This user didn't apply to this activity");
+            return ResponseEntity.badRequest().body("This user didn't apply for this activity");
         }
 
         return ResponseEntity.ok(activityService.rejectUser(activity, model));

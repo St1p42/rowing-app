@@ -36,6 +36,8 @@ public class ActivityDTO implements DTO {
 
     private  List<String> applicants;
 
+    private String boatType;
+
     /**
      * Getter for the id.
      *
@@ -55,6 +57,9 @@ public class ActivityDTO implements DTO {
 
     public String getName() {
         return name;
+    }
+    public String getBoatType() {
+        return boatType;
     }
 
     /**
@@ -81,7 +86,7 @@ public class ActivityDTO implements DTO {
      * @param applicants for this activity
      */
     public ActivityDTO(UUID id, String owner, String name, String type, Date start,
-                       List<Position> positions, List<String> applicants) {
+                       List<Position> positions, List<String> applicants, String boatType) {
         this.id = id;
         this.owner = owner;
         this.name = name;
@@ -89,6 +94,7 @@ public class ActivityDTO implements DTO {
         this.start = start;
         this.positions = positions;
         this.applicants = applicants;
+        this.boatType = boatType;
     }
 
     /**
@@ -131,5 +137,6 @@ public class ActivityDTO implements DTO {
         this.start = dto.getStart();
         this.positions = dto.getPositions();
         this.applicants = dto.getApplicants();
+        this.boatType = dto.getBoatType();
     }
 }
