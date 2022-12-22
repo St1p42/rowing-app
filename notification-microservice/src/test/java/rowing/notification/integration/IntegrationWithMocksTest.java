@@ -1,9 +1,7 @@
 package rowing.notification.integration;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,8 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles({"test", "mockTokenVerifier", "mockAuthenticationManager"})
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class IntegrationTest {
+public class IntegrationWithMocksTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -57,16 +54,14 @@ public class IntegrationTest {
     @Value("${uri.users.url}")
     String uri;
 
+    private MockRestServiceServer mockServer;
+
     @Value("${bearerToken}")
     String token;
 
-    @BeforeAll
-    public void setup() {
-        SpringApplicationBuilder uws = new SpringApplicationBuilder(rowing.user.Application.class);
-        uws.run("--server.port=8084");
-
-        SpringApplicationBuilder auth = new SpringApplicationBuilder(rowing.authentication.Application.class);
-        auth.run("--server.port=8081");
+    @BeforeEach
+    public void setUp() {
+        mockServer = MockRestServiceServer.createServer(restTemplate);
     }
 
     @Test
@@ -83,6 +78,11 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.ACCEPTED, new UUID(1, 1));
 
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withSuccess("halitgulamov@gmail.com", MediaType.TEXT_PLAIN));
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
@@ -108,13 +108,20 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.CHANGES, new UUID(1, 1), "Delft");
 
-
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withSuccess("halitgulamov@gmail.com", MediaType.TEXT_PLAIN));
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
 
         // Assert
         result.andExpect(status().isOk());
@@ -134,13 +141,20 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.ACTIVITY_FULL, new UUID(1, 1));
 
-
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withSuccess("halitgulamov@gmail.com", MediaType.TEXT_PLAIN));
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
 
         // Assert
         result.andExpect(status().isOk());
@@ -160,13 +174,20 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.ACCEPTED, new UUID(1, 1));
 
-
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
 
         // Assert
         result.andExpect(status().isOk());
@@ -209,13 +230,20 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.ACCEPTED, new UUID(1, 1));
 
-
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withUnauthorizedRequest());
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
 
         // Assert
         result.andExpect(status().isBadRequest());
@@ -235,13 +263,20 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.ACCEPTED, new UUID(1, 1));
 
-
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withBadRequest());
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
 
         // Assert
         result.andExpect(status().isBadRequest());
@@ -294,13 +329,20 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.CHANGES, new UUID(1, 1), "delft");
 
-
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withSuccess("aojica65@gmail.com", MediaType.TEXT_PLAIN));
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
 
         // Assert
         result.andExpect(status().isOk());
@@ -320,13 +362,20 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.CHANGES, new UUID(1, 1), new Date());
 
-
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withSuccess("aojica65@gmail.com", MediaType.TEXT_PLAIN));
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
 
         // Assert
         result.andExpect(status().isOk());
@@ -346,13 +395,20 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.CHANGES, new UUID(1, 1), new Date());
 
-
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
 
         // Assert
         result.andExpect(status().isOk());
@@ -372,13 +428,20 @@ public class IntegrationTest {
         NotificationRequestModel requestModel = new NotificationRequestModel("alex",
                 NotificationStatus.CHANGES, new UUID(1, 1), "delft");
 
-
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         // calls REST API internally
         ResultActions result = mockMvc.perform(post("/notify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
 
         // Assert
         result.andExpect(status().isOk());
