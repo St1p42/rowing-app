@@ -287,4 +287,31 @@ public class ActivityService {
         return "User " + model.getUserId() + " is accepted successfully";
     }
 
+    /**
+     * Signs off a user from an activity.
+     *
+     * @param activityId - activity to be signed off from
+     * @return String - information about the user, activity and status of the operation.
+     * @throws IllegalArgumentException - if the activity is not found, or the user is not signed up for this activity
+     */
+    public String signOff(UUID activityId) throws IllegalArgumentException {
+        String username = authManager.getUsername();
+        Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
+        if (!optionalActivity.isPresent()) {
+            throw new IllegalArgumentException("Activity not found!");
+        }
+        Activity activity = optionalActivity.get();
+        if (!activity.getApplicants().contains(username)) {
+            throw new IllegalArgumentException("User has not signed-up for this activity");
+        }
+        Optional<Match> optionalMatch = matchRepository.findByActivityIdAndUserId(activityId, username);
+        if (optionalMatch.isPresent()) {
+            Match match = optionalMatch.get();
+            activity.getPositions().add(match.getPosition());
+            matchRepository.delete(match);
+        }
+        activity.getApplicants().remove(username);
+        activityRepository.save(activity);
+        return "User " + username + " has signed off from the activity : " + activityId;
+    }
 }

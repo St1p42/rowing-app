@@ -123,6 +123,23 @@ public class ActivityController {
     }
 
     /**
+     * Endpoint that lets the user disconnect from the activity using the id.
+     *
+     * @param activityId - the activity to disconnect from
+     * @return response if the sign-off was successful or not
+     */
+    @PostMapping("/sign-off/{activityId}")
+    public ResponseEntity<String> signOffActivity(@PathVariable UUID activityId) {
+        String response = "";
+        try {
+            response = activityService.signOff(activityId);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Endpoint for accepting a specific user to an activity with the chosen position.
      *
      * @param activityId the id of the activity

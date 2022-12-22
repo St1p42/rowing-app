@@ -18,6 +18,8 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
 
     Optional<Match> findByUserId(String userId);
 
+    Optional<Match> findByActivityIdAndUserId(UUID activityId, String userId);
+
     boolean existsByActivityId(UUID activityId);
 
     boolean existsByActivityIdAndUserId(UUID activityId, String userID);
