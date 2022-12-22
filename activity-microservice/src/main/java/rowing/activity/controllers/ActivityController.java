@@ -159,4 +159,40 @@ public class ActivityController {
 
         return ResponseEntity.ok(activityService.acceptUser(activity, model));
     }
+
+    /**
+     * Endpoint for rejecting a specific user to an activity.
+     *
+     * @param activityId the id of the activity
+     * @param model the UserDTO keeping the information about the selected user
+     * @return a ResponseEntity of string to notify what happened
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
+     */
+    @PostMapping("/{activityId}/reject")
+    public ResponseEntity<String> rejectUser(@PathVariable("activityId") UUID activityId,
+                                             @RequestBody UserDTO model) throws JsonProcessingException {
+
+        Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
+        if (!optionalActivity.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist!");
+        }
+        Activity activity = optionalActivity.get();
+        if (!authManager.getUsername().equals(activity.getOwner())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only the owner of the activity can reject users");
+        }
+        if (matchRepository.existsByActivityId(activityId)) {
+            List<Match> matches = matchRepository.findAllByActivityId(activityId);
+            for (Match match : matches) {
+                if (match.getUserId().equals(model.getUserId())) {
+                    return ResponseEntity.badRequest().body("This user is already participating in the activity");
+                }
+            }
+        }
+        if (!activity.getApplicants().contains(model.getUserId())) {
+            return ResponseEntity.badRequest().body("This user didn't apply to this activity");
+        }
+
+        return ResponseEntity.ok(activityService.rejectUser(activity, model));
+    }
 }

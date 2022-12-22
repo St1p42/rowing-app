@@ -241,7 +241,7 @@ public class ActivityService {
      *
      * @param activity that the owner wants to accept the user for
      * @param model the UserDTORequestModel keeping the information about the selected user and position
-     * @return a String that notifies that the user is created successfully.
+     * @return a String that notifies that the user is accepted successfully.
      * @throws JsonProcessingException if there is a problem occurs when converting
      *         the NotificationRequestModel object to Json
      */
@@ -285,6 +285,34 @@ public class ActivityService {
         }
 
         return "User " + model.getUserId() + " is accepted successfully";
+    }
+
+    /**
+     * Rejects the user applied to the activity, and sends a notification to the user.
+     *
+     * @param activity that the owner wants to reject the user for
+     * @param model the UserDTO keeping the information about the selected user
+     * @return a String that notifies that the user is rejected successfully.
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
+     */
+    public String rejectUser(Activity activity, UserDTO model) throws JsonProcessingException {
+        activity.getApplicants().remove(model.getUserId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        NotificationRequestModel request = new NotificationRequestModel(model.getUserId(),
+                NotificationStatus.REJECTED, activity.getId());
+
+        String body = JsonUtil.serialize(request);
+        HttpEntity requestEntity = new HttpEntity(body, headers);
+        ResponseEntity responseEntity = restTemplate.exchange(
+                urlNotification + ":" + portNotification + pathNotify,
+                HttpMethod.POST, requestEntity, String.class);
+
+        return "User " + model.getUserId() + " is rejected successfully";
     }
 
 }
