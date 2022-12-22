@@ -215,15 +215,13 @@ public class ActivityControllerTest {
         List<String> applicantList1 = new ArrayList<>();
         activity.setApplicants(applicantList1);
 
-        List<Activity> activityList = new ArrayList<>();
         List<ActivityDTO> activityDTOList = new ArrayList<>();
 
-        activityList.add(amateurTraining);
-        activityList.add(activity);
+        amateurTraining = mockActivityRepository.save(amateurTraining);
+        activity = mockActivityRepository.save(activity);
+
         activityDTOList.add(amateurTraining.toDto());
         activityDTOList.add(activity.toDto());
-
-        mockActivityRepository.saveAll(activityList);
 
         ResultActions result = mockMvc.perform(get("/activity/activityList")
                 .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
@@ -234,6 +232,8 @@ public class ActivityControllerTest {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         String response = result.andReturn().getResponse().getContentAsString();
+        System.out.println(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("]}}", "]}"));
+        System.out.println(mapper.writeValueAsString(activityDTOList));
 
         //assertThat(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("\"COX\"]}}", "\"COX\"]}")).
         // isEqualTo(mapper.writeValueAsString(activity_dto_list));
@@ -265,15 +265,12 @@ public class ActivityControllerTest {
         List<String> applicantList1 = new ArrayList<>();
         activity.setApplicants(applicantList1);
 
-        List<Activity> activityList = new ArrayList<>();
         List<ActivityDTO> activityDTOList = new ArrayList<>();
 
-        activityList.add(amateurTraining);
-        activityList.add(activity);
-        activityDTOList.add(amateurTraining.toDto());
+        amateurCompetition = mockActivityRepository.save(amateurTraining);
+        activity = mockActivityRepository.save(activity);
 
-        mockActivityRepository.save(amateurTraining);
-        mockActivityRepository.save(activity);
+        activityDTOList.add(amateurCompetition.toDto());
 
         ResultActions result = mockMvc.perform(get("/activity/activityList")
                 .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
