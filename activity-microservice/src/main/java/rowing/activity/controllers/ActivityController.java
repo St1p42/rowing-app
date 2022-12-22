@@ -133,7 +133,7 @@ public class ActivityController {
                                              @RequestBody UserDTORequestModel model) throws JsonProcessingException {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
         if (!optionalActivity.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist !");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist!");
         }
         Activity activity = optionalActivity.get();
         if (!authManager.getUsername().equals(activity.getOwner())) {
