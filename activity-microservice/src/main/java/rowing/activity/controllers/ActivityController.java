@@ -116,6 +116,8 @@ public class ActivityController {
             updatedActivityDTO = activityService.updateActivity(activityId, dto);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ActivityDTO was not valid", e);
         }
         return ResponseEntity.ok(updatedActivityDTO);
     }

@@ -10,6 +10,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rowing.activity.authentication.AuthManager;
+import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.utils.Builder;
 import rowing.activity.domain.CompetitionBuilder;
 import rowing.activity.domain.Director;
@@ -254,23 +255,23 @@ public class ActivityService {
      * @return activityDto - the activityDto corresponding to the updated activity
      * @throws IllegalArgumentException - if the activity is not found in the database
      */
-    public ActivityDTO updateActivity(UUID activityId, ActivityDTO updateActivityDto) throws IllegalArgumentException {
+    public ActivityDTO updateActivity(UUID activityId, ActivityDTO updateActivityDto) throws IllegalArgumentException, JsonProcessingException {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
         if (optionalActivity.isPresent()) {
             throw new IllegalArgumentException("Activity does not exist !");
         }
         Activity activity = optionalActivity.get();
 
-        NotificationRequestModel notificationRequestModel = new NotificationRequestModel(activity.getOwner(),
+        NotificationRequestModel request = new NotificationRequestModel(activity.getOwner(),
                 NotificationStatus.CHANGES,
                 activity.getId());
 
         Optional<Date> optionalStart = Optional.ofNullable(updateActivityDto.getStart());
         if (optionalStart.isPresent()) {
             Date newStart = optionalStart.get();
-            checkNewStart(newStart);
+            checkNewStart(newStart);  // Checking if the new start is in the future
             activity.setStart(newStart);
-            notificationRequestModel.setDate(newStart);
+            request.setDate(newStart);
         }
 
         Optional.ofNullable(updateActivityDto.getName()).ifPresent(activity::setName);
@@ -279,19 +280,41 @@ public class ActivityService {
         if (optionalLocation.isPresent()) {
             String newLocation = optionalLocation.get();
             activity.setLocation(newLocation);
-            notificationRequestModel.setLocation(newLocation);
+            request.setLocation(newLocation);
         }
 
+        //get all participants of the activity
+        List<String> participants = new ArrayList<>();
 
+        if(matchRepository.existsByActivityId(activityId)){
+            List<Match> matches = matchRepository.findAllByActivityId(activityId);
+            for(Match match : matches){
+                if(match.getDto().getStatus() == NotificationStatus.ACCEPTED){
+                    participants.add(match.getUserId());
+                }
+            }
+        }
 
-        for (String userId : activity.getApplicants()) {
+        // Send notification to all participants
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        String body = JsonUtil.serialize(request);
+        HttpEntity requestEntity = new HttpEntity(body, headers);
+        ResponseEntity responseEntity = restTemplate.exchange(
+                "http://localhost:8082/notify",
+                HttpMethod.POST, requestEntity, String.class);
+
+        //Check if any participants are not available for the new date and remove them from the activity if they are not
+        for (String userId : participants) {
             //building the request
-            String uri = "http://localhost:8080/get-availability";
-            HttpHeaders headers = new HttpHeaders();
-            HttpEntity requestHttp = new HttpEntity(headers);
+            String uriUser = "http://localhost:8080/get-availability";
+            HttpHeaders headersUser = new HttpHeaders();
+            HttpEntity requestHttpUser = new HttpEntity(headers);
 
             //sending the request
-            ResponseEntity<List<AvailabilityIntervals>> response = restTemplate.exchange(uri, HttpMethod.GET, requestHttp,
+            ResponseEntity<List<AvailabilityIntervals>> response = restTemplate.exchange(uriUser, HttpMethod.GET, requestHttpUser,
                     new ParameterizedTypeReference<List<AvailabilityIntervals>>() {
                     }, userId);
 
