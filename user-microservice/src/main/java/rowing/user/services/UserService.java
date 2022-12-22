@@ -35,8 +35,11 @@ public class UserService {
     public User findUserById(String userId)
             throws UserNotFoundException {
         Optional<User> optionalUser = userRepository.findByUserId(userId);
-        User user = optionalUser.get();
-        return user;
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return user;
+        }
+        throw new UserNotFoundException("userId");
     }
 
     /**
@@ -59,8 +62,13 @@ public class UserService {
      * @return user - the userDTO of the object with the specified userId.
      */
     public UserDTO updateUser(String userId, UpdateUserDTO updateUserDTO)
-            throws IllegalArgumentException, UserNotFoundException {
-        User user = findUserById(userId);
+            throws IllegalArgumentException {
+        User user;
+        try {
+            user = findUserById(userId);
+        } catch (UserNotFoundException e) {
+            user = new User(userId);
+        }
 
         Optional.ofNullable(updateUserDTO.getRowingPositions()).ifPresent(user::setRowingPositions);
         Optional.ofNullable(updateUserDTO.getAvailability()).ifPresent(user::setAvailability);

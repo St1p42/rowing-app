@@ -89,7 +89,6 @@ public class AuthenticationController {
     public ResponseEntity register(@RequestBody RegistrationRequestModel request) throws Exception {
 
         try {
-            System.out.println("What????");
             Username username = new Username(request.getUsername());
             Password password = new Password(request.getPassword());
             registrationService.registerUser(username, password);

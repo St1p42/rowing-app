@@ -13,19 +13,13 @@ import rowing.commons.entities.utils.Views;
 
 import java.util.List;
 
-@AllArgsConstructor
 @NoArgsConstructor
-@ToString(callSuper = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = UpdateUserDTO.class, name = "UserDTO")
-})
-@JsonView(Views.Public.class)
 @Data
-@Getter
-@Setter
+@AllArgsConstructor
+@JsonView(Views.Public.class)
 public class UpdateUserDTO implements DTO {
+
+    private String userId;
 
     private List<Position> rowingPositions;
 
@@ -45,6 +39,32 @@ public class UpdateUserDTO implements DTO {
 
     private Boolean competitive;
 
+    /**
+     * Construct a UpdateUserDTO.
+     *
+     * @param rowingPositions - positions
+     * @param availability - availability
+     * @param email - email
+     * @param firstName - first name
+     * @param lastName - last name
+     * @param coxCertificates - certificates
+     * @param gender - gender
+     * @param rowingOrganization - organization
+     * @param competitive - status of competition
+     */
+    public UpdateUserDTO(List<Position> rowingPositions, List<AvailabilityIntervals> availability, String email,
+                         String firstName, String lastName, List<String> coxCertificates, Gender gender,
+                         String rowingOrganization, Boolean competitive) {
+        this.rowingPositions = rowingPositions;
+        this.availability = availability;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.coxCertificates = coxCertificates;
+        this.gender = gender;
+        this.rowingOrganization = rowingOrganization;
+        this.competitive = competitive;
+    }
 }
 
 

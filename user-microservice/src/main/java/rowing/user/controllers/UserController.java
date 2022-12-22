@@ -45,18 +45,12 @@ public class UserController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public UserController(AuthManager authManager, UserRepository userRepository, UserService userService, AvailabilityService availabilityService) {
+    public UserController(AuthManager authManager, UserRepository userRepository, UserService userService,
+                          AvailabilityService availabilityService) {
         this.authManager = authManager;
         this.userRepository = userRepository;
         this.userService = userService;
         this.availabilityService = availabilityService;
-    }
-
-    @PostMapping("/register-user")
-    public ResponseEntity createUser(String userId) {
-        User user = new User(userId);
-        userRepository.save(user);
-        return ResponseEntity.ok().build();
     }
 
     /**
@@ -69,7 +63,7 @@ public class UserController {
         String userId = authManager.getUsername();
         UserDTO userDTO;
 
-        try{
+        try {
             userDTO = userService.getUser(userId);
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found", e);
@@ -105,7 +99,7 @@ public class UserController {
      *
      * @return updated user
      */
-    @PatchMapping("/update-user")
+    @PostMapping("/update-user")
     public ResponseEntity<UserDTO> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
         String userId = authManager.getUsername();
 
@@ -115,8 +109,6 @@ public class UserController {
             updatedUserDTO = userService.updateUser(userId, updateUserDTO);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Input types incorrect.");
-        } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
         }
 
 

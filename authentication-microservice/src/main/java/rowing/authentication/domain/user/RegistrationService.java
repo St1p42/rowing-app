@@ -1,30 +1,12 @@
 package rowing.authentication.domain.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * A DDD service for registering a new user.
  */
 @Service
 public class RegistrationService {
-    @Value("${uri.users.url}")
-    private String url;
-
-    @Value("${uri.users.port}")
-    private String port;
-
-    @Value("${uri.users.getregistrationpath}")
-    private String registrationPath;
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     private final transient CredentialRepository credentialRepository;
     private final transient PasswordHashingService passwordHashingService;
@@ -60,15 +42,6 @@ public class RegistrationService {
         AppUser user = new AppUser(username, hashedPassword);
         credentialRepository.save(user);
 
-        //building the request
-        String uri = url + ":" + "8082" + registrationPath;
-        HttpHeaders headers = new HttpHeaders();
-        String body = "{\"userId\":\"" + user.getUsername() + "\"}";
-        HttpEntity requestHttp = new HttpEntity(body, headers);
-
-        //sending the request
-        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.POST, requestHttp, String.class);
-        System.out.println(response.getStatusCode());
         return user;
 
     }

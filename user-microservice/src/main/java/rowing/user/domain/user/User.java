@@ -87,31 +87,60 @@ public class User extends HasEvents {
         //this.recordThat(new UserWasCreatedEvent(username));
     }
 
+    /**
+     * Setter with data validation for availability.
+     *
+     * @param availability - availability of the user.
+     * @throws IllegalArgumentException - if validation fails
+     */
     public void setAvailability(List<AvailabilityIntervals> availability) throws IllegalArgumentException {
-        if(availability == null)
+        if (availability == null) {
             return;
+        }
         this.availability = new ArrayList<>();
-        for(AvailabilityIntervals a : availability){
-            this.availability.add(new AvailabilityIntervals(a.getDay().toString(), a.getStartInterval().toString(), a.getEndInterval().toString()));
+        for (AvailabilityIntervals a : availability) {
+            this.availability.add(new AvailabilityIntervals(a.getDay().toString(),
+                    a.getStartInterval().toString(), a.getEndInterval().toString()));
         }
     }
 
+    /**
+     * Setter with data validation for email.
+     *
+     * @param email - email of the user.
+     * @throws IllegalArgumentException - if validation fails
+     */
     public void setEmail(String email) throws IllegalArgumentException {
-        if(email == null || email.length() <= 6 || !email.contains("@") || !email.contains("."))
+        if (email == null || email.length() <= 6 || !email.contains("@") || !email.contains(".")) {
             throw new IllegalArgumentException("Email has not valid format");
+        }
         this.email = email;
     }
 
+    /**
+     * Setter with data validation for first name.
+     *
+     * @param firstName - first name of the user.
+     * @throws IllegalArgumentException - if validation fails
+     */
     public void setFirstName(String firstName) throws IllegalArgumentException {
-        if(firstName == null || firstName.length() <= 1 || !firstName.matches("^[a-zA-Z]*$")){
-            throw new IllegalArgumentException("First Name should be longer than 1 character and should contain only letters");
+        if (firstName == null || firstName.length() <= 1 || !firstName.matches("^[a-zA-Z]*$")) {
+            throw new IllegalArgumentException("First Name should be longer "
+                    + "than 1 character and should contain only letters");
         }
         this.firstName = firstName;
     }
 
+    /**
+     * Setter with data validation for last name.
+     *
+     * @param lastName - last name of the user.
+     * @throws IllegalArgumentException - if validation fails
+     */
     public void setLastName(String lastName) throws IllegalArgumentException {
-        if(lastName == null || lastName.length() <= 1 || !lastName.matches("^[a-zA-Z]*$")){
-            throw new IllegalArgumentException("Last Name should be longer than 1 character and should contain only letters");
+        if (lastName == null || lastName.length() <= 1 || !lastName.matches("^[a-zA-Z]*$")) {
+            throw new IllegalArgumentException("Last Name should be longer "
+                    + "than 1 character and should contain only letters");
         }
         this.lastName = lastName;
     }
@@ -124,9 +153,19 @@ public class User extends HasEvents {
         this.coxCertificates = coxCertificates;
     } */
 
-    public void setRowingOrganization(String rowingOrganization){
-        if(rowingOrganization.length() <= 2)
+    /**
+     * Setter with data validation for rowing organisation.
+     *
+     * @param rowingOrganization - rowing organisation of the user.
+     * @throws IllegalArgumentException - if validation fails
+     */
+    public void setRowingOrganization(String rowingOrganization) {
+        if (rowingOrganization == null) {
+            return;
+        }
+        if (rowingOrganization.length() <= 2) {
             throw new IllegalArgumentException("Rowing organization must be at least 3 characters long");
+        }
         this.rowingOrganization = rowingOrganization;
     }
 
@@ -150,6 +189,11 @@ public class User extends HasEvents {
         return Objects.hash(userId);
     }
 
+    /**
+     * Convert user to UsetDTO.
+     *
+     * @return - userDTO
+     */
     public UserDTO toDTO() {
         return new UserDTO(userId,
                 rowingPositions,
