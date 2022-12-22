@@ -153,7 +153,7 @@ public class ActivityController {
                 }
             }
         }
-        if(!model.getRowingPositions().contains(model.getPositionSelected())){
+        if (!model.getRowingPositions().contains(model.getPositionSelected())) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The user didn't apply for this position");
         }
         if (!activity.getApplicants().contains(model.getUserId())) {
@@ -162,21 +162,21 @@ public class ActivityController {
         if (!activity.getPositions().contains(model.getPositionSelected())) {
             return ResponseEntity.badRequest().body("This position is already full");
         }
-        if(model.getPositionSelected().equals(Position.COX)){
+        if (model.getPositionSelected().equals(Position.COX)) {
             List<String> certificates = model.getCoxCertificates();
             List<CoxCertificate> coxCertificates = new ArrayList<>();
-            for(String s : certificates){
-                if(Certificates.existByName(s)){
+            for (String s : certificates) {
+                if (Certificates.existByName(s)) {
                     coxCertificates.add(Certificates.getCertificate(s));
                 }
             }
             boolean exists = false;
-            for(CoxCertificate certificate : coxCertificates){
-                if(certificate.getName().equals(activity.getBoatType())){
+            for (CoxCertificate certificate : coxCertificates) {
+                if (certificate.getName().equals(activity.getBoatType())) {
                     exists = true;
                     break;
                 }
-                if(certificate.getSupersedes() != null) {
+                if (certificate.getSupersedes() != null) {
                     for (String supersede : certificate.getSupersedes()) {
                         if (supersede.equals(activity.getBoatType())) {
                             exists = true;
@@ -185,7 +185,7 @@ public class ActivityController {
                     }
                 }
             }
-            if(!exists){
+            if (!exists) {
                 return ResponseEntity.badRequest().body("The user don't have a certificate for this boat type!");
             }
         }
