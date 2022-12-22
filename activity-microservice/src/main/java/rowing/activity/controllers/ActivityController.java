@@ -14,6 +14,8 @@ import rowing.activity.domain.repositories.MatchRepository;
 import rowing.activity.services.ActivityService;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
+import rowing.commons.entities.CompetitionDTO;
+import rowing.commons.entities.UpdateUserDTO;
 import rowing.commons.entities.MatchingDTO;
 import rowing.commons.entities.UserDTO;
 import rowing.commons.models.UserDTORequestModel;

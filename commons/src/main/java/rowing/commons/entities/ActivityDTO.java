@@ -79,6 +79,8 @@ public class ActivityDTO implements DTO {
      *
      * @param start time of the activity
      *
+     * @param location location of the activity
+     *
      * @param positions required for the activity
      *
      * @param applicants for this activity
