@@ -113,7 +113,7 @@ public class ActivityController {
         String response = "";
         try {
             response = activityService.signUp(match);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
             //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
         }

@@ -173,7 +173,7 @@ public class ActivityService {
      * @return String - the response corresponding to the signUp result
      * @throws IllegalArgumentException - if the activity is not found in the database or user is not compatible
      */
-    public String signUp(MatchingDTO match) throws IllegalArgumentException {
+    public String signUp(MatchingDTO match) throws IllegalArgumentException, JsonProcessingException {
 
         Optional<Activity> activity = activityRepository.findActivityById(match.getActivityId());
         if (activity.isPresent()) {
@@ -204,7 +204,23 @@ public class ActivityService {
             }
 
             activityPresent.addApplicant(match.getUserId()); // If all is fine we add the applicant
-            activityRepository.save(activityPresent);
+            activityPresent = activityRepository.save(activityPresent);
+
+            if(activityPresent.getPositions().size() < 1){
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                headers.setBearerAuth(token);
+
+                NotificationRequestModel request = new NotificationRequestModel(match.getUserId(),
+                        NotificationStatus.ACTIVITY_FULL, activityPresent.getId());
+
+                String body = JsonUtil.serialize(request);
+                HttpEntity requestEntity = new HttpEntity(body, headers);
+                ResponseEntity responseEntity = restTemplate.exchange(
+                        "http://localhost:8082/notify",
+                        HttpMethod.POST, requestEntity, String.class);
+            }
 
             return "User " + match.getUserId() + " signed up for activity : " + match.getActivityId().toString();
         }
@@ -225,8 +241,8 @@ public class ActivityService {
                 model.getUserId(), model.getPositionSelected(), model.getGender(),
                 model.getCompetitive(), model.getRowingOrganization(), model.getAvailability(), NotificationStatus.ACCEPTED));
 
-        matchRepository.save(match);
-        activityRepository.save(activity);
+        match = matchRepository.save(match);
+        activity = activityRepository.save(activity);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -240,6 +256,22 @@ public class ActivityService {
         ResponseEntity responseEntity = restTemplate.exchange(
                 "http://localhost:8082/notify",
                 HttpMethod.POST, requestEntity, String.class);
+
+        if (activity.getPositions().size() < 1) {
+            List<String> applicants = activity.getApplicants();
+            for (String user : applicants) {
+                if (!matchRepository.existsByActivityIdAndUserId(match.getActivityId(), user)) {
+
+                    request = new NotificationRequestModel(user,
+                            NotificationStatus.ACTIVITY_FULL, activity.getId());
+                    body = JsonUtil.serialize(request);
+                    requestEntity = new HttpEntity(body, headers);
+                    responseEntity = restTemplate.exchange(
+                            "http://localhost:8082/notify",
+                            HttpMethod.POST, requestEntity, String.class);
+                }
+            }
+        }
 
         return "User " + model.getUserId() + " is accepted successfully";
     }

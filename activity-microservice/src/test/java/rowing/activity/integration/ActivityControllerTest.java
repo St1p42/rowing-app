@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -123,7 +124,6 @@ public class ActivityControllerTest {
      * @throws ParseException exception for wrong format
      */
     @BeforeEach
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void init() throws ParseException {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
@@ -151,7 +151,6 @@ public class ActivityControllerTest {
 
         List<Position> positionList = new ArrayList<>();
         positionList.add(Position.COACH);
-        positionList.add(Position.COX);
         List<String> applicantList = new ArrayList<>();
 
         director.constructTraining((TrainingBuilder) trainingBuilder, UUID.randomUUID(),
@@ -173,8 +172,14 @@ public class ActivityControllerTest {
                 availability, null);
 
         exampleUser = new UserDTO("Efe", new ArrayList<>(Arrays.asList(Position.PORT, Position.COACH)),
-                availability, "extra.unluyurt@gmail.com", "Efe", "Unluyurt",
+                availability, "extra.efeunluyurt@gmail.com", "Efe", "Unluyurt",
                 coxCertificates, Gender.MALE, "TU DELFT", true);
+    }
+
+    @AfterEach
+    public void end(){
+        mockActivityRepository.deleteAll();
+        mockMatchRepository.deleteAll();
     }
 
     @Test
@@ -467,7 +472,7 @@ public class ActivityControllerTest {
         when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
 
         Activity training = amateurTraining;
-        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+        training.setApplicants(new ArrayList<>(Arrays.asList("Efe")));
         UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
 
         training = mockActivityRepository.save(training);
@@ -480,7 +485,7 @@ public class ActivityControllerTest {
         mockServer.expect(requestTo("http://localhost:8082/notify"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().json(JsonUtil.serialize(notificationRequestModel)))
-                .andRespond(withSuccess("extra.unluyurt@gmail.com", MediaType.TEXT_PLAIN));
+                .andRespond(withSuccess("extra.efeunluyurt@gmail.com", MediaType.TEXT_PLAIN));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/activity/" + id + "/accept")
@@ -628,4 +633,50 @@ public class ActivityControllerTest {
         String response = result.getResponse().getContentAsString();
         assertThat(response).isEqualTo("This position is already full");
     }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void activityIsFull() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+        UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
+
+        training = mockActivityRepository.save(training);
+        UUID id = training.getId();
+
+        NotificationRequestModel notificationRequestModel = new NotificationRequestModel("Efe",
+                NotificationStatus.ACCEPTED, id);
+
+        NotificationRequestModel notificationRequestModel2 = new NotificationRequestModel("Alex",
+                NotificationStatus.ACTIVITY_FULL, id);
+
+        mockServer.expect(requestTo("http://localhost:8082/notify"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().json(JsonUtil.serialize(notificationRequestModel)))
+                .andRespond(withSuccess("extra.efeunluyurt@gmail.com", MediaType.TEXT_PLAIN));
+
+        mockServer.expect(requestTo("http://localhost:8082/notify"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().json(JsonUtil.serialize(notificationRequestModel2)))
+                .andRespond(withSuccess("extra.efeunluyurt@gmail.com", MediaType.TEXT_PLAIN));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/" + id + "/accept")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(model))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        mockServer.verify();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + "Efe"
+                + " is accepted successfully");
+    }
+
+
 }
