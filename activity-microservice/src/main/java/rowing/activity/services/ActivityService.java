@@ -1,7 +1,6 @@
 package rowing.activity.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -20,16 +19,13 @@ import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.NotificationStatus;
-import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 import rowing.commons.entities.MatchingDTO;
-import rowing.commons.entities.UserDTO;
 import rowing.commons.entities.utils.JsonUtil;
 import rowing.commons.models.NotificationRequestModel;
 import rowing.commons.models.UserDTORequestModel;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -58,10 +54,8 @@ public class ActivityService {
      * Constructor for the ActivityService class.
      *
      * @param activityRepository that will be used to keep info about activities
-     *
-     * @param authManager that will be used
-     *
-     * @param matchRepository that will be used to match users and activities
+     * @param authManager        that will be used
+     * @param matchRepository    that will be used to match users and activities
      */
     @Autowired
     public ActivityService(ActivityRepository activityRepository, AuthManager authManager, MatchRepository matchRepository) {
@@ -83,7 +77,6 @@ public class ActivityService {
      * Method to create a new activity and add it to the repository.
      *
      * @param dto that will contain basic activity information
-     *
      * @return the string will be returned if the activity is added successfully
      */
     public String createActivity(ActivityDTO dto) {
@@ -155,7 +148,7 @@ public class ActivityService {
     /**
      * Function that checks wether a schedule is available for an activity.
      *
-     * @param activity that needs to fit in the availability
+     * @param activity     that needs to fit in the availability
      * @param availability list of intervals that could fit our activity start time
      * @return true or false
      */
@@ -198,7 +191,7 @@ public class ActivityService {
                 throw new IllegalArgumentException("User is not available for this activity !");
             }
             if (activityPresent instanceof Competition) {   // Checking competition requirements
-                Competition competition = (Competition) activityPresent; 
+                Competition competition = (Competition) activityPresent;
                 if (!match.getCompetitive()) {
                     throw new IllegalArgumentException("User is not competitive!");
                 }
@@ -240,10 +233,10 @@ public class ActivityService {
      * Accepts the user to the activity, saves the match to the matching repo, and sends a notification to the user.
      *
      * @param activity that the owner wants to accept the user for
-     * @param model the UserDTORequestModel keeping the information about the selected user and position
+     * @param model    the UserDTORequestModel keeping the information about the selected user and position
      * @return a String that notifies that the user is created successfully.
      * @throws JsonProcessingException if there is a problem occurs when converting
-     *         the NotificationRequestModel object to Json
+     *                                 the NotificationRequestModel object to Json
      */
     public String acceptUser(Activity activity, UserDTORequestModel model) throws JsonProcessingException {
         activity.getPositions().remove(model.getPositionSelected());
@@ -287,4 +280,23 @@ public class ActivityService {
         return "User " + model.getUserId() + " is accepted successfully";
     }
 
+    public String kickUser(Activity activity, String userId) throws IllegalArgumentException {
+        boolean signedUp = false;
+        for (int i = 0; i < activity.getApplicants().size(); i++ ) {
+            if (activity.getApplicants().get(i).equals(userId)) {
+                List<String> list = activity.getApplicants();
+                list.remove(i);
+                activity.setApplicants(list);
+                signedUp = true;
+            }
+        }
+        if (!signedUp)
+            throw new IllegalArgumentException("User " + userId + " was not signed up for this activity !");
+        activityRepository.save(activity);
+        Optional<Match> match = matchRepository.findByActivityIdAndUserId(activity.getId(), userId);
+        if (match.isPresent()) {
+            matchRepository.delete(match.get());
+        }
+        return "User " + userId + " kicked successfully !";
+    }
 }

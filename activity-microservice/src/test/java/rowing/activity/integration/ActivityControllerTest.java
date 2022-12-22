@@ -128,9 +128,9 @@ public class ActivityControllerTest {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
-        when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("Admin");
 
         mockServer = MockRestServiceServer.createServer(restTemplate);
         // Act
@@ -154,13 +154,13 @@ public class ActivityControllerTest {
         List<String> applicantList = new ArrayList<>();
 
         director.constructTraining((TrainingBuilder) trainingBuilder, UUID.randomUUID(),
-                "Admin", "Amateur Training", "Training",
+                "Amateur Training", "Admin", "Training",
                 amateurTrainingDate, positionList, applicantList);
         amateurTraining = trainingBuilder.build();
 
         Builder competitionBuilder = new CompetitionBuilder();
         director.constructCompetition((CompetitionBuilder) competitionBuilder, UUID.randomUUID(),
-                "Admin", "Amateur Competition", "Competition",
+                "Amateur Competition", "Admin", "Competition",
                 amateurCompetitionDate,  Gender.MALE, "TUDelft", positionList, applicantList);
         amateurCompetition = competitionBuilder.build();
 
@@ -467,9 +467,6 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void userAcceptedSuccessfully() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
 
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Efe")));
@@ -504,9 +501,6 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void activityDoesNotExist() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
 
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
@@ -529,9 +523,6 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void youAreNotTheOwner() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
 
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
@@ -555,9 +546,6 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void userIsAlreadyParticipating() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
 
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
@@ -584,9 +572,6 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void userDidNotApply() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
 
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex")));
@@ -610,9 +595,6 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void positionIsAlreadyFilled() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
 
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
@@ -637,9 +619,6 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void activityIsFull() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
 
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
@@ -678,5 +657,14 @@ public class ActivityControllerTest {
                 + " is accepted successfully");
     }
 
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void kickUser() throws Exception {
 
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+        training = mockActivityRepository.save(training);
+        UUID id = training.getId();
+
+    }
 }
