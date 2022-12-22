@@ -21,12 +21,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-@ToString(callSuper = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = UserDTO.class, name = "UserDTO")
-})
 @JsonView(Views.Public.class)
 public class UserDTO implements DTO {
 
@@ -50,6 +44,32 @@ public class UserDTO implements DTO {
 
     private Boolean competitive;
 
+    /**
+     * Construct a UserDTO.
+     *
+     * @param rowingPositions - positions
+     * @param availability - availability
+     * @param email - email
+     * @param firstName - first name
+     * @param lastName - last name
+     * @param coxCertificates - certificates
+     * @param gender - gender
+     * @param rowingOrganization - organization
+     * @param competitive - status of competition
+     */
+    public UserDTO(List<Position> rowingPositions, List<AvailabilityIntervals> availability, String email,
+                   String firstName, String lastName, List<String> coxCertificates, Gender gender,
+                   String rowingOrganization, Boolean competitive) {
+        this.rowingPositions = rowingPositions;
+        this.availability = availability;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.coxCertificates = coxCertificates;
+        this.gender = gender;
+        this.rowingOrganization = rowingOrganization;
+        this.competitive = competitive;
+    }
 }
 
 

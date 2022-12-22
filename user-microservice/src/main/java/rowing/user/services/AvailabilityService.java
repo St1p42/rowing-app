@@ -7,6 +7,7 @@ import rowing.commons.AvailabilityIntervals;
 import rowing.user.domain.user.AvailabilityNotFoundException;
 import rowing.user.domain.user.User;
 import rowing.user.domain.user.UserRepository;
+import rowing.user.domain.user.utils.UserNotFoundException;
 
 import java.time.DateTimeException;
 import java.util.List;
@@ -34,7 +35,8 @@ public class AvailabilityService {
      * @param userId - the id of the user we are interested in.
      * @return user - the user object with the specified userId
      */
-    public User findUserById(String userId) {
+    public User findUserById(String userId)
+            throws UserNotFoundException {
         Optional<User> u = userRepository.findByUserId(userId);
         User user = u.get();
         //return null;
@@ -53,7 +55,7 @@ public class AvailabilityService {
      * @throws DateTimeException - exception if the format of the time is incorrect
      */
     public User addAvailability(String day, String startTime, String endTime, String userId)
-            throws IllegalArgumentException, DateTimeException {
+            throws IllegalArgumentException, DateTimeException, UserNotFoundException {
         AvailabilityIntervals interval = new AvailabilityIntervals(day, startTime, endTime);
         User u = findUserById(userId);
         List<AvailabilityIntervals> intervals = u.getAvailability();
@@ -74,7 +76,7 @@ public class AvailabilityService {
      * @throws DateTimeException - exception if the format of the time is incorrect
      */
     public User removeAvailability(String day, String startTime, String endTime, String userId)
-            throws AvailabilityNotFoundException, IllegalArgumentException, DateTimeException {
+            throws AvailabilityNotFoundException, IllegalArgumentException, DateTimeException, UserNotFoundException {
         AvailabilityIntervals interval = new AvailabilityIntervals(day, startTime, endTime);
         User u = findUserById(userId);
         List<AvailabilityIntervals> intervals = u.getAvailability();
@@ -102,7 +104,7 @@ public class AvailabilityService {
      */
     public User editAvailability(String dayOld, String startTimeOld, String endTimeOld,
                                  String dayNew, String startTimeNew, String endTimeNew, String userId)
-            throws AvailabilityNotFoundException, IllegalArgumentException, DateTimeException {
+            throws AvailabilityNotFoundException, IllegalArgumentException, DateTimeException, UserNotFoundException {
         AvailabilityIntervals intervalOld = new AvailabilityIntervals(dayOld, startTimeOld, endTimeOld);
         AvailabilityIntervals intervalNew;
         intervalNew = new AvailabilityIntervals(dayNew, startTimeNew, endTimeNew);
