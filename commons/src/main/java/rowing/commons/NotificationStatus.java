@@ -6,5 +6,6 @@ public enum NotificationStatus {
     WITHDRAWN,
     KICKED,
     DELETED,
-    CHANGES
+    CHANGES,
+    ACTIVITY_FULL
 }

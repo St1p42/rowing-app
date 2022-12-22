@@ -35,6 +35,10 @@ public class Notification {
 
     private String changesBody;
 
+    private String activityFullSubject;
+
+    private String activityFullBody;
+
     private String username;
     private boolean useKafka = false;
 
@@ -122,6 +126,8 @@ public class Notification {
             case CHANGES:
                 return changesBody + activityId + ":\n"
                         + "Date: " + newDate + "\nLocation: " + newLocation;
+            case ACTIVITY_FULL:
+                return activityFullBody + activityId;
             default:
                 return defaultBody + activityId;
         }
@@ -136,9 +142,10 @@ public class Notification {
     public String retrieveSubject() {
         if (notificationStatus == null) {
             return subject + "unknown";
-        }
-        if (notificationStatus == NotificationStatus.CHANGES) {
-            return changesSubject + ' ';
+        } else if (notificationStatus == NotificationStatus.CHANGES) {
+            return changesSubject;
+        } else if (notificationStatus == NotificationStatus.ACTIVITY_FULL) {
+            return activityFullSubject;
         }
         return subject + notificationStatus;
     }
