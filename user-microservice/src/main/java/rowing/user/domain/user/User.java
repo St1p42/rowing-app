@@ -170,7 +170,8 @@ public class User extends HasEvents {
         if (rowingOrganization == null) {
             return;
         }
-        if (rowingOrganization.length() <= 2) {
+        int limit = 2;
+        if (rowingOrganization.length() <= limit) {
             throw new IllegalArgumentException("Rowing organization must be at least 3 characters long");
         }
         this.rowingOrganization = rowingOrganization;
