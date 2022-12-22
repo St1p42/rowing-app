@@ -43,7 +43,7 @@ public class ActivityService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${microserviceJWT}")
+    @Value("${tokenJWTActivity}")
     String token;
 
     /**
@@ -255,7 +255,7 @@ public class ActivityService {
      * @return activityDto - the activityDto corresponding to the updated activity
      * @throws IllegalArgumentException - if the activity is not found in the database
      */
-    public ActivityDTO updateActivity(UUID activityId, ActivityDTO updateActivityDto) throws IllegalArgumentException, JsonProcessingException {
+    public String updateActivity(UUID activityId, ActivityDTO updateActivityDto) throws IllegalArgumentException, JsonProcessingException {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
         if (optionalActivity.isPresent()) {
             throw new IllegalArgumentException("Activity does not exist !");
@@ -309,9 +309,11 @@ public class ActivityService {
         //Check if any participants are not available for the new date and remove them from the activity if they are not
         for (String userId : participants) {
             //building the request
-            String uriUser = "http://localhost:8080/get-availability";
+            String uriUser = "http://localhost:8084/get-availability";
             HttpHeaders headersUser = new HttpHeaders();
-            HttpEntity requestHttpUser = new HttpEntity(headers);
+            headersUser.setContentType(MediaType.APPLICATION_JSON);
+            headersUser.setBearerAuth(token);
+            HttpEntity requestHttpUser = new HttpEntity(userId, headersUser);
 
             //sending the request
             ResponseEntity<List<AvailabilityIntervals>> response = restTemplate.exchange(uriUser, HttpMethod.GET, requestHttpUser,
@@ -331,7 +333,7 @@ public class ActivityService {
         activityRepository.save(activity);
 
         ActivityDTO activityDto = activity.toDto();
-        return activityDto;
+        return "Activity" + activityId + "has been updated successfully";
     }
 
     /**

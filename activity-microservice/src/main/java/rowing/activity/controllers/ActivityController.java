@@ -112,16 +112,25 @@ public class ActivityController {
      * @return activityDTO - the activity that has been updated
      */
     @PatchMapping("/{activityId}/update-activity")
-    public ResponseEntity<ActivityDTO> updateUser(@PathVariable("activityId") UUID activityId, ActivityDTO dto) {
-        ActivityDTO updatedActivityDTO;
+    public ResponseEntity<String> updateUser(@PathVariable("activityId") UUID activityId, ActivityDTO dto) {
+        Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
+        if (!optionalActivity.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist !");
+        }
+        Activity activity = optionalActivity.get();
+        if (!authManager.getUsername().equals(activity.getOwner())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only the owner of the activity can edit an activity !");
+        }
+
+        String result = "Activity has not been updated";
         try {
-            updatedActivityDTO = activityService.updateActivity(activityId, dto);
+            result = activityService.updateActivity(activityId, dto);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
         } catch (JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ActivityDTO was not valid", e);
         }
-        return ResponseEntity.ok(updatedActivityDTO);
+        return ResponseEntity.ok(result);
     }
 
     /**
