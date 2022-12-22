@@ -37,6 +37,33 @@ public class NotifyUserService {
     @Value("${microserviceJWT}")
     String token;
 
+    @Value("${body.notification.accepted}")
+    private String acceptedBody;
+
+    @Value("${body.notification.rejected}")
+    private String rejectedBody;
+
+    @Value("${body.notification.deleted}")
+    private String deletedBody;
+
+    @Value("${body.notification.kicked}")
+    private String kickedBody;
+
+    @Value("${body.notification.withdrawn}")
+    private String withdrawnBody;
+
+    @Value("${body.notification.default}")
+    private String defaultBody;
+
+    @Value("${subject.notification.general}")
+    private String subject;
+
+    @Value("${subject.notification.activityChanges}")
+    private String changesSubject;
+
+    @Value("${body.notification.activityChanges}")
+    private String changesBody;
+
     @Autowired
     transient RestTemplate restTemplate;
 
@@ -80,6 +107,7 @@ public class NotifyUserService {
             strategy =
                     strategyFactory.findStrategy(StrategyName.EMAIL);
             notification = new Notification(request, response.getBody());
+            setVariables(notification);
             strategy.notifyUser(notification);
         } catch (RestClientException e) {
             if (e.getMessage().contains("404")) {
@@ -87,6 +115,7 @@ public class NotifyUserService {
                 strategy =
                         strategyFactory.findStrategy(StrategyName.KAFKA);
                 notification = new Notification(request, request.getUsername(), true);
+                setVariables(notification);
                 strategy.notifyUser(notification);
             } else {
                 throw e;
@@ -94,5 +123,31 @@ public class NotifyUserService {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    /**
+     * Sets the body variables of the notification object because
+     * non-Spring-managed classes cannot load them by themselves.
+     *
+     * @param notification for which the variables need to be set
+     */
+    public void setVariables(Notification notification) {
+        notification.setAcceptedBody(this.acceptedBody);
+
+        notification.setRejectedBody(this.rejectedBody);
+
+        notification.setDeletedBody(this.deletedBody);
+
+        notification.setKickedBody(this.kickedBody);
+
+        notification.setWithdrawnBody(this.withdrawnBody);
+
+        notification.setDefaultBody(this.defaultBody);
+
+        notification.setSubject(this.subject);
+
+        notification.setChangesSubject(this.changesSubject);
+
+        notification.setChangesBody(this.changesBody);
     }
 }
