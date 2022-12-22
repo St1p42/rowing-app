@@ -85,7 +85,6 @@ public class NotifyUserService {
                 || request.getActivityId() == null || request.getStatus() == null) {
             throw new IllegalArgumentException();
         }
-
         if (request.getStatus().equals(NotificationStatus.CHANGES)
                 && (request.getDate() == null && request.getLocation() == null)) {
             throw new IllegalArgumentException();
