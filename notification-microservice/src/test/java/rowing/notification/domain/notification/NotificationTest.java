@@ -139,6 +139,18 @@ class NotificationTest {
     }
 
     @Test
+    void subjectActivityFull() {
+        NotificationRequestModel activityFull = new NotificationRequestModel("alex",
+                NotificationStatus.ACTIVITY_FULL,
+                new UUID(101L, 2L));
+        Notification notificationFull = new Notification(activityFull, "random@gmail.com");
+        ReflectionTestUtils.setField(notificationFull, "activityFullSubject",
+                "The activity you signed up for is currently full ");
+        String answer = "The activity you signed up for is currently full ";
+        assertEquals(answer, notificationFull.retrieveSubject());
+    }
+
+    @Test
     void subjectNull() {
         Notification notificationNullStatus = new Notification(null, "random@gmail.com");
         ReflectionTestUtils.setField(notificationNullStatus, "subject", "Your status for the activity is ");
@@ -268,5 +280,20 @@ class NotificationTest {
                 + "Date: " + date + "\nLocation: The location has not changed since the last update.";
         assertEquals(body, notificationChanges.retrieveBody());
     }
+
+
+    @Test
+    void retrieveBodyActivityFull() {
+        NotificationRequestModel activityFull = new NotificationRequestModel("alex",
+                NotificationStatus.ACTIVITY_FULL,
+                new UUID(101L, 2L));
+        Notification notificationFull = new Notification(activityFull, "random@gmail.com");
+        String answer = "The activity you signed up for is full at the moment.\n"
+                + "Thus, you are currently in the waiting list for the activity with id ";
+        ReflectionTestUtils.setField(notificationFull, "activityFullBody", answer);
+        assertEquals(answer + "00000000-0000-0065-0000-000000000002",
+                notificationFull.retrieveBody());
+    }
+
 
 }

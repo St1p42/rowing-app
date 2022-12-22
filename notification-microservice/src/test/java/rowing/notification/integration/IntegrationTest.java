@@ -126,6 +126,7 @@ public class IntegrationTest {
         result.andExpect(status().isOk());
     }
 
+
     @Test
     public void testSendNotificationKafka() throws Exception {
         // Arrange

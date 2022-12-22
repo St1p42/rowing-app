@@ -37,6 +37,9 @@ public class NotifyUserService {
     @Value("${microserviceJWT}")
     String token;
 
+    @Value("${subject.notification.general}")
+    private String subject;
+
     @Value("${body.notification.accepted}")
     private String acceptedBody;
 
@@ -55,14 +58,17 @@ public class NotifyUserService {
     @Value("${body.notification.default}")
     private String defaultBody;
 
-    @Value("${subject.notification.general}")
-    private String subject;
-
     @Value("${subject.notification.activityChanges}")
     private String changesSubject;
 
     @Value("${body.notification.activityChanges}")
     private String changesBody;
+
+    @Value("${subject.notification.activityFull}")
+    private String activityFullSubject;
+
+    @Value("${body.notification.activityFull}")
+    private String activityFullBody;
 
     @Autowired
     transient RestTemplate restTemplate;
@@ -149,5 +155,9 @@ public class NotifyUserService {
         notification.setChangesSubject(this.changesSubject);
 
         notification.setChangesBody(this.changesBody);
+
+        notification.setActivityFullSubject(this.activityFullSubject);
+
+        notification.setActivityFullBody(this.activityFullBody);
     }
 }
