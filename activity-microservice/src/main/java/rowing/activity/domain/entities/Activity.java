@@ -22,7 +22,10 @@ import java.util.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(indexes = {@Index(name = "id", columnList = "id")})
 public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
-    @Column(name = "id", nullable = false, unique = true)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private UUID id;
 
     @Column(name = "owner", nullable = false)

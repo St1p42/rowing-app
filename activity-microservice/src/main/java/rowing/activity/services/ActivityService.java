@@ -1,8 +1,12 @@
 package rowing.activity.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import rowing.activity.authentication.AuthManager;
 import rowing.activity.domain.utils.Builder;
 import rowing.activity.domain.CompetitionBuilder;
@@ -15,9 +19,15 @@ import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
 import rowing.commons.AvailabilityIntervals;
+import rowing.commons.NotificationStatus;
+import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 import rowing.commons.entities.MatchingDTO;
+import rowing.commons.entities.UserDTO;
+import rowing.commons.entities.utils.JsonUtil;
+import rowing.commons.models.NotificationRequestModel;
+import rowing.commons.models.UserDTORequestModel;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -29,6 +39,20 @@ public class ActivityService {
     private final transient ActivityRepository activityRepository;
     private final transient AuthManager authManager;
     private final transient MatchRepository matchRepository;
+    @Autowired
+    private transient RestTemplate restTemplate;
+
+    @Value("${microserviceJWT}")
+    private transient String token;
+
+    @Value("${portNotification}")
+    String portNotification;
+
+    @Value("${urlNotification}")
+    String urlNotification;
+
+    @Value("${pathNotify}")
+    String pathNotify;
 
     /**
      * Constructor for the ActivityService class.
@@ -52,7 +76,7 @@ public class ActivityService {
      * @return the example found in the database with the given id
      */
     public String hellWorld() {
-        return "Hello " + authManager.getNetId();
+        return "Hello " + authManager.getUsername();
     }
 
     /**
@@ -92,12 +116,20 @@ public class ActivityService {
         Date currentDate = calendar.getTime();
         List<Activity> activities = activityRepository.findAll();
         List<ActivityDTO> activityDTOs = new ArrayList<>();
+
+        List<UUID> uuids = new ArrayList<>();
         for (Activity activity : activities) {
 
             if (activity.getStart().after(currentDate)) {
                 activityDTOs.add(activity.toDto());
             } else {
+                uuids.add(activity.getId());
                 activityRepository.delete(activity);
+            }
+        }
+        for (UUID id : uuids) {
+            if (matchRepository.existsByActivityId(id)) {
+                matchRepository.deleteAll(matchRepository.findAllByActivityId(id));
             }
         }
         return activityDTOs;
@@ -150,7 +182,7 @@ public class ActivityService {
      * @return String - the response corresponding to the signUp result
      * @throws IllegalArgumentException - if the activity is not found in the database or user is not compatible
      */
-    public String signUp(MatchingDTO match) throws IllegalArgumentException {
+    public String signUp(MatchingDTO match) throws IllegalArgumentException, JsonProcessingException {
 
         Optional<Activity> activity = activityRepository.findActivityById(match.getActivityId());
         if (activity.isPresent()) {
@@ -181,11 +213,78 @@ public class ActivityService {
             }
 
             activityPresent.addApplicant(match.getUserId()); // If all is fine we add the applicant
-            activityRepository.save(activityPresent);
+            activityPresent = activityRepository.save(activityPresent);
+
+            if (activityPresent.getPositions().size() < 1) {
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                headers.setBearerAuth(token);
+
+                NotificationRequestModel request = new NotificationRequestModel(match.getUserId(),
+                        NotificationStatus.ACTIVITY_FULL, activityPresent.getId());
+
+                String body = JsonUtil.serialize(request);
+                HttpEntity requestEntity = new HttpEntity(body, headers);
+                ResponseEntity responseEntity = restTemplate.exchange(
+                        urlNotification + ":" + portNotification + pathNotify,
+                        HttpMethod.POST, requestEntity, String.class);
+            }
 
             return "User " + match.getUserId() + " signed up for activity : " + match.getActivityId().toString();
         }
         throw new IllegalArgumentException("Activity does not exist !");
+    }
+
+    /**
+     * Accepts the user to the activity, saves the match to the matching repo, and sends a notification to the user.
+     *
+     * @param activity that the owner wants to accept the user for
+     * @param model the UserDTORequestModel keeping the information about the selected user and position
+     * @return a String that notifies that the user is created successfully.
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
+     */
+    public String acceptUser(Activity activity, UserDTORequestModel model) throws JsonProcessingException {
+        activity.getPositions().remove(model.getPositionSelected());
+        Match<MatchingDTO> match = new Match<>(new MatchingDTO(UUID.randomUUID(), activity.getId(),
+                model.getUserId(), model.getPositionSelected(), model.getGender(),
+                model.getCompetitive(), model.getRowingOrganization(),
+                model.getAvailability(), NotificationStatus.ACCEPTED));
+
+        match = matchRepository.save(match);
+        activity = activityRepository.save(activity);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        NotificationRequestModel request = new NotificationRequestModel(model.getUserId(),
+                NotificationStatus.ACCEPTED, activity.getId());
+
+        String body = JsonUtil.serialize(request);
+        HttpEntity requestEntity = new HttpEntity(body, headers);
+        ResponseEntity responseEntity = restTemplate.exchange(
+                urlNotification + ":" + portNotification + pathNotify,
+                HttpMethod.POST, requestEntity, String.class);
+
+        if (activity.getPositions().size() < 1) {
+            List<String> applicants = activity.getApplicants();
+            for (String user : applicants) {
+                if (!matchRepository.existsByActivityIdAndUserId(match.getActivityId(), user)) {
+
+                    request = new NotificationRequestModel(user,
+                            NotificationStatus.ACTIVITY_FULL, activity.getId());
+                    body = JsonUtil.serialize(request);
+                    requestEntity = new HttpEntity(body, headers);
+                    responseEntity = restTemplate.exchange(
+                            urlNotification + ":" + portNotification + pathNotify,
+                            HttpMethod.POST, requestEntity, String.class);
+                }
+            }
+        }
+
+        return "User " + model.getUserId() + " is accepted successfully";
     }
 
 }
