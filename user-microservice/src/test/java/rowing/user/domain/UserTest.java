@@ -2,6 +2,8 @@ package rowing.user.domain;
 
 import org.junit.jupiter.api.Test;
 import rowing.commons.AvailabilityIntervals;
+import rowing.commons.Certificates;
+import rowing.commons.CoxCertificate;
 import rowing.user.domain.user.User;
 import rowing.commons.entities.UserDTO;
 
@@ -248,5 +250,30 @@ public class UserTest {
         shouldBeEqual.setUserId("bogdan");
         shouldBeEqual.setAvailability(new ArrayList<>());
         assertThat(userDTO).isEqualTo(shouldBeEqual);
+    }
+
+    @Test
+    public void setCoxCertificatesNullTest() {
+        Certificates.initialize();
+        User user = new User("bogdan");
+        user.setCoxCertificates(null);
+        assertThat(user.getCoxCertificates()).isNull();
+    }
+
+    @Test
+    public void setCoxCertificatesCorrectlyTest() {
+        Certificates.initialize();
+        User user = new User("bogdan");
+        user.setCoxCertificates(Arrays.asList("C4"));
+        assertThat(user.getCoxCertificates()).isEqualTo(Arrays.asList("C4"));
+    }
+
+    @Test
+    public void setCoxCertificatesIncorrectlyTest() {
+        Certificates.initialize();
+        User user = new User("bogdan");
+        assertThrows(IllegalArgumentException.class, () -> {
+            user.setCoxCertificates(Arrays.asList("C12"));
+        });
     }
 }

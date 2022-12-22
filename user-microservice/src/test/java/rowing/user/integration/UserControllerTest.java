@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import rowing.commons.AvailabilityIntervals;
+import rowing.commons.Certificates;
 import rowing.commons.Gender;
 import rowing.commons.entities.UpdateUserDTO;
 import rowing.commons.entities.UserDTO;
@@ -484,6 +485,8 @@ public class UserControllerTest {
         when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("bogdan");
         when(mockUserRepository.findByUserId("bogdan")).thenReturn(Optional.of(originalUser));
 
+        Certificates.initialize();
+
         UpdateUserDTO updateUserDTO = new UpdateUserDTO(null, null, "joyce@gmail.com", null,
                 null, Arrays.asList("C4"), null, null, null);
         User shouldBeUpdatedToThisUser = new User("bogdan", "lala", "lala", "joyce@gmail.com");
@@ -515,6 +518,8 @@ public class UserControllerTest {
         when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("bogdan");
         when(mockUserRepository.findByUserId("bogdan")).thenReturn(Optional.of(originalUser));
 
+        Certificates.initialize();
+
         UpdateUserDTO updateUserDTO = new UpdateUserDTO(null, null, "joyce@gmail.com",
                 null, null, Arrays.asList("C12"), null, null, null);
         // Act
@@ -526,6 +531,6 @@ public class UserControllerTest {
 
 
         // Assert
-        result.andExpect(status().isOk());
+        result.andExpect(status().isBadRequest());
     }
 }

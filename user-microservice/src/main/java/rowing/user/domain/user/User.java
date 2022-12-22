@@ -2,10 +2,7 @@ package rowing.user.domain.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import rowing.commons.AvailabilityIntervals;
-import rowing.commons.CoxCertificate;
-import rowing.commons.Gender;
-import rowing.commons.Position;
+import rowing.commons.*;
 import rowing.commons.entities.UserDTO;
 import rowing.user.domain.HasEvents;
 
@@ -145,13 +142,23 @@ public class User extends HasEvents {
         this.lastName = lastName;
     }
 
-    /*public void setCoxCertificates(List<String> coxCertificates){
-        for(String name : coxCertificates){
-            if(Certificates.existByName(name) == false)
+    /**
+     * Setter with data validation for cox certificates.
+     *
+     * @param coxCertificates - cox certificates of the user.
+     * @throws IllegalArgumentException - if validation fails
+     */
+    public void setCoxCertificates(List<String> coxCertificates) {
+        if (coxCertificates == null) {
+            return;
+        }
+        for (String name : coxCertificates) {
+            if (Certificates.existByName(name) == false) {
                 throw new IllegalArgumentException("Certificates are not recognized");
+            }
         }
         this.coxCertificates = coxCertificates;
-    } */
+    }
 
     /**
      * Setter with data validation for rowing organisation.
