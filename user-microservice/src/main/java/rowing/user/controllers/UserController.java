@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import rowing.commons.AvailabilityIntervals;
 import rowing.commons.entities.UpdateUserDTO;
 import rowing.user.authentication.AuthManager;
 import rowing.user.domain.user.AvailabilityNotFoundException;
@@ -17,6 +18,7 @@ import rowing.user.models.TwoAvailabilitiesModel;
 import rowing.user.services.AvailabilityService;
 
 import java.time.DateTimeException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -57,12 +59,29 @@ public class UserController {
         String userId = authManager.getUsername();
         Optional<User> optionalUser = userRepository.findByUserId(userId);
 
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
         User user = optionalUser.get();
         return ResponseEntity.ok(user);
+    }
+
+    /**
+     * Gets user availability.
+     *
+     * @return user availability.
+     */
+    @GetMapping("/get-availability")
+    public ResponseEntity<List<AvailabilityIntervals>> getAvailability(@RequestBody String userId) {
+        Optional<User> optionalUser = userRepository.findByUserId(userId);
+
+        if (optionalUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        User user = optionalUser.get();
+        return ResponseEntity.ok(user.getAvailability());
     }
 
 
@@ -77,7 +96,7 @@ public class UserController {
         String userId = (String) ((JSONObject) array.get(0)).get("username");
         Optional<User> u = userRepository.findByUserId(userId);
         System.out.println(username);
-        if (!u.isPresent()) {
+        if (u.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user = u.get();

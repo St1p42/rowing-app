@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rowing.activity.authentication.AuthManager;
@@ -14,7 +16,6 @@ import rowing.activity.domain.Director;
 import rowing.activity.domain.TrainingBuilder;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
-import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
@@ -29,7 +30,6 @@ import rowing.commons.entities.utils.JsonUtil;
 import rowing.commons.models.NotificationRequestModel;
 import rowing.commons.models.UserDTORequestModel;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -257,23 +257,81 @@ public class ActivityService {
     public ActivityDTO updateActivity(UUID activityId, ActivityDTO updateActivityDto) throws IllegalArgumentException {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
         if (optionalActivity.isPresent()) {
-            Activity activity = optionalActivity.get();
-
-            NotificationRequestModel notificationRequestModel = new NotificationRequestModel(activity.getOwner(),
-                    NotificationStatus.CHANGES,
-                    activity.getId());
-
-            Optional.ofNullable(updateActivityDto.getName()).ifPresent(activity::setName);
-            Optional.ofNullable(updateActivityDto.getStart()).ifPresent(activity::setStart);
-            Optional.ofNullable(updateActivityDto.getStart()).ifPresent(notificationRequestModel::setDate);
-            Optional.ofNullable(updateActivityDto.getLocation()).ifPresent(activity::setLocation);
-            Optional.ofNullable(updateActivityDto.getLocation()).ifPresent(notificationRequestModel::setLocation);
-
-            activityRepository.save(activity);
-
-            ActivityDTO activityDto = activity.toDto();
-            return activityDto;
+            throw new IllegalArgumentException("Activity does not exist !");
         }
-        throw new IllegalArgumentException();
+        Activity activity = optionalActivity.get();
+
+        NotificationRequestModel notificationRequestModel = new NotificationRequestModel(activity.getOwner(),
+                NotificationStatus.CHANGES,
+                activity.getId());
+
+        Optional<Date> optionalStart = Optional.ofNullable(updateActivityDto.getStart());
+        if (optionalStart.isPresent()) {
+            Date newStart = optionalStart.get();
+            checkNewStart(newStart);
+            activity.setStart(newStart);
+            notificationRequestModel.setDate(newStart);
+        }
+
+        Optional.ofNullable(updateActivityDto.getName()).ifPresent(activity::setName);
+
+        Optional<String> optionalLocation = Optional.ofNullable(updateActivityDto.getLocation());
+        if (optionalLocation.isPresent()) {
+            String newLocation = optionalLocation.get();
+            activity.setLocation(newLocation);
+            notificationRequestModel.setLocation(newLocation);
+        }
+
+
+
+        for (String userId : activity.getApplicants()) {
+            //building the request
+            String uri = "http://localhost:8080/get-availability";
+            HttpHeaders headers = new HttpHeaders();
+            HttpEntity requestHttp = new HttpEntity(headers);
+
+            //sending the request
+            ResponseEntity<List<AvailabilityIntervals>> response = restTemplate.exchange(uri, HttpMethod.GET, requestHttp,
+                    new ParameterizedTypeReference<List<AvailabilityIntervals>>() {
+                    }, userId);
+
+            //checking the response
+            if (response.getStatusCode() == HttpStatus.OK) {
+                List<AvailabilityIntervals> availability = response.getBody();
+                if (!checkAvailability(activity, availability)) {
+                    //remove the applicant
+                }
+            }
+
+        }
+
+        activityRepository.save(activity);
+
+        ActivityDTO activityDto = activity.toDto();
+        return activityDto;
     }
+
+    /**
+     * Method to check if the new start date is valid.
+     *
+     * @param newStart - the new start date
+     * @throws IllegalArgumentException - if the new start date is invalid
+     */
+    private static void checkNewStart(Date newStart)
+            throws IllegalArgumentException {
+        Calendar calCurrent = Calendar.getInstance();  // Get local time
+        calCurrent.setTime(Calendar.getInstance().getTime());
+        var dayCurrent = calCurrent.get(Calendar.DAY_OF_WEEK);
+        var timeCurrent = LocalTime.ofInstant(calCurrent.getTime().toInstant(), ZoneId.systemDefault());
+
+        Calendar calNewStart = Calendar.getInstance();  // Get start time
+        calNewStart.setTime(newStart);
+        var dayNewStart = calNewStart.get(Calendar.DAY_OF_WEEK);
+        var timeNewStart = LocalTime.ofInstant(calNewStart.getTime().toInstant(), ZoneId.systemDefault());
+
+        if (dayCurrent == dayNewStart && timeCurrent.isAfter(timeNewStart)) {
+            throw new IllegalArgumentException("Activity start time is in the past !");
+        }
+    }
+
 }
