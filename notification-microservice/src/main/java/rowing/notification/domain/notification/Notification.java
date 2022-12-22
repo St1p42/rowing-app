@@ -142,8 +142,7 @@ public class Notification {
     public String retrieveSubject() {
         if (notificationStatus == null) {
             return subject + "unknown";
-        }
-        else if (notificationStatus == NotificationStatus.CHANGES) {
+        } else if (notificationStatus == NotificationStatus.CHANGES) {
             return changesSubject;
         } else if (notificationStatus == NotificationStatus.ACTIVITY_FULL) {
             return activityFullSubject;

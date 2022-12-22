@@ -126,6 +126,38 @@ public class IntegrationTest {
         result.andExpect(status().isOk());
     }
 
+    @Test
+    public void testSendNotificationFull() throws Exception {
+        // Arrange
+        // Notice how some custom parts of authorisation need to be mocked.
+        // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
+        when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+
+        // Act
+        // Still include Bearer token as AuthFilter itself is not mocked
+        NotificationRequestModel requestModel = new NotificationRequestModel("alex",
+                NotificationStatus.ACTIVITY_FULL, new UUID(1, 1));
+
+        //mocks the Users getEmailAddress endpoint
+        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().json("{\"username\": \"alex\"}"))
+                .andRespond(withSuccess("halitgulamov@gmail.com", MediaType.TEXT_PLAIN));
+
+        // calls REST API internally
+        ResultActions result = mockMvc.perform(post("/notify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer MockedToken")
+                .content(JsonUtil.serialize(requestModel)));
+
+        // verify if the request was made
+        mockServer.verify();
+
+        // Assert
+        result.andExpect(status().isOk());
+    }
 
     @Test
     public void testSendNotificationKafka() throws Exception {

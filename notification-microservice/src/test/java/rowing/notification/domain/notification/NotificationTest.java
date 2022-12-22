@@ -63,7 +63,7 @@ class NotificationTest {
                 NotificationStatus.CHANGES, new UUID(101L, 2L), "Delft");
         Notification notificationChanges = new Notification(changes, "random@gmail.com");
         ReflectionTestUtils.setField(notificationChanges, "changesSubject",
-                "The activity you have signed up for has some changes");
+                "The activity you have signed up for has some changes ");
         ReflectionTestUtils.setField(notificationChanges, "changesBody",
                 "There are some updates regarding the activity with id ");
         String subject = "The activity you have signed up for has some changes ";
@@ -133,7 +133,7 @@ class NotificationTest {
                 NotificationStatus.CHANGES, new UUID(101L, 2L), "Delft");
         Notification notificationChanges = new Notification(changes, "random@gmail.com");
         ReflectionTestUtils.setField(notificationChanges, "changesSubject",
-                "The activity you have signed up for has some changes");
+                "The activity you have signed up for has some changes ");
         String subject = "The activity you have signed up for has some changes ";
         assertEquals(subject, notificationChanges.retrieveSubject());
     }
@@ -275,7 +275,6 @@ class NotificationTest {
         Notification notificationChanges = new Notification(changes, "random@gmail.com");
         ReflectionTestUtils.setField(notificationChanges, "changesBody",
                 "There are some updates regarding the activity with id ");
-        String subject = "The activity you have signed up for has some changes";
         String body = notificationChanges.getChangesBody() + "00000000-0000-0065-0000-000000000002:\n"
                 + "Date: " + date + "\nLocation: The location has not changed since the last update.";
         assertEquals(body, notificationChanges.retrieveBody());
@@ -288,7 +287,7 @@ class NotificationTest {
                 NotificationStatus.ACTIVITY_FULL,
                 new UUID(101L, 2L));
         Notification notificationFull = new Notification(activityFull, "random@gmail.com");
-        String answer = "The activity you signed up for is full at the moment.\n"
+        String answer = "The activity you signed up for is full at the moment. \n"
                 + "Thus, you are currently in the waiting list for the activity with id ";
         ReflectionTestUtils.setField(notificationFull, "activityFullBody", answer);
         assertEquals(answer + "00000000-0000-0065-0000-000000000002",
