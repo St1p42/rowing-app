@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.authentication;
+package kafkaTemplate.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -21,6 +21,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.security.core.context.SecurityContextHolder;
+import rowing.kafkaTemplate.authentication.JwtRequestFilter;
+import rowing.kafkaTemplate.authentication.JwtTokenVerifier;
 
 public class JwtRequestFilterTests {
     private transient JwtRequestFilter jwtRequestFilter;

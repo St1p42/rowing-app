@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.config;
+package rowing.kafkaTemplate.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;

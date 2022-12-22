@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.authentication;
+package rowing.kafkaTemplate.authentication;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -47,8 +47,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      * @throws IOException      Exception
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                 FilterChain filterChain) throws ServletException, IOException {
 
         // Get authorization header
         String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);

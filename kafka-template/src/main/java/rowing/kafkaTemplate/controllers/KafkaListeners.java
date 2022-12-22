@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.controllers;
+package rowing.kafkaTemplate.controllers;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;

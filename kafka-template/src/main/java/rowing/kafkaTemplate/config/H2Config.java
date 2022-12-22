@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.config;
+package rowing.kafkaTemplate.config;
 
 import javax.sql.DataSource;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * The H2 config.
  */
 @Configuration
-@EnableJpaRepositories("nl.tudelft.sem.template.example.domain")
+@EnableJpaRepositories("rowing.kafkaTemplate.domain")
 @PropertySource("classpath:application-dev.properties")
 @EnableTransactionManagement
 public class H2Config {
