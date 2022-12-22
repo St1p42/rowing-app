@@ -58,7 +58,9 @@ public class MatchingDTO implements DTO {
      *
      * @param status of the user for participating in this activity
      */
-    public MatchingDTO(UUID id, UUID activityId, String userId, Position position, Gender gender, Boolean competitive, String organisation, List<AvailabilityIntervals> availability, NotificationStatus status) {
+    public MatchingDTO(UUID id, UUID activityId, String userId, Position position, Gender gender,
+                       Boolean competitive, String organisation,
+                       List<AvailabilityIntervals> availability, NotificationStatus status) {
         this.id = id;
         this.activityId = activityId;
         this.userId = userId;
