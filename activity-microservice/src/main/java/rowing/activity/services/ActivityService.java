@@ -45,6 +45,15 @@ public class ActivityService {
     @Value("${microserviceJWT}")
     private transient String token;
 
+    @Value("${portNotification}")
+    String portNotification;
+
+    @Value("${urlNotification}")
+    String urlNotification;
+
+    @Value("${pathNotify}")
+    String pathNotify;
+
     /**
      * Constructor for the ActivityService class.
      *
@@ -218,7 +227,7 @@ public class ActivityService {
                 String body = JsonUtil.serialize(request);
                 HttpEntity requestEntity = new HttpEntity(body, headers);
                 ResponseEntity responseEntity = restTemplate.exchange(
-                        "http://localhost:8082/notify",
+                        urlNotification + ":" + portNotification + pathNotify,
                         HttpMethod.POST, requestEntity, String.class);
             }
 
@@ -256,7 +265,7 @@ public class ActivityService {
         String body = JsonUtil.serialize(request);
         HttpEntity requestEntity = new HttpEntity(body, headers);
         ResponseEntity responseEntity = restTemplate.exchange(
-                "http://localhost:8082/notify",
+                urlNotification + ":" + portNotification + pathNotify,
                 HttpMethod.POST, requestEntity, String.class);
 
         if (activity.getPositions().size() < 1) {
@@ -269,7 +278,7 @@ public class ActivityService {
                     body = JsonUtil.serialize(request);
                     requestEntity = new HttpEntity(body, headers);
                     responseEntity = restTemplate.exchange(
-                            "http://localhost:8082/notify",
+                            urlNotification + ":" + portNotification + pathNotify,
                             HttpMethod.POST, requestEntity, String.class);
                 }
             }
