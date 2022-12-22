@@ -16,8 +16,9 @@ public class TrainingBuilder implements Builder {
     private String type;
     private Date start;
     private List<String> applicants;
+    private String boatType;
 
     public Training build() {
-        return new Training(id, owner, name, type, start, positions, applicants);
+        return new Training(id, owner, name, type, start, positions, applicants, boatType);
     }
 }
