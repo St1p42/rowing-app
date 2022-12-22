@@ -2,6 +2,8 @@ package rowing.activity.integration;
 
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -15,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -43,10 +47,13 @@ import rowing.activity.domain.repositories.MatchRepository;
 import rowing.activity.domain.utils.Builder;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.Gender;
+import rowing.commons.NotificationStatus;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.MatchingDTO;
 import rowing.commons.entities.UserDTO;
+import rowing.commons.entities.utils.JsonUtil;
+import rowing.commons.models.NotificationRequestModel;
 import rowing.commons.models.UserDTORequestModel;
 //import com.fasterxml.jackson.*;
 
@@ -64,6 +71,7 @@ import java.util.*;
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @EnableWebMvc
+@TestPropertySource(properties = { "spring.config.name=application-test"})
 public class ActivityControllerTest {
 
     @Autowired
@@ -73,6 +81,8 @@ public class ActivityControllerTest {
 
     @Autowired
     private transient JwtTokenVerifier mockJwtTokenVerifier;
+
+    private MockRestServiceServer mockServer;
 
     @Autowired
     private transient AuthManager mockAuthenticationManager;
@@ -117,6 +127,8 @@ public class ActivityControllerTest {
         when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
         when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
         when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
+
+        mockServer = MockRestServiceServer.createServer(restTemplate);
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
 
@@ -422,12 +434,129 @@ public class ActivityControllerTest {
     @Test
     public void userAcceptedSuccessfully() throws Exception {
         when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
-//        when(restTemplate.exchange("http://localhost:8082/notify",
-//                HttpMethod.POST, requestEntity, String.class)))
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+
         Activity training = amateurTraining;
         UUID id = UUID.randomUUID();
         training.setId(id);
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+        UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
+
+        NotificationRequestModel notificationRequestModel = new NotificationRequestModel("Efe",
+                NotificationStatus.ACCEPTED, id);
+
+        when(mockActivityRepository.findActivityById(id)).thenReturn(Optional.of(training));
+
+        mockServer.expect(requestTo("http://localhost:8082/notify"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().json(JsonUtil.serialize(notificationRequestModel)))
+                .andRespond(withSuccess("extra.unluyurt@gmail.com", MediaType.TEXT_PLAIN));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/" + id + "/accept")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(model))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        mockServer.verify();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + "Efe"
+                + " is accepted successfully");
+    }
+
+    @Test
+    public void activityDoesNotExist() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+
+        Activity training = amateurTraining;
+        UUID id = UUID.randomUUID();
+        training.setId(id);
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+        UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/" + id + "/accept")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(model))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Activity does not exist !");
+    }
+
+    @Test
+    public void youAreNotTheOwner() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+
+        Activity training = amateurTraining;
+        UUID id = UUID.randomUUID();
+        training.setId(id);
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+        UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
+
+
+        when(mockActivityRepository.findActivityById(id)).thenReturn(Optional.of(training));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/" + id + "/accept")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(model))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Only the owner of the activity can accept users");
+    }
+
+    @Test
+    public void userIsAlreadyParticipating() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+
+        Activity training = amateurTraining;
+        UUID id = UUID.randomUUID();
+        training.setId(id);
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+        UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
+
+        Match match1 = new Match(UUID.randomUUID(), id, "Efe", Position.COACH);
+        when(mockActivityRepository.findActivityById(id)).thenReturn(Optional.of(training));
+        when(mockMatchRepository.existsByActivityId(id)).thenReturn(true);
+        when(mockMatchRepository.findAllByActivityId(id)).thenReturn(new ArrayList<>(Arrays.asList(match1)));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/" + id + "/accept")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(model))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("This user is already participating in the activity");
+    }
+
+    @Test
+    public void userDidNotApply() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+
+        Activity training = amateurTraining;
+        UUID id = UUID.randomUUID();
+        training.setId(id);
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex")));
         UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
 
         when(mockActivityRepository.findActivityById(id)).thenReturn(Optional.of(training));
@@ -439,10 +568,35 @@ public class ActivityControllerTest {
                 .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-
         // Assert
         String response = result.getResponse().getContentAsString();
-        assertThat(response).isEqualTo("User " + "Efe"
-                + " is accepted successfully");
+        assertThat(response).isEqualTo("This user didn't apply to this activity");
+    }
+
+    @Test
+    public void positionIsAlreadyFilled() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Amateur Training");
+
+        Activity training = amateurTraining;
+        UUID id = UUID.randomUUID();
+        training.setId(id);
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+        UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
+        training.setPositions(new ArrayList<>(Arrays.asList(Position.COX)));
+
+        when(mockActivityRepository.findActivityById(id)).thenReturn(Optional.of(training));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/" + id + "/accept")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(model))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("This position is already full");
     }
 }

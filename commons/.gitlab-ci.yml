@@ -14,6 +14,12 @@ build-commons:
   script:
     gradle commons:assemble commons:testClasses
 
+checkStyle-commons:
+  stage: staticAnalysis
+  script:
+    gradle commons:checkstyleMain commons:checkStyleTest
+  allow_failure: true
+
 PMD-commons:
   stage: staticAnalysis
   script:

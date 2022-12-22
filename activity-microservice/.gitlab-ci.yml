@@ -20,7 +20,6 @@ checkStyle-activity-microservice:
     gradle activity-microservice:checkstyleMain activity-microservice:checkStyleTest
   allow_failure: true
 
-
 PMD-activity-microservice:
   stage: staticAnalysis
   script:
