@@ -41,8 +41,10 @@ public class ActivityController {
     /**
      * Instantiates a new controller.
      *
-     * @param authManager     Spring Security component used to authenticate and authorize the user
-     * @param matchRepository
+     * @param authManager Spring Security component used to authenticate and authorize the user
+     * @param activityRepository the activity repository to be used
+     * @param matchRepository the match repository to be used
+     * @param activityService the activity service to be used
      */
     @Autowired
     public ActivityController(AuthManager authManager, ActivityRepository activityRepository,
@@ -126,7 +128,8 @@ public class ActivityController {
      * @param activityId the id of the activity
      * @param model the UserDTORequestModel keeping the information about the selected user and position
      * @return a ResponseEntity of string to notify what happened
-     * @throws JsonProcessingException if there is a problem occurs when converting the NotificationRequestModel object to Json
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
      */
     @PostMapping("/{activityId}/accept")
     public ResponseEntity<String> acceptUser(@PathVariable("activityId") UUID activityId,
@@ -147,10 +150,10 @@ public class ActivityController {
                 }
             }
         }
-        if(!activity.getApplicants().contains(model.getUserId())){
+        if (!activity.getApplicants().contains(model.getUserId())) {
             return ResponseEntity.badRequest().body("This user didn't apply to this activity");
         }
-        if(!activity.getPositions().contains(model.getPositionSelected())){
+        if (!activity.getPositions().contains(model.getPositionSelected())) {
             return ResponseEntity.badRequest().body("This position is already full");
         }
 

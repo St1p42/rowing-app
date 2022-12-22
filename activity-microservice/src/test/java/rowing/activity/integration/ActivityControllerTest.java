@@ -177,7 +177,7 @@ public class ActivityControllerTest {
     }
 
     @AfterEach
-    public void end(){
+    public void end() {
         mockActivityRepository.deleteAll();
         mockMatchRepository.deleteAll();
     }

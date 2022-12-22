@@ -40,10 +40,10 @@ public class ActivityService {
     private final transient AuthManager authManager;
     private final transient MatchRepository matchRepository;
     @Autowired
-    private RestTemplate restTemplate;
+    private transient RestTemplate restTemplate;
 
     @Value("${microserviceJWT}")
-    String token;
+    private transient String token;
 
     /**
      * Constructor for the ActivityService class.
@@ -118,8 +118,8 @@ public class ActivityService {
                 activityRepository.delete(activity);
             }
         }
-        for(UUID id : uuids){
-            if(matchRepository.existsByActivityId(id)){
+        for (UUID id : uuids) {
+            if (matchRepository.existsByActivityId(id)) {
                 matchRepository.deleteAll(matchRepository.findAllByActivityId(id));
             }
         }
@@ -206,7 +206,7 @@ public class ActivityService {
             activityPresent.addApplicant(match.getUserId()); // If all is fine we add the applicant
             activityPresent = activityRepository.save(activityPresent);
 
-            if(activityPresent.getPositions().size() < 1){
+            if (activityPresent.getPositions().size() < 1) {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
@@ -233,13 +233,15 @@ public class ActivityService {
      * @param activity that the owner wants to accept the user for
      * @param model the UserDTORequestModel keeping the information about the selected user and position
      * @return a String that notifies that the user is created successfully.
-     * @throws JsonProcessingException if there is a problem occurs when converting the NotificationRequestModel object to Json
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
      */
     public String acceptUser(Activity activity, UserDTORequestModel model) throws JsonProcessingException {
         activity.getPositions().remove(model.getPositionSelected());
         Match<MatchingDTO> match = new Match<>(new MatchingDTO(UUID.randomUUID(), activity.getId(),
                 model.getUserId(), model.getPositionSelected(), model.getGender(),
-                model.getCompetitive(), model.getRowingOrganization(), model.getAvailability(), NotificationStatus.ACCEPTED));
+                model.getCompetitive(), model.getRowingOrganization(),
+                model.getAvailability(), NotificationStatus.ACCEPTED));
 
         match = matchRepository.save(match);
         activity = activityRepository.save(activity);
