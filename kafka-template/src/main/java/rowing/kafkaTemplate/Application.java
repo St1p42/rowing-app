@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example;
+package rowing.kafkaTemplate;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

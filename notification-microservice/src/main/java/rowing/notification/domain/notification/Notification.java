@@ -1,6 +1,7 @@
 package rowing.notification.domain.notification;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import rowing.commons.NotificationStatus;
@@ -9,7 +10,6 @@ import rowing.commons.models.NotificationRequestModel;
 //write tests for this class
 //later add the activity information to this class and change retrieveText respectively
 @Data
-@PropertySource("application.properties")
 public class Notification {
     private String activityId;
     private NotificationStatus notificationStatus;
@@ -17,32 +17,27 @@ public class Notification {
     private String newLocation;
     private String newDate;
 
-    @Value("${body.notification.accepted}")
     private String acceptedBody;
 
-    @Value("${body.notification.rejected}")
     private String rejectedBody;
 
-    @Value("${body.notification.deleted}")
     private String deletedBody;
 
-    @Value("${body.notification.kicked}")
     private String kickedBody;
 
-    @Value("${body.notification.withdrawn}")
     private String withdrawnBody;
 
-    @Value("${body.notification.default}")
     private String defaultBody;
 
-    @Value("${subject.notification.general}")
     private String subject;
 
-    @Value("${subject.notification.activityChanges}")
     private String changesSubject;
 
-    @Value("${body.notification.activityChanges}")
     private String changesBody;
+
+    private String activityFullSubject;
+
+    private String activityFullBody;
 
     private String username;
     private boolean useKafka = false;
@@ -131,6 +126,8 @@ public class Notification {
             case CHANGES:
                 return changesBody + activityId + ":\n"
                         + "Date: " + newDate + "\nLocation: " + newLocation;
+            case ACTIVITY_FULL:
+                return activityFullBody + activityId;
             default:
                 return defaultBody + activityId;
         }
@@ -145,9 +142,10 @@ public class Notification {
     public String retrieveSubject() {
         if (notificationStatus == null) {
             return subject + "unknown";
-        }
-        if (notificationStatus == NotificationStatus.CHANGES) {
-            return changesSubject + ' ';
+        } else if (notificationStatus == NotificationStatus.CHANGES) {
+            return changesSubject;
+        } else if (notificationStatus == NotificationStatus.ACTIVITY_FULL) {
+            return activityFullSubject;
         }
         return subject + notificationStatus;
     }

@@ -85,7 +85,7 @@ public class AvailabilityIntervals {
      * @return d - a LocalTime object
      * @throws ParseException - exception if the format is incorrect.
      */
-    public LocalTime convertToTime(String time) throws ParseException {
+    public final LocalTime convertToTime(String time) throws ParseException {
         //time += ":00";
         int limit = 5;
         if (time.length() != limit) {

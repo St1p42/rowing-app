@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.authentication;
+package kafkaTemplate.authentication;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
+import rowing.kafkaTemplate.authentication.JwtAuthenticationEntryPoint;
+import rowing.kafkaTemplate.authentication.JwtRequestFilter;
 
 public class JwtAuthenticationEntryPointTests {
     private transient JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

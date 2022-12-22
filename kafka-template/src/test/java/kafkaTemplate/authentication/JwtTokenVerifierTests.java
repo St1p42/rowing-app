@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.authentication;
+package kafkaTemplate.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -15,6 +15,7 @@ import java.util.Map;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import rowing.kafkaTemplate.authentication.JwtTokenVerifier;
 
 public class JwtTokenVerifierTests {
     private transient JwtTokenVerifier jwtTokenVerifier;
