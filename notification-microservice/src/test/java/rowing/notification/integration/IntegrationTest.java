@@ -1,7 +1,6 @@
 package rowing.notification.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,12 +24,7 @@ import rowing.commons.entities.utils.JsonUtil;
 import rowing.commons.models.NotificationRequestModel;
 import rowing.notification.authentication.AuthManager;
 import rowing.notification.authentication.JwtTokenVerifier;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -209,30 +204,6 @@ public class IntegrationTest {
     }
 
     @Test
-    public void testUnauthorizedUsers() throws Exception {
-        // Arrange
-        // Notice how some custom parts of authorisation need to be mocked.
-        // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
-        when(mockAuthenticationManager.getUsername()).thenReturn("ExampleUser");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockJwtTokenVerifier.getNetIdFromToken(anyString())).thenReturn("ExampleUser");
-
-        // Act
-        // Still include Bearer token as AuthFilter itself is not mocked
-        NotificationRequestModel requestModel = new NotificationRequestModel("notAlex",
-                NotificationStatus.ACCEPTED, new UUID(1, 1));
-
-        // calls REST API internally
-        ResultActions result = mockMvc.perform(post("/notify")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer MockedToken")
-                .content(JsonUtil.serialize(requestModel)));
-
-        // Assert
-        result.andExpect(status().isBadRequest());
-    }
-
-    @Test
     public void testBadRequestUsers() throws Exception {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
@@ -243,7 +214,7 @@ public class IntegrationTest {
 
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
-        NotificationRequestModel requestModel = new NotificationRequestModel("notAlex",
+        NotificationRequestModel requestModel = new NotificationRequestModel(null,
                 NotificationStatus.ACCEPTED, new UUID(1, 1));
 
         // calls REST API internally
