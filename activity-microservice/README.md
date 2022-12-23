@@ -50,11 +50,26 @@ To use the endpoints that this microservice provides, the `authentication` micro
 - - ![img_10.png](images/useractivity.png)
 - - 
 - - `{activityId}/reject` - rejects a user from participating in an activity - only to be called by the owner of the activity
-- - returns 200 OK if the user was rejected successfully, 403 forbidden if the request wasn't made by the owner of the activity or other error code if there were any problems
+- - returns 200 OK if the user was rejected successfully, 403 FORBIDDEN if the request wasn't made by the owner of the activity or other error code if there were any problems
 - - this is how a request should look like 
 - - ![img_10.png](images/userrejected.png)
 - - 
 - - `{activityId}/accept` - accepts a user to participate in an activity - only to be called by the owner of the activity
-- - returns 200 OK if the user was accepted successfully, 403 forbidden if the request wasn't made by the owner of the activity or other error code if there were any problems
+- - returns 200 OK if the user was accepted successfully, 403 FORBIDDEN if the request wasn't made by the owner of the activity or other error code if there were any problems
 - - this is how a request should look like 
 - - ![img_10.png](images/useraccepted.png)
+- - 
+- - `{activityId}/kick` - kicks a user who is currently participating in the activity and creates a free position - only to be called by the owner of the activity
+- - returns 200 OK if the user was rejected successfully, 403 FORBIDDEN if the request wasn't made by the owner of the activity or other error code if there were any problems
+- - this is how a request should look like
+- - ![](images/userkicked.png)
+- -
+- - `user/{userId}` - sends a username and recieves a userDTO object corresponding to that username from the user repository by communicating with the user microservice
+- - returns 200 OK if the userDTO object is returned successfully, and 400 BAD REQUEST if there were any problems
+- - this is how a request should look like
+- - ![](images/getuser.png)
+- - 
+- - `{activityId}/participants` - retrieves the all current participants of the activity and returns a list of userDTO objects by communicating with the user microservice - only to be called by the owner of the activity
+- - returns 200 OK if the participant list is returned successfully, 403 FORBIDDEN if the request wasn't made by the owner, and 400 BAD REQUEST if there were any problems
+- - this is how a request should look like
+- - ![](images/returnparticipants.png)
