@@ -1,6 +1,7 @@
 package rowing.notification.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import kafka.utils.Json;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -89,8 +90,8 @@ public class IntegrationTest {
                         "test", null, null, null, null);
         String body = JsonUtil.serialize(updateUserDTO);
         HttpEntity requestHttp = new HttpEntity(body, headers);
-        System.out.println(body);
-        restTemplate.exchange("http://localhost:8084/user/update-user", HttpMethod.POST, requestHttp, UserDTO.class);
+        //System.out.println(body);
+        restTemplate.exchange("http://localhost:8084/user/update-user", HttpMethod.POST, requestHttp, String.class);
     }
 
     @Test
