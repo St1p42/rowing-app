@@ -39,4 +39,15 @@ public class Certificates {
         }
         return false;
     }
+
+    public static CoxCertificate getCertificate(String name){
+        if (existByName(name)){
+            for(CoxCertificate certificate : certificatesList){
+                if(certificate.getName().equals(name)){
+                    return certificate;
+                }
+            }
+        }
+        throw new RuntimeException();
+    }
 }

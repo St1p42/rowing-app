@@ -92,6 +92,7 @@ public class AuthenticationController {
             Username username = new Username(request.getUsername());
             Password password = new Password(request.getPassword());
             registrationService.registerUser(username, password);
+
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.toString());
         }

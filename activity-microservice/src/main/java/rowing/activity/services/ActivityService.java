@@ -241,7 +241,7 @@ public class ActivityService {
      *
      * @param activity that the owner wants to accept the user for
      * @param model the UserDTORequestModel keeping the information about the selected user and position
-     * @return a String that notifies that the user is created successfully.
+     * @return a String that notifies that the user is accepted successfully.
      * @throws JsonProcessingException if there is a problem occurs when converting
      *         the NotificationRequestModel object to Json
      */
@@ -313,5 +313,64 @@ public class ActivityService {
         activity.getApplicants().remove(username);
         activityRepository.save(activity);
         return "User " + username + " has signed off from the activity : " + activityId;
+    }
+
+     * Rejects the user applied to the activity, and sends a notification to the user.
+     *
+     * @param activity that the owner wants to reject the user for
+     * @param model the UserDTO keeping the information about the selected user
+     * @return a String that notifies that the user is rejected successfully.
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
+     */
+    public String rejectUser(Activity activity, UserDTO model) throws JsonProcessingException {
+        activity.getApplicants().remove(model.getUserId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        NotificationRequestModel request = new NotificationRequestModel(model.getUserId(),
+                NotificationStatus.REJECTED, activity.getId());
+
+        String body = JsonUtil.serialize(request);
+        HttpEntity requestEntity = new HttpEntity(body, headers);
+        ResponseEntity responseEntity = restTemplate.exchange(
+                urlNotification + ":" + portNotification + pathNotify,
+                HttpMethod.POST, requestEntity, String.class);
+
+        return "User " + model.getUserId() + " is rejected successfully";
+    }
+
+    /**
+     * Function that kicks an user from the repository.
+     *
+     * @param activity activity information
+     * @param userId id of the user that needs to be kicked
+     * @return message containing if the user has been kicked or not
+     * @throws IllegalArgumentException if the input is invalid
+     */
+    public String kickUser(Activity activity, String userId) throws IllegalArgumentException {
+        boolean signedUp = false;
+        System.out.println(userId + "\n");
+        for (int i = 0; i < activity.getApplicants().size(); i++) {
+            System.out.println(activity.getApplicants().get(i).toString());
+            if (activity.getApplicants().get(i).equals(userId)) {
+                List<String> list = activity.getApplicants();
+                list.remove(i);
+                activity.setApplicants(list);
+                signedUp = true;
+            }
+        }
+        if (!signedUp) {
+            throw new IllegalArgumentException("User " + userId + " was not signed up for this activity !");
+        }
+        activityRepository.save(activity);
+        Optional<Match> match = matchRepository.findByActivityIdAndUserId(activity.getId(), userId);
+        if (match.isPresent()) {
+            matchRepository.delete(match.get());
+            return "User " + userId + " is no longer participating !";
+        }
+        return "User " + userId + " kicked successfully !";
     }
 }

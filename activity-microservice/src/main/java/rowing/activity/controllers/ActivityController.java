@@ -12,12 +12,15 @@ import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
 import rowing.activity.services.ActivityService;
+import rowing.commons.Certificates;
+import rowing.commons.CoxCertificate;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.MatchingDTO;
 import rowing.commons.entities.UserDTO;
 import rowing.commons.models.UserDTORequestModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -167,13 +170,108 @@ public class ActivityController {
                 }
             }
         }
+        if (!model.getRowingPositions().contains(model.getPositionSelected())) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The user didn't apply for this position");
+        }
         if (!activity.getApplicants().contains(model.getUserId())) {
-            return ResponseEntity.badRequest().body("This user didn't apply to this activity");
+            return ResponseEntity.badRequest().body("This user didn't apply for this activity");
         }
         if (!activity.getPositions().contains(model.getPositionSelected())) {
             return ResponseEntity.badRequest().body("This position is already full");
         }
+        if (model.getPositionSelected().equals(Position.COX)) {
+            List<String> certificates = model.getCoxCertificates();
+            List<CoxCertificate> coxCertificates = new ArrayList<>();
+            for (String s : certificates) {
+                if (Certificates.existByName(s)) {
+                    coxCertificates.add(Certificates.getCertificate(s));
+                }
+            }
+            boolean exists = false;
+            for (CoxCertificate certificate : coxCertificates) {
+                if (certificate.getName().equals(activity.getBoatType())) {
+                    exists = true;
+                    break;
+                }
+                if (certificate.getSupersedes() != null) {
+                    for (String supersede : certificate.getSupersedes()) {
+                        if (supersede.equals(activity.getBoatType())) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!exists) {
+                return ResponseEntity.badRequest().body("The user don't have a certificate for this boat type!");
+            }
+        }
 
         return ResponseEntity.ok(activityService.acceptUser(activity, model));
+    }
+
+    /**
+     * Endpoint for rejecting a specific user to an activity.
+     *
+     * @param activityId the id of the activity
+     * @param model the UserDTO keeping the information about the selected user
+     * @return a ResponseEntity of string to notify what happened
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
+     */
+    @PostMapping("/{activityId}/reject")
+    public ResponseEntity<String> rejectUser(@PathVariable("activityId") UUID activityId,
+                                             @RequestBody UserDTO model) throws JsonProcessingException {
+
+        Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
+        if (!optionalActivity.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist!");
+        }
+        Activity activity = optionalActivity.get();
+        if (!authManager.getUsername().equals(activity.getOwner())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only the owner of the activity can reject users");
+        }
+        if (matchRepository.existsByActivityId(activityId)) {
+            List<Match> matches = matchRepository.findAllByActivityId(activityId);
+            for (Match match : matches) {
+                if (match.getUserId().equals(model.getUserId())) {
+                    return ResponseEntity.badRequest().body("This user is already participating in the activity");
+                }
+            }
+        }
+        if (!activity.getApplicants().contains(model.getUserId())) {
+            return ResponseEntity.badRequest().body("This user didn't apply for this activity");
+        }
+
+        return ResponseEntity.ok(activityService.rejectUser(activity, model));
+    }
+
+
+    /**
+     * Endpoint that kicks an user from signUp and participation for a certain activity.
+     *
+     * @param activityId id of the activity they owner wants to kick the user from
+     * @param userId id of the user that gets kicked
+     * @return response if user has been kicked or not
+     */
+    @PostMapping("/{activityId}/kick")
+    public ResponseEntity<String> kickUser(@PathVariable("activityId") UUID activityId,
+                                             @RequestBody String userId)  {
+        String response;
+        Optional<Activity> activityOpt = activityRepository.findActivityById(activityId);
+        if (activityOpt.isPresent()) {
+            Activity activity = activityOpt.get();
+            if (!authManager.getUsername().equals(activity.getOwner())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only the owner of the activity can kick users");
+            }
+            try {
+                response = activityService.kickUser(activity, userId);
+                return ResponseEntity.ok(response);
+            } catch (IllegalArgumentException e) {
+                response = e.getMessage();
+                return ResponseEntity.badRequest().body(response);
+            }
+        }
+        return ResponseEntity.badRequest().body("ActivityId is not correct !");
     }
 }
