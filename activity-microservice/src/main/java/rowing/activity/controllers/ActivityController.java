@@ -302,9 +302,11 @@ public class ActivityController {
      */
     @GetMapping("/{activityId}/participants")
     public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable UUID activityId) {
-        if (activityRepository.existsById(activityId)) {
-            if (!authManager.getUsername().equals(activityRepository.findActivityById(activityId).get().getOwner())) {
-                ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only the owner can see the participants");
+        Optional<Activity> activityOpt = activityRepository.findActivityById(activityId);
+        if (activityOpt.isPresent()) {
+            Activity activity = activityRepository.findActivityById(activityId).get();;
+            if (!authManager.getUsername().equals(activity.getOwner())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only the owner can see the participants");
             }
             return ResponseEntity.ok(activityService.getParticipants(activityId));
         }
