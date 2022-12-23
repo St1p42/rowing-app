@@ -79,7 +79,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.ACCEPTED, new UUID(1, 1));
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withSuccess("halitgulamov@gmail.com", MediaType.TEXT_PLAIN));
@@ -112,7 +112,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.CHANGES, new UUID(1, 1), "Delft");
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withSuccess("halitgulamov@gmail.com", MediaType.TEXT_PLAIN));
@@ -145,7 +145,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.ACTIVITY_FULL, new UUID(1, 1));
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withSuccess("halitgulamov@gmail.com", MediaType.TEXT_PLAIN));
@@ -178,7 +178,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.ACCEPTED, new UUID(1, 1));
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
@@ -234,7 +234,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.ACCEPTED, new UUID(1, 1));
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withUnauthorizedRequest());
@@ -267,7 +267,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.ACCEPTED, new UUID(1, 1));
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withBadRequest());
@@ -333,7 +333,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.CHANGES, new UUID(1, 1), "delft");
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withSuccess("aojica65@gmail.com", MediaType.TEXT_PLAIN));
@@ -366,7 +366,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.CHANGES, new UUID(1, 1), new Date());
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withSuccess("aojica65@gmail.com", MediaType.TEXT_PLAIN));
@@ -399,7 +399,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.CHANGES, new UUID(1, 1), new Date());
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
@@ -432,7 +432,7 @@ public class IntegrationWithMocksTest {
                 NotificationStatus.CHANGES, new UUID(1, 1), "delft");
 
         //mocks the Users getEmailAddress endpoint
-        mockServer.expect(requestTo(uri + ":8082/get-email-address"))
+        mockServer.expect(requestTo(uri + ":8084/get-email-address"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(content().json("{\"username\": \"alex\"}"))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
