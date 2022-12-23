@@ -1,8 +1,11 @@
 package rowing.activity.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.h2.engine.User;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import rowing.activity.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import rowing.activity.domain.repositories.MatchRepository;
 import rowing.activity.services.ActivityService;
 import rowing.commons.Certificates;
 import rowing.commons.CoxCertificate;
+import rowing.commons.NotificationStatus;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
@@ -48,10 +52,10 @@ public class ActivityController {
     /**
      * Instantiates a new controller.
      *
-     * @param authManager Spring Security component used to authenticate and authorize the user
+     * @param authManager        Spring Security component used to authenticate and authorize the user
      * @param activityRepository the activity repository to be used
-     * @param matchRepository the match repository to be used
-     * @param activityService the activity service to be used
+     * @param matchRepository    the match repository to be used
+     * @param activityService    the activity service to be used
      */
     @Autowired
     public ActivityController(AuthManager authManager, ActivityRepository activityRepository,
@@ -157,6 +161,23 @@ public class ActivityController {
         } catch (IllegalArgumentException | JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
             //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Endpoint that lets the user disconnect from the activity using the id.
+     *
+     * @param activityId - the activity to disconnect from
+     * @return response if the sign-off was successful or not
+     */
+    @PostMapping("/signOff/{activityId}")
+    public ResponseEntity<String> signOffActivity(@PathVariable UUID activityId) {
+        String response = "";
+        try {
+            response = activityService.signOff(activityId);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok(response);
     }
@@ -292,5 +313,31 @@ public class ActivityController {
             }
         }
         return ResponseEntity.badRequest().body("ActivityId is not correct !");
+    }
+
+    /**
+     * Endpoint to return the userDTO object for the corresponding username.
+     *
+     * @param userId of the user
+     * @return a response entity with the userDTO object inside
+     */
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable String userId) {
+        try {
+            return ResponseEntity.ok(activityService.getUser(userId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Endpoint to return all participants of an activity.
+     *
+     * @param activityId of the activity
+     * @return a response entity with the list of participants inside
+     */
+    @GetMapping("/{activityId}/participants")
+    public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable UUID activityId) {
+        return ResponseEntity.ok(activityService.getParticipants(activityId));
     }
 }

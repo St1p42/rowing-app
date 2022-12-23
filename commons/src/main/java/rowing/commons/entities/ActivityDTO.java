@@ -61,6 +61,7 @@ public class ActivityDTO implements DTO {
     public String getName() {
         return name;
     }
+
     public String getBoatType() {
         return boatType;
     }

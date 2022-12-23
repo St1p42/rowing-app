@@ -35,7 +35,7 @@ public class Director {
         builder.setLocation(location);
         builder.setPositions(positions);
         builder.setApplicants(applicants);
-        builder.setBoatType(builder.getBoatType());
+        builder.setBoatType(boatType);
     }
 
     /**
@@ -53,7 +53,7 @@ public class Director {
         builder.setLocation(dto.getLocation());
         builder.setPositions(dto.getPositions());
         builder.setApplicants(dto.getApplicants());
-        builder.setBoatType(builder.getBoatType());
+        builder.setBoatType(dto.getBoatType());
     }
 
     /**
@@ -102,7 +102,7 @@ public class Director {
         builder.setPositions(dto.getPositions());
         builder.setGender(dto.getGender());
         builder.setOrganisation(dto.getOrganisation());
-        builder.setApplicants(builder.getApplicants());
-        builder.setBoatType(builder.getBoatType());
+        builder.setApplicants(dto.getApplicants());
+        builder.setBoatType(dto.getBoatType());
     }
 }

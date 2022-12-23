@@ -35,6 +35,10 @@ repositories {
 	mavenCentral()
 }
 
+jar {
+	enabled = true
+}
+
 dependencies {
 
 	implementation 'org.springframework.kafka:spring-kafka'
@@ -72,7 +76,7 @@ test {
 	useJUnitPlatform()
 	jacoco {
 		enabled = true
-		includes = ['rowing.*']
+		includes = ['rowing.user.*']
 		excludes = []
 	}
 }
@@ -87,7 +91,7 @@ jacocoTestCoverageVerification() {
 		rule {
 			enabled = true
 			element = 'CLASS'
-			includes = ['rowing.*']
+			includes = ['rowing.user.*']
 
 			limit {
 				counter = 'BRANCH'
@@ -116,7 +120,7 @@ pitest {
 	//adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
 	junit5PluginVersion = '0.12'
 
-	targetClasses = ['rowing.*']  //by default "${project.group}.*"
+	targetClasses = ['rowing.user.*']  //by default "${project.group}.*"
 	pitestVersion = '1.5.1' //not needed when a default PIT version should be used
 	threads = 4
 	outputFormats = ['XML', 'HTML']

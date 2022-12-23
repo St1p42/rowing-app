@@ -295,6 +295,34 @@ public class ActivityService {
     }
 
     /**
+     * Signs off a user from an activity.
+     *
+     * @param activityId - activity to be signed off from
+     * @return String - information about the user, activity and status of the operation.
+     * @throws IllegalArgumentException - if the activity is not found, or the user is not signed up for this activity
+     */
+    public String signOff(UUID activityId) throws IllegalArgumentException {
+        String username = authManager.getUsername();
+        Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
+        if (!optionalActivity.isPresent()) {
+            throw new IllegalArgumentException("Activity not found!");
+        }
+        Activity activity = optionalActivity.get();
+        if (!activity.getApplicants().contains(username)) {
+            throw new IllegalArgumentException("User has not signed-up for this activity");
+        }
+        Optional<Match> optionalMatch = matchRepository.findByActivityIdAndUserId(activityId, username);
+        if (optionalMatch.isPresent()) {
+            Match match = optionalMatch.get();
+            activity.getPositions().add(match.getPosition());
+            matchRepository.delete(match);
+        }
+        activity.getApplicants().remove(username);
+        activityRepository.save(activity);
+        return "User " + username + " has signed off from the activity : " + activityId;
+    }
+
+    /**
      * Rejects the user applied to the activity, and sends a notification to the user.
      *
      * @param activity that the owner wants to reject the user for
@@ -352,6 +380,55 @@ public class ActivityService {
             return "User " + userId + " is no longer participating !";
         }
         return "User " + userId + " kicked successfully !";
+    }
+
+    /**
+     * Returns the userDTO object for the corresponding username.
+     *
+     * @param userId of the user
+     * @return the userDTO object of the user
+     */
+    public UserDTO getUser(String userId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
+        ResponseEntity<UserDTO> response = restTemplate
+                .exchange(urlNotification + ":" + portUsers + "/user/" + userId + "/get-user",
+                        HttpMethod.GET, requestEntity, UserDTO.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        }
+        throw new IllegalArgumentException();
+    }
+
+    /**
+     * Method to return all participants of an activity.
+     *
+     * @param activityId of the activity
+     * @return list of users
+     */
+    public List<UserDTO> getParticipants(UUID activityId) {
+        List<String> ids = new ArrayList<>();
+
+        if (matchRepository.existsByActivityId(activityId)) {
+            List<Match> matches = matchRepository.findAllByActivityId(activityId);
+            for (Match match : matches) {
+                if (match.getDto().getStatus() == NotificationStatus.ACCEPTED) {
+                    ids.add(match.getUserId());
+                }
+            }
+        }
+
+        List<UserDTO> users = new ArrayList<>();
+
+        for (String id : ids) {
+            users.add(getUser(id));
+        }
+
+        return users;
     }
 
     /**

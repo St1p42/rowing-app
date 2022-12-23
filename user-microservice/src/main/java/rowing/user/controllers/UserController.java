@@ -213,4 +213,18 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Endpoint for retrieving the user from the database with their username.
+     *
+     * @param userId of the user to get from the database
+     * @return a response entity containing the userDTO object of the requested user
+     */
+    @GetMapping("/{userId}/get-user")
+    public ResponseEntity<UserDTO> getUserSelected(@PathVariable String userId) {
+        if (!userRepository.findByUserId(userId).isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(userService.getUserSelected(userId));
+    }
+
 }

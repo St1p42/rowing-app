@@ -40,7 +40,7 @@ test {
     useJUnitPlatform()
     jacoco {
         enabled = true
-        includes = ['rowing.*']
+        includes = ['rowing.commons.*']
         excludes = []
     }
 }
@@ -51,7 +51,7 @@ jacocoTestCoverageVerification() {
         rule {
             enabled = true
             element = 'CLASS'
-            includes = ['rowing.*']
+            includes = ['rowing.commons.*']
 
             limit {
                 counter = 'BRANCH'

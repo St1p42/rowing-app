@@ -26,6 +26,10 @@ plugins {
 	id 'info.solidsoft.pitest' version '1.5.2'
 }
 
+jar {
+	enabled = true
+}
+
 group = 'rowing'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 11
