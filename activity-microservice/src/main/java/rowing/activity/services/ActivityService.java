@@ -391,7 +391,7 @@ public class ActivityService {
 
         HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
         ResponseEntity<UserDTO> response = restTemplate.
-                exchange(urlNotification + ":" + portUsers + "/user/get-user",
+                exchange(urlNotification + ":" + portUsers + "/user/" + userId + "/get-user",
                         HttpMethod.GET, requestEntity, UserDTO.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {

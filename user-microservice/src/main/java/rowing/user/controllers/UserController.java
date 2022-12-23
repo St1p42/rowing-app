@@ -191,4 +191,12 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{userId}/get-user")
+    public ResponseEntity<UserDTO> getUserSelected(@PathVariable String userId){
+        if(!userRepository.findByUserId(userId).isPresent()){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(userService.getUserSelected(userId));
+    }
+
 }

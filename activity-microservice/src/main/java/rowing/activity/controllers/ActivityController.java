@@ -287,7 +287,11 @@ public class ActivityController {
      */
     @GetMapping("/user/{userId}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String userId){
-        return ResponseEntity.ok(activityService.getUser(userId));
+        try {
+            return ResponseEntity.ok(activityService.getUser(userId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**
@@ -298,6 +302,11 @@ public class ActivityController {
      */
     @GetMapping("/{activityId}/participants")
     public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable UUID activityId){
-        return ResponseEntity.ok(activityService.getParticipants(activityId));
+        try {
+            return ResponseEntity.ok(activityService.getParticipants(activityId));
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
