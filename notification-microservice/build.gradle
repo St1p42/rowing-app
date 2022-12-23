@@ -104,7 +104,7 @@ jacocoTestCoverageVerification() {
 			enabled = true
 			element = 'CLASS'
 			includes = ['rowing.notification.*']
-
+			excludes = ['rowing.notification.integration.IntegrationTest.java']
 			limit {
 				counter = 'BRANCH'
 				value = 'COVEREDRATIO'
