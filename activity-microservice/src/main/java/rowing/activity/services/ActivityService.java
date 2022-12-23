@@ -350,15 +350,52 @@ public class ActivityService {
         return "User " + userId + " kicked successfully !";
     }
 
+    /**
+     * Returns the userDTO object for the corresponding username.
+     *
+     * @param userId of the user
+     * @return the userDTO object of the user
+     */
     public UserDTO getUser(String userId){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
         ResponseEntity<UserDTO> response = restTemplate.
                 exchange(urlNotification + ":" + portUsers + "/user/get-user",
                         HttpMethod.GET, requestEntity, UserDTO.class);
 
-        return response.getBody();
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        }
+        throw new IllegalArgumentException();
+    }
+
+    /**
+     * Method to return all participants of an activity.
+     *
+     * @param activityId of the activity
+     * @return list of users
+     */
+    public List<UserDTO> getParticipants(UUID activityId){
+        List<String> ids = new ArrayList<>();
+
+        if (matchRepository.existsByActivityId(activityId)) {
+            List<Match> matches = matchRepository.findAllByActivityId(activityId);
+            for (Match match : matches) {
+                if (match.getDto().getStatus() == NotificationStatus.ACCEPTED) {
+                    ids.add(match.getUserId());
+                }
+            }
+        }
+
+        List<UserDTO> users = new ArrayList<>();
+
+        for (String id : ids) {
+            users.add(getUser(id));
+        }
+
+        return users;
     }
 }
