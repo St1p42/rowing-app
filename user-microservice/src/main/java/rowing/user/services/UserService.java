@@ -86,7 +86,13 @@ public class UserService {
         return updatedUserDTO;
     }
 
-    public UserDTO getUserSelected(String userId){
+    /**
+     * Mehod for retrieving the user from the database with their username.
+     *
+     * @param userId of the user to get from the database
+     * @return the userDTO object of the requested user
+     */
+    public UserDTO getUserSelected(String userId) {
         return userRepository.findByUserId(userId).get().toDTO();
     }
 }

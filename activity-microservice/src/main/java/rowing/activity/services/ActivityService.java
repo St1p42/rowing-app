@@ -356,14 +356,14 @@ public class ActivityService {
      * @param userId of the user
      * @return the userDTO object of the user
      */
-    public UserDTO getUser(String userId){
+    public UserDTO getUser(String userId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
-        ResponseEntity<UserDTO> response = restTemplate.
-                exchange(urlNotification + ":" + portUsers + "/user/" + userId + "/get-user",
+        ResponseEntity<UserDTO> response = restTemplate
+                .exchange(urlNotification + ":" + portUsers + "/user/" + userId + "/get-user",
                         HttpMethod.GET, requestEntity, UserDTO.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -378,7 +378,7 @@ public class ActivityService {
      * @param activityId of the activity
      * @return list of users
      */
-    public List<UserDTO> getParticipants(UUID activityId){
+    public List<UserDTO> getParticipants(UUID activityId) {
         List<String> ids = new ArrayList<>();
 
         if (matchRepository.existsByActivityId(activityId)) {
