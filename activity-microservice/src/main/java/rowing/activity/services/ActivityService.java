@@ -54,6 +54,9 @@ public class ActivityService {
     @Value("${pathNotify}")
     String pathNotify;
 
+    @Value("${portUsers}")
+    String portUsers;
+
     /**
      * Constructor for the ActivityService class.
      *
@@ -345,5 +348,17 @@ public class ActivityService {
             return "User " + userId + " is no longer participating !";
         }
         return "User " + userId + " kicked successfully !";
+    }
+
+    public UserDTO getUser(String userId){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
+        ResponseEntity<UserDTO> response = restTemplate.
+                exchange(urlNotification + ":" + portUsers + "/user/get-user",
+                        HttpMethod.GET, requestEntity, UserDTO.class);
+
+        return response.getBody();
     }
 }
