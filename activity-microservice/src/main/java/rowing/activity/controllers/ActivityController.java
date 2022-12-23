@@ -112,6 +112,7 @@ public class ActivityController {
     }
 
     /** Endpoint to update the activity.
+     *
      * @param activityId - the id of the activity to be updated
      * @param dto - the activityDTO that contains the new information
      * @return activityDTO - the activity that has been updated

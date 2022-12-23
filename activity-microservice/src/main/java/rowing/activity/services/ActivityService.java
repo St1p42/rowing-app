@@ -357,7 +357,8 @@ public class ActivityService {
      * @return activityDto - the activityDto corresponding to the updated activity
      * @throws IllegalArgumentException - if the activity is not found in the database
      */
-    public String updateActivity(UUID activityId, ActivityDTO updateActivityDto) throws IllegalArgumentException, JsonProcessingException {
+    public String updateActivity(UUID activityId, ActivityDTO updateActivityDto)
+            throws IllegalArgumentException, JsonProcessingException {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
         if (optionalActivity.isPresent()) {
             throw new IllegalArgumentException("Activity does not exist !");
@@ -388,10 +389,10 @@ public class ActivityService {
         //get all participants of the activity
         List<String> participants = new ArrayList<>();
 
-        if(matchRepository.existsByActivityId(activityId)){
+        if (matchRepository.existsByActivityId(activityId)) {
             List<Match> matches = matchRepository.findAllByActivityId(activityId);
-            for(Match match : matches){
-                if(match.getDto().getStatus() == NotificationStatus.ACCEPTED){
+            for (Match match : matches) {
+                if (match.getDto().getStatus() == NotificationStatus.ACCEPTED) {
                     participants.add(match.getUserId());
                 }
             }
@@ -418,18 +419,17 @@ public class ActivityService {
             HttpEntity requestHttpUser = new HttpEntity(userId, headersUser);
 
             //sending the request
-            ResponseEntity<List<AvailabilityIntervals>> response = restTemplate.exchange(uriUser, HttpMethod.GET, requestHttpUser,
-                    new ParameterizedTypeReference<List<AvailabilityIntervals>>() {
-                    }, userId);
+            ResponseEntity<List<AvailabilityIntervals>> response =
+                    restTemplate.exchange(uriUser, HttpMethod.GET, requestHttpUser,
+                    new ParameterizedTypeReference<List<AvailabilityIntervals>>() {}, userId);
 
             //checking the response
             if (response.getStatusCode() == HttpStatus.OK) {
                 List<AvailabilityIntervals> availability = response.getBody();
                 if (!checkAvailability(activity, availability)) {
-
+                    kickUser(activity, userId);
                 }
             }
-
         }
 
         activityRepository.save(activity);

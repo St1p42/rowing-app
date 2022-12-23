@@ -25,6 +25,7 @@ public class CompetitionBuilder implements Builder {
     private String boatType;
 
     public Competition build() {
-        return new Competition(id, owner, name, type, start, location, gender, organisation, positions, applicants, boatType);
+        return new Competition(id, owner, name, type, start, location,
+                gender, organisation, positions, applicants, boatType);
     }
 }

@@ -48,6 +48,7 @@ public class ActivityServiceTest {
     private transient MatchRepository mockMatchRepository = mock(MatchRepository.class);
     @Autowired
     private transient AuthManager mockAuthenticationManager;
+
     private ActivityService activityService;
 
     Activity amateurTraining;
@@ -87,13 +88,13 @@ public class ActivityServiceTest {
 
         director.constructTraining((TrainingBuilder) trainingBuilder, UUID.randomUUID(),
                 "Admin", "Amateur Training", "Training",
-                amateurTrainingDate, positionList, applicantList, "C4");
+                amateurTrainingDate, "Aula", positionList, applicantList, "C4");
         amateurTraining = trainingBuilder.build();
 
         Builder competitionBuilder = new CompetitionBuilder();
         director.constructCompetition((CompetitionBuilder) competitionBuilder, UUID.randomUUID(),
                 "Admin", "Amateur Competition", "Competition",
-                amateurCompetitionDate,  Gender.MALE, "TUDelft", positionList, applicantList, "C4");
+                amateurCompetitionDate, "Aula", Gender.MALE, "TUDelft", positionList, applicantList, "C4");
         amateurCompetition = competitionBuilder.build();
 
         availability = new ArrayList<AvailabilityIntervals>();
