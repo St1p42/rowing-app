@@ -133,10 +133,10 @@ public class ActivityController {
         try {
             result = activityService.updateActivity(activityId, dto);
         } catch (IllegalArgumentException e) {
-            if(e.getMessage().equals("Activity does not exist !")) {
+            if (e.getMessage().equals("Activity does not exist !")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist !");
             }
-            if(e.getMessage().equals(("Activity start time is in the past !"))) {
+            if (e.getMessage().equals(("Activity start time is in the past !"))) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Activity start time is in the past !");
             }
         }

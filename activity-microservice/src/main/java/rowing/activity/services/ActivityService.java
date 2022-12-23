@@ -402,7 +402,7 @@ public class ActivityService {
         headersNotification.setContentType(MediaType.APPLICATION_JSON);
         headersNotification.setBearerAuth(token);
 
-        for(String username: participants){
+        for (String username : participants) {
             requestModel.setUsername(username);
             String bodyNotification = JsonUtil.serialize(requestModel);
             HttpEntity requestNotification = new HttpEntity(bodyNotification, headersNotification);
@@ -411,7 +411,7 @@ public class ActivityService {
                     HttpMethod.POST, requestNotification, String.class);
 
 
-        //Check if any participants are not available for the new date and remove them from the activity if they are not
+            //Check if any participants are not available for the new date and remove them from the activity if they are not
             if (optionalStart.isPresent()) {
                 //building the request for the user availability
                 String uriUser = urlNotification + ":" + portUsers + pathUserController + pathUserAvailability;
@@ -446,7 +446,7 @@ public class ActivityService {
      * Gets the list of accepted participants of an activity.
      *
      * @param activityId - the UUID corresponding to the activity
-     * @return List<String> - the list of accepted participants
+     * @return the list of accepted participants
      */
     public List<String> getParticipantIDs(UUID activityId) {
         List<String> participants = new ArrayList<>();

@@ -931,7 +931,7 @@ public class ActivityControllerTest {
 
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void ActivityUpdatedSuccessfullyEmptyUpdate() throws Exception {
+    public void activityUpdatedSuccessfullyEmptyUpdate() throws Exception {
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
 
@@ -954,7 +954,7 @@ public class ActivityControllerTest {
 
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void ActivityUpdatedSuccessfullyChanges() throws Exception {
+    public void activityUpdatedSuccessfullyChanges() throws Exception {
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
 
