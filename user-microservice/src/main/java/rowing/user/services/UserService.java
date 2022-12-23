@@ -85,4 +85,8 @@ public class UserService {
 
         return updatedUserDTO;
     }
+
+    public UserDTO getUserSelected(String userId){
+        return userRepository.findByUserId(userId).get().toDTO();
+    }
 }
