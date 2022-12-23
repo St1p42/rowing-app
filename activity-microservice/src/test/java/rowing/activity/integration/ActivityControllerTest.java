@@ -1238,27 +1238,65 @@ public class ActivityControllerTest {
         assertThat(response).isEqualTo("Only the owner of the activity can kick users");
     }
 
-//    @Test
-//    @Transactional(propagation = Propagation.REQUIRES_NEW)
-//    public void getUserTest() throws Exception {
-//
-//        UserDTO userDTO = exampleUser;
-//
-//        mockServer.expect(requestTo("http://localhost:8084/user/" + userDTO.getUserId() + "/get-user"))
-//                .andExpect(method(HttpMethod.GET))
-//                .andRespond(withSuccess(JsonUtil.serialize(userDTO), MediaType.APPLICATION_JSON));
-//
-//        RequestBuilder requestBuilder = MockMvcRequestBuilders
-//                .get("/activity/user/" + userDTO.getUserId())
-//                .header("Authorization", "Bearer MockedToken")
-//                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(userDTO))
-//                .contentType(MediaType.APPLICATION_JSON);
-//
-//        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-//        mockServer.verify();
-//        // Assert
-//        String response = result.getResponse().getContentAsString();
-//
-//        assertThat(response).isEqualTo(userDTO);
-//    }
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void getUserTest() throws Exception {
+
+        UserDTO userDTO = exampleUser;
+
+        mockServer.expect(requestTo("http://localhost:8084/user/" + userDTO.getUserId() + "/get-user"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(userDTO), MediaType.APPLICATION_JSON));
+
+
+        ResultActions result = mockMvc.perform(get("/activity/user/" + userDTO.getUserId())
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isOk());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        String response = result.andReturn().getResponse().getContentAsString();
+
+        mockServer.verify();
+        // Assert
+
+        assertThat(response).isEqualTo(objectMapper.writeValueAsString(userDTO));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void getParticipantsTest() throws Exception {
+
+        UserDTO userDTO = exampleUser;
+
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+
+        training = mockActivityRepository.save(training);
+        UUID id = training.getId();
+
+        mockMatchRepository.save(new Match(UUID.randomUUID(), id, "Efe", Position.COACH));
+
+        mockServer.expect(requestTo("http://localhost:8084/user/Efe/get-user"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(userDTO), MediaType.APPLICATION_JSON));
+
+
+        ResultActions result = mockMvc.perform(get("/activity/" + id + "/participants")
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isOk());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        String response = result.andReturn().getResponse().getContentAsString();
+
+        mockServer.verify();
+        // Assert
+
+        assertThat(response).isEqualTo(objectMapper.writeValueAsString(new ArrayList<>(Arrays.asList(userDTO))));
+    }
 }
