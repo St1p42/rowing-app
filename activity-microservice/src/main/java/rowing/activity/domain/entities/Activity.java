@@ -40,6 +40,9 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
     @Column(name = "date", nullable = false)
     private Date start;
 
+    @Column(name = "location", nullable = false)
+    private String location;
+
     @Column(name = "positions")
     @ElementCollection
     private List<Position> positions;
@@ -73,18 +76,22 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
 
         this.type = dto.getType();
         this.start = dto.getStart();
+        this.location = dto.getLocation();
         this.positions = dto.getPositions();
         this.applicants = dto.getApplicants();
         this.boatType = dto.getBoatType();
     }
 
     /**
-     * Function that puts an user on the application list.
+     * Add an applicant to the list of applicants.
      *
-     * @param userName name of the user we add to the applicant list
+     * @param applicant to add
      */
-    public void addApplicant(String userName) {
-        this.applicants.add(userName);
+    public void addApplicant(String applicant) {
+        if (this.applicants == null) {
+            this.applicants = new ArrayList<>();
+        }
+        this.applicants.add(applicant);
     }
 
     /**
@@ -99,6 +106,7 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
                 this.name,
                 this.type,
                 this.start,
+                this.location,
                 this.positions,
                 this.applicants,
                 this.boatType

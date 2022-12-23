@@ -79,7 +79,7 @@ test {
 	jacoco {
 		enabled = true
 		includes = ['rowing.notification.*']
-		excludes = []
+		excludes = ['rowing.notification.integration.IntegrationTest.java']
 	}
 
 	finalizedBy jacocoTestReport

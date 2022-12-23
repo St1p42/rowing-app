@@ -32,6 +32,9 @@ public class ActivityDTO implements DTO {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date start;
+
+    private String location;
+
     private List<Position> positions;
 
     private  List<String> applicants;
@@ -82,17 +85,20 @@ public class ActivityDTO implements DTO {
      *
      * @param start time of the activity
      *
+     * @param location location of the activity
+     *
      * @param positions required for the activity
      *
      * @param applicants for this activity
      */
     public ActivityDTO(UUID id, String owner, String name, String type, Date start,
-                       List<Position> positions, List<String> applicants, String boatType) {
+                       String location, List<Position> positions, List<String> applicants, String boatType) {
         this.id = id;
         this.owner = owner;
         this.name = name;
         this.type = type;
         this.start = start;
+        this.location = location;
         this.positions = positions;
         this.applicants = applicants;
         this.boatType = boatType;
@@ -106,6 +112,13 @@ public class ActivityDTO implements DTO {
     public Date getStart() {
         return start;
     }
+
+    /**
+     * Getter for the location of the activity.
+     *
+     * @return the location of the activity
+     */
+    public String getLocation() { return location; }
 
     /**
      * Getter for the list of positions.
@@ -136,6 +149,7 @@ public class ActivityDTO implements DTO {
         this.name = dto.getName();
         this.type = dto.getType();
         this.start = dto.getStart();
+        this.location = dto.getLocation();
         this.positions = dto.getPositions();
         this.applicants = dto.getApplicants();
         this.boatType = dto.getBoatType();
