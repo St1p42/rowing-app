@@ -128,7 +128,7 @@ public class ActivityController {
      * @param activityId - the activity to disconnect from
      * @return response if the sign-off was successful or not
      */
-    @PostMapping("/sign-off/{activityId}")
+    @PostMapping("/signOff/{activityId}")
     public ResponseEntity<String> signOffActivity(@PathVariable UUID activityId) {
         String response = "";
         try {

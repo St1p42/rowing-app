@@ -692,7 +692,7 @@ public class ActivityControllerTest {
         match.setActivityId(trainingId); // Make sure to set for the activity you want to sign up for
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", trainingId)
+                .post("/activity/signOff/{activityId}", trainingId)
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -719,7 +719,7 @@ public class ActivityControllerTest {
         match.setActivityId(competitionId); // Make sure to set for the activity you want to sign up for
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", competitionId)
+                .post("/activity/signOff/{activityId}", competitionId)
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -747,7 +747,7 @@ public class ActivityControllerTest {
         Match match1 = new Match(UUID.randomUUID(), trainingId, "Admin", Position.COACH);
         mockMatchRepository.save(match1);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", trainingId)
+                .post("/activity/signOff/{activityId}", trainingId)
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -775,7 +775,7 @@ public class ActivityControllerTest {
         Match match1 = new Match(UUID.randomUUID(), competitionId, "Admin", Position.COACH);
         mockMatchRepository.save(match1);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", competitionId)
+                .post("/activity/signOff/{activityId}", competitionId)
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -800,7 +800,7 @@ public class ActivityControllerTest {
         trainingId = activity.getId();
         //System.out.println(mockActivityRepository.existsById(trainingId));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", UUID.randomUUID())
+                .post("/activity/signOff/{activityId}", UUID.randomUUID())
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -823,7 +823,7 @@ public class ActivityControllerTest {
         competitionId = activity.getId();
         //System.out.println(mockActivityRepository.existsById(trainingId));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", UUID.randomUUID())
+                .post("/activity/signOff/{activityId}", UUID.randomUUID())
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -849,7 +849,7 @@ public class ActivityControllerTest {
         Match match1 = new Match(UUID.randomUUID(), trainingId, "Admin", Position.COACH);
         mockMatchRepository.save(match1);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", UUID.randomUUID())
+                .post("/activity/signOff/{activityId}", UUID.randomUUID())
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -875,7 +875,7 @@ public class ActivityControllerTest {
         mockMatchRepository.save(match1);
         //System.out.println(mockActivityRepository.existsById(trainingId));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", UUID.randomUUID())
+                .post("/activity/signOff/{activityId}", UUID.randomUUID())
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -897,7 +897,7 @@ public class ActivityControllerTest {
         trainingId = activity.getId();
         //System.out.println(mockActivityRepository.existsById(trainingId));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", trainingId)
+                .post("/activity/signOff/{activityId}", trainingId)
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -919,7 +919,7 @@ public class ActivityControllerTest {
         competitionId = activity.getId();
         //System.out.println(mockActivityRepository.existsById(trainingId));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", competitionId)
+                .post("/activity/signOff/{activityId}", competitionId)
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -944,7 +944,7 @@ public class ActivityControllerTest {
         Match match1 = new Match(UUID.randomUUID(), trainingId, "Admin", Position.COACH);
         mockMatchRepository.save(match1);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", trainingId)
+                .post("/activity/signOff/{activityId}", trainingId)
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -969,7 +969,7 @@ public class ActivityControllerTest {
         mockMatchRepository.save(match1);
         //System.out.println(mockActivityRepository.existsById(trainingId));
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/activity/sign-off/{activityId}", competitionId)
+                .post("/activity/signOff/{activityId}", competitionId)
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON);
 
