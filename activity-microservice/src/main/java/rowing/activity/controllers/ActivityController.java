@@ -259,4 +259,33 @@ public class ActivityController {
 
         return ResponseEntity.ok(activityService.rejectUser(activity, model));
     }
+
+
+    /**
+     * Endpoint that kicks an user from signUp and participation for a certain activity.
+     *
+     * @param activityId id of the activity they owner wants to kick the user from
+     * @param userId id of the user that gets kicked
+     * @return response if user has been kicked or not
+     */
+    @PostMapping("/{activityId}/kick")
+    public ResponseEntity<String> kickUser(@PathVariable("activityId") UUID activityId,
+                                             @RequestBody String userId)  {
+        String response;
+        Optional<Activity> activityOpt = activityRepository.findActivityById(activityId);
+        if (activityOpt.isPresent()) {
+            Activity activity = activityOpt.get();
+            if (!authManager.getUsername().equals(activity.getOwner())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only the owner of the activity can kick users");
+            }
+            try {
+                response = activityService.kickUser(activity, userId);
+                return ResponseEntity.ok(response);
+            } catch (IllegalArgumentException e) {
+                response = e.getMessage();
+                return ResponseEntity.badRequest().body(response);
+            }
+        }
+        return ResponseEntity.badRequest().body("ActivityId is not correct !");
+    }
 }

@@ -316,6 +316,37 @@ public class ActivityService {
         return "User " + model.getUserId() + " is rejected successfully";
     }
 
+    /**
+     * Function that kicks an user from the repository.
+     *
+     * @param activity activity information
+     * @param userId id of the user that needs to be kicked
+     * @return message containing if the user has been kicked or not
+     * @throws IllegalArgumentException if the input is invalid
+     */
+    public String kickUser(Activity activity, String userId) throws IllegalArgumentException {
+        boolean signedUp = false;
+        System.out.println(userId + "\n");
+        for (int i = 0; i < activity.getApplicants().size(); i++) {
+            System.out.println(activity.getApplicants().get(i).toString());
+            if (activity.getApplicants().get(i).equals(userId)) {
+                List<String> list = activity.getApplicants();
+                list.remove(i);
+                activity.setApplicants(list);
+                signedUp = true;
+            }
+        }
+        if (!signedUp) {
+            throw new IllegalArgumentException("User " + userId + " was not signed up for this activity !");
+        }
+        activityRepository.save(activity);
+        Optional<Match> match = matchRepository.findByActivityIdAndUserId(activity.getId(), userId);
+        if (match.isPresent()) {
+            matchRepository.delete(match.get());
+            return "User " + userId + " is no longer participating !";
+        }
+        return "User " + userId + " kicked successfully !";
+    }
 
     /**
      * Method to update an activity in the repository.
