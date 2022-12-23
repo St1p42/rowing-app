@@ -89,7 +89,7 @@ public class IntegrationTest {
                         "test", null, null, null, null);
         String body = JsonUtil.serialize(updateUserDTO);
         HttpEntity requestHttp = new HttpEntity(body, headers);
-        System.out.println(body);
+        //System.out.println(body);
         restTemplate.exchange("http://localhost:8084/user/update-user", HttpMethod.POST, requestHttp, UserDTO.class);
     }
 
