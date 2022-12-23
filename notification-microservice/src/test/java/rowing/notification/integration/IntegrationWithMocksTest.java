@@ -90,6 +90,9 @@ public class IntegrationWithMocksTest {
                 .header("Authorization", "Bearer MockedToken")
                 .content(JsonUtil.serialize(requestModel)));
 
+        // verify if the request was made
+        mockServer.verify();
+
         // Assert
         result.andExpect(status().isOk());
     }
@@ -250,7 +253,7 @@ public class IntegrationWithMocksTest {
     }
 
     @Test
-    public void testBadRequesUsers() throws Exception {
+    public void testBadRequestUsers() throws Exception {
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.

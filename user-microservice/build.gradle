@@ -76,7 +76,7 @@ test {
 	useJUnitPlatform()
 	jacoco {
 		enabled = true
-		includes = ['rowing.*']
+		includes = ['rowing.user.*']
 		excludes = []
 	}
 }
