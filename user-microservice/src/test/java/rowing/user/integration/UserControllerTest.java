@@ -1,11 +1,13 @@
 package rowing.user.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -562,5 +564,38 @@ public class UserControllerTest {
         String response = result.andReturn().getResponse().getErrorMessage();
 
         assertThat(response).isEqualTo("Input types incorrect.");
+    }
+
+    @Test
+    public void getUserTest() throws Exception {
+        User originalUser = new User("bogdan", "lala", "lala", "bogdan@gmail.com");
+        when(mockAuthenticationManager.getUsername()).thenReturn("bogdan");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("bogdan");
+
+        when(mockUserRepository.findByUserId("bogdan")).thenReturn(Optional.of(originalUser));
+
+        ResultActions result = mockMvc.perform(get("/user/bogdan/get-user")
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        String response = result.andReturn().getResponse().getContentAsString();
+        JSONAssert.assertEquals(mapper.writeValueAsString(originalUser.toDTO()), response, false);
+    }
+
+    @Test
+    public void noUserTest() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("bogdan");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockJwtTokenVerifier.getUsernameFromToken(anyString())).thenReturn("bogdan");
+
+
+        ResultActions result = mockMvc.perform(get("/user/bogdan/get-user")
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isBadRequest());
     }
 }

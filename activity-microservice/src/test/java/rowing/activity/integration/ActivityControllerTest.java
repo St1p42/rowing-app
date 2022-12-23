@@ -3,6 +3,7 @@ package rowing.activity.integration;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -1298,5 +1299,24 @@ public class ActivityControllerTest {
         // Assert
 
         assertThat(response).isEqualTo(objectMapper.writeValueAsString(new ArrayList<>(Arrays.asList(userDTO))));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void noUserTest() throws Exception {
+
+        UserDTO userDTO = exampleUser;
+
+        mockServer.expect(requestTo("http://localhost:8084/user/" + userDTO.getUserId() + "/get-user"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withBadRequest());
+
+
+        ResultActions result = mockMvc.perform(get("/activity/user/" + userDTO.getUserId())
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isBadRequest());
+        mockServer.verify();
     }
 }
