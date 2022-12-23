@@ -8,8 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import rowing.activity.authentication.AuthManager;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
@@ -20,23 +24,27 @@ import rowing.activity.domain.utils.Builder;
 import rowing.activity.services.ActivityService;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.Gender;
+import rowing.commons.NotificationStatus;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.MatchingDTO;
+import rowing.commons.entities.UserDTO;
+import rowing.commons.entities.utils.JsonUtil;
+import rowing.commons.models.NotificationRequestModel;
+import rowing.commons.models.UserDTORequestModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -179,4 +187,5 @@ public class ActivityServiceTest {
         verify(mockActivityRepository).delete(activity);
         verify(mockMatchRepository).deleteAll(mockMatchRepository.findAllByActivityId(id));
     }
+
 }
