@@ -524,6 +524,10 @@ public class ActivityControllerTest {
     public void userAcceptedSuccessfully() throws Exception {
 
         Activity training = amateurTraining;
+        List<Position> positionListNew = new ArrayList<>();
+        positionListNew.add(Position.COACH);
+        positionListNew.add(Position.COX);
+        training.setPositions(positionListNew);
         training.setApplicants(new ArrayList<>(Arrays.asList("Efe")));
         UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
 
