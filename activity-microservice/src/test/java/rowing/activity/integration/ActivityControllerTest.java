@@ -7,12 +7,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -55,12 +53,6 @@ import rowing.commons.entities.UserDTO;
 import rowing.commons.entities.utils.JsonUtil;
 import rowing.commons.models.NotificationRequestModel;
 import rowing.commons.models.UserDTORequestModel;
-//import com.fasterxml.jackson.*;
-
-import javax.persistence.Transient;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -153,16 +145,16 @@ public class ActivityControllerTest {
 
         director.constructTraining((TrainingBuilder) trainingBuilder, UUID.randomUUID(),
                 "Amateur Training", "Admin", "Training",
-                amateurTrainingDate, positionList, applicantList, "C4");
+                amateurTrainingDate, "Aula", positionList, applicantList, "C4");
         amateurTraining = trainingBuilder.build();
 
         Builder competitionBuilder = new CompetitionBuilder();
         director.constructCompetition((CompetitionBuilder) competitionBuilder, UUID.randomUUID(),
                 "Amateur Competition", "Admin", "Competition",
-                amateurCompetitionDate,  Gender.MALE, "TUDelft", positionList, applicantList, "C4");
+                amateurCompetitionDate,  "Aula", Gender.MALE, "TUDelft", positionList, applicantList, "C4");
         amateurCompetition = competitionBuilder.build();
 
-        availability = new ArrayList<AvailabilityIntervals>();
+        availability = new ArrayList<>();
         availability.add(new AvailabilityIntervals("wednesday", "14:05", "14:06"));
         availability.add(new AvailabilityIntervals("thursday", "16:05", "16:06"));
         match = new MatchingDTO(UUID.randomUUID(), null,
