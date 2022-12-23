@@ -20,10 +20,10 @@ public class AvailabilityIntervalsAttributeConverter implements AttributeConvert
 
     @Override
     public List<AvailabilityIntervals> convertToEntityAttribute(String dbData) {
-        if (dbData == null) {
+        if (dbData == null || dbData.length() == 0) {
             return null;
         }
-        System.out.println(dbData);
+        System.out.println(dbData.length());
         String[] av = dbData.split(", ");
         List<AvailabilityIntervals> sol = new ArrayList<AvailabilityIntervals>();
         for (String availability : av) {

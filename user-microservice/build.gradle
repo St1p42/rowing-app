@@ -35,6 +35,10 @@ repositories {
 	mavenCentral()
 }
 
+jar {
+	enabled = true
+}
+
 dependencies {
 
 	implementation 'org.springframework.kafka:spring-kafka'
@@ -72,7 +76,7 @@ test {
 	useJUnitPlatform()
 	jacoco {
 		enabled = true
-		includes = ['rowing.*']
+		includes = ['rowing.user.*']
 		excludes = []
 	}
 }

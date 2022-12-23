@@ -40,10 +40,16 @@ public class Certificates {
         return false;
     }
 
-    public static CoxCertificate getCertificate(String name){
-        if (existByName(name)){
-            for(CoxCertificate certificate : certificatesList){
-                if(certificate.getName().equals(name)){
+    /**
+     * Gets certificate.
+     *
+     * @param name name of certificate
+     * @return a certificate
+     */
+    public static CoxCertificate getCertificate(String name) {
+        if (existByName(name)) {
+            for (CoxCertificate certificate : certificatesList) {
+                if (certificate.getName().equals(name)) {
                     return certificate;
                 }
             }
