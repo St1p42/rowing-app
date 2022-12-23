@@ -91,7 +91,7 @@ public class ActivityDTO implements DTO {
      * @param applicants for this activity
      */
     public ActivityDTO(UUID id, String owner, String name, String type, Date start,
-                       List<Position> positions, List<String> applicants, String boatType) {
+                       String location, List<Position> positions, List<String> applicants, String boatType) {
         this.id = id;
         this.owner = owner;
         this.name = name;
@@ -148,6 +148,7 @@ public class ActivityDTO implements DTO {
         this.name = dto.getName();
         this.type = dto.getType();
         this.start = dto.getStart();
+        this.location = dto.getLocation();
         this.positions = dto.getPositions();
         this.applicants = dto.getApplicants();
         this.boatType = dto.getBoatType();

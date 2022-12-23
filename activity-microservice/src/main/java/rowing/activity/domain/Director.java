@@ -25,12 +25,14 @@ public class Director {
      * @param applicants list of applicants names
      */
     public void constructTraining(TrainingBuilder builder, UUID id, String name, String owner, String type,
-                                  Date start, List<Position> positions, List<String> applicants, String boatType) {
+                                  Date start, String location,
+                                  List<Position> positions, List<String> applicants, String boatType) {
         builder.setId(id);
         builder.setName(name);
         builder.setOwner(owner);
         builder.setType(type);
         builder.setStart(start);
+        builder.setLocation(location);
         builder.setPositions(positions);
         builder.setApplicants(applicants);
         builder.setBoatType(builder.getBoatType());
@@ -69,13 +71,14 @@ public class Director {
      * @param applicants list of applicants names
      */
     public void constructCompetition(CompetitionBuilder builder, UUID id, String name, String owner, String type,
-                                     Date start, Gender gender, String organisation,
+                                     Date start, String location, Gender gender, String organisation,
                                      List<Position> positions, List<String> applicants, String boatType) {
         builder.setId(id);
         builder.setName(name);
         builder.setOwner(owner);
         builder.setType(type);
         builder.setStart(start);
+        builder.setLocation(location);
         builder.setGender(gender);
         builder.setOrganisation(organisation);
         builder.setPositions(positions);

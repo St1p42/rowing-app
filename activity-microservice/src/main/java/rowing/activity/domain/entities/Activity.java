@@ -28,26 +28,26 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Column(name = "owner", nullable = false, unique = false)
+    @Column(name = "owner", nullable = false)
     private String owner;
 
-    @Column(name = "name", nullable = false, unique = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "type", nullable = true, unique = false)
+    @Column(name = "type")
     private String type;
 
-    @Column(name = "date", nullable = false, unique = false)
+    @Column(name = "date", nullable = false)
     private Date start;
 
-    @Column(name = "location", nullable = false, unique = false)
+    @Column(name = "location", nullable = false)
     private String location;
 
-    @Column(name = "positions", nullable = true, unique = false)
+    @Column(name = "positions")
     @ElementCollection
     private List<Position> positions;
 
-    @Column(name = "applicants", nullable = true, unique = false)
+    @Column(name = "applicants")
     @ElementCollection
     private List<String> applicants;
 

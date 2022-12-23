@@ -395,7 +395,7 @@ public class ActivityService {
             if (response.getStatusCode() == HttpStatus.OK) {
                 List<AvailabilityIntervals> availability = response.getBody();
                 if (!checkAvailability(activity, availability)) {
-                    //remove the applicant
+
                 }
             }
 
