@@ -1,7 +1,9 @@
 package rowing.activity.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.h2.engine.User;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,6 +17,7 @@ import rowing.activity.domain.repositories.MatchRepository;
 import rowing.activity.services.ActivityService;
 import rowing.commons.Certificates;
 import rowing.commons.CoxCertificate;
+import rowing.commons.NotificationStatus;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.MatchingDTO;
@@ -276,8 +279,25 @@ public class ActivityController {
         return ResponseEntity.badRequest().body("ActivityId is not correct !");
     }
 
+    /**
+     * Endpoint to return the userDTO object for the corresponding username.
+     *
+     * @param userId of the user
+     * @return a response entity with the userDTO object inside
+     */
     @GetMapping("/user/{userId}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String userId){
         return ResponseEntity.ok(activityService.getUser(userId));
+    }
+
+    /**
+     * Endpoint to return all participants of an activity.
+     *
+     * @param activityId of the activity
+     * @return a response entity with the list of participants inside
+     */
+    @GetMapping("/{activityId}/participants")
+    public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable UUID activityId){
+        return ResponseEntity.ok(activityService.getParticipants(activityId));
     }
 }
