@@ -1351,7 +1351,6 @@ public class ActivityControllerTest {
         Date newAmateurTrainingDate = formatter.parse(dateString);
 
         ActivityDTO updatedActivity = training.toDto();
-        updatedActivity.setName("Updated Activity");
         updatedActivity.setStart(newAmateurTrainingDate);
         updatedActivity.setLocation("Updated Location");
 
@@ -1361,7 +1360,6 @@ public class ActivityControllerTest {
                 .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updatedActivity))
                 .contentType(MediaType.APPLICATION_JSON);
 
-        assertEquals(updatedActivity.getName(), "Updated Activity");
         assertEquals(updatedActivity.getLocation(), "Updated Location");
         assertEquals(updatedActivity.getStart(), newAmateurTrainingDate);
     }

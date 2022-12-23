@@ -433,7 +433,7 @@ public class ActivityService {
 
     /**
      * Method to update an activity in the repository.
-     * Fields that can be updated are: name, start, location.
+     * Fields that can be updated are: start time, location.
      *
      * @param activityId - the UUID corresponding to the activity that will be updated
      * @param updateActivityDto - the activityDto containing the information which the activity will be updated with
@@ -460,8 +460,6 @@ public class ActivityService {
             activity.setStart(newStart);
             requestModel.setDate(newStart);
         }
-
-        Optional.ofNullable(updateActivityDto.getName()).ifPresent(activity::setName);
 
         Optional<String> optionalLocation = Optional.ofNullable(updateActivityDto.getLocation());
         if (optionalLocation.isPresent()) {
