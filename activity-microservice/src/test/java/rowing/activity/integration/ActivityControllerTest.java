@@ -1,5 +1,7 @@
 package rowing.activity.integration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -930,10 +932,6 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void ActivityUpdatedSuccessfullyEmptyUpdate() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
-
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
 
@@ -943,7 +941,7 @@ public class ActivityControllerTest {
         ActivityDTO updatedActivity = training.toDto();
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .put("/activity/" + id + "/update-activity")
+                .patch("/activity/" + id + "/update-activity")
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updatedActivity))
                 .contentType(MediaType.APPLICATION_JSON);
@@ -957,10 +955,6 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void ActivityUpdatedSuccessfullyChanges() throws Exception {
-        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
-        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
-        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
-
         Activity training = amateurTraining;
         training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
 
@@ -977,9 +971,91 @@ public class ActivityControllerTest {
         updatedActivity.setLocation("Updated Location");
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .put("/activity/" + id + "/update-activity")
+                .patch("/activity/" + id + "/update-activity")
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updatedActivity))
                 .contentType(MediaType.APPLICATION_JSON);
+
+        assertEquals(updatedActivity.getName(), "Updated Activity");
+        assertEquals(updatedActivity.getLocation(), "Updated Location");
+        assertEquals(updatedActivity.getStart(), newAmateurTrainingDate);
     }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void youAreNotTheOwnerForActivityUpdateException() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
+
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+
+        training = mockActivityRepository.save(training);
+        UUID id = training.getId();
+
+        ActivityDTO updatedActivity = training.toDto();
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .patch("/activity/" + id + "/update-activity")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updatedActivity))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Only the owner of the activity can edit an activity !");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void newDateHasPassedActivityUpdateException() throws Exception {
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+
+        training = mockActivityRepository.save(training);
+        UUID id = training.getId();
+
+        String dateString = "26-09-1043 14:05:05";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        Date passedDate = formatter.parse(dateString);
+
+        ActivityDTO updatedActivity = training.toDto();
+        updatedActivity.setStart(passedDate);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .patch("/activity/" + id + "/update-activity")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updatedActivity))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Activity start time is in the past !");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void activityDoesNotExistForUpdateActivityException() throws Exception {
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+
+        UUID id = training.getId();
+
+        ActivityDTO updatedActivity = training.toDto();
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .patch("/activity/" + id + "/update-activity")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updatedActivity))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Activity does not exist !");
+    }
+
 }

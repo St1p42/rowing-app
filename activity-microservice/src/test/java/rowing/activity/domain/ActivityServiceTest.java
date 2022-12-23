@@ -20,6 +20,7 @@ import rowing.activity.domain.utils.Builder;
 import rowing.activity.services.ActivityService;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.Gender;
+import rowing.commons.NotificationStatus;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.MatchingDTO;
@@ -27,10 +28,7 @@ import rowing.commons.entities.MatchingDTO;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -190,4 +188,24 @@ public class ActivityServiceTest {
             ActivityService.checkNewStart(passedDate);
         });
     }
+
+    @Test
+    public void checkStartTrue() throws ParseException {
+        String dateString = "26-09-3043 14:05:05";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        Date futureDate = formatter.parse(dateString);
+
+        assertTrue(ActivityService.checkNewStart(futureDate));
+    }
+
+    @Test
+    public void checkStartCurrentFalse() throws ParseException {
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = calendar.getTime();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            ActivityService.checkNewStart(currentDate);
+        });
+    }
+
 }

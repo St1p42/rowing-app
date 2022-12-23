@@ -118,7 +118,8 @@ public class ActivityController {
      * @return activityDTO - the activity that has been updated
      */
     @PatchMapping("/{activityId}/update-activity")
-    public ResponseEntity<String> updateUser(@PathVariable("activityId") UUID activityId, @RequestBody ActivityDTO dto) {
+    public ResponseEntity<String> updateUser(@PathVariable("activityId") UUID activityId, @RequestBody ActivityDTO dto)
+        throws JsonProcessingException {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
         if (!optionalActivity.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist !");
@@ -132,9 +133,12 @@ public class ActivityController {
         try {
             result = activityService.updateActivity(activityId, dto);
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
-        } catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ActivityDTO was not valid", e);
+            if(e.getMessage().equals("Activity does not exist !")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist !");
+            }
+            if(e.getMessage().equals(("Activity start time is in the past !"))) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Activity start time is in the past !");
+            }
         }
         return ResponseEntity.ok(result);
     }

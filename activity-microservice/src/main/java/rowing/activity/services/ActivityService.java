@@ -55,6 +55,9 @@ public class ActivityService {
     @Value("${portUsers}")
     String portUsers;
 
+    @Value("${pathUserController}")
+    String pathUserController;
+
     @Value("${pathUserAvailability}")
     String pathUserAvailability;
 
@@ -411,7 +414,7 @@ public class ActivityService {
         //Check if any participants are not available for the new date and remove them from the activity if they are not
             if (optionalStart.isPresent()) {
                 //building the request for the user availability
-                String uriUser = urlNotification + ":" + portUsers + pathUserAvailability;
+                String uriUser = urlNotification + ":" + portUsers + pathUserController + pathUserAvailability;
                 HttpHeaders headersUser = new HttpHeaders();
                 headersUser.setContentType(MediaType.APPLICATION_JSON);
                 headersUser.setBearerAuth(token);
@@ -445,7 +448,7 @@ public class ActivityService {
      * @param activityId - the UUID corresponding to the activity
      * @return List<String> - the list of accepted participants
      */
-    private List<String> getParticipantIDs(UUID activityId) {
+    public List<String> getParticipantIDs(UUID activityId) {
         List<String> participants = new ArrayList<>();
 
         if (matchRepository.existsByActivityId(activityId)) {
@@ -465,19 +468,15 @@ public class ActivityService {
      * @param newStart - the new start date
      * @throws IllegalArgumentException - if the new start date is invalid
      */
-    public static void checkNewStart(Date newStart)
+    public static boolean checkNewStart(Date newStart)
             throws IllegalArgumentException {
-        Calendar calCurrent = Calendar.getInstance();  // Get local time
-        calCurrent.setTime(Calendar.getInstance().getTime());
-        var timeCurrent = LocalTime.ofInstant(calCurrent.getTime().toInstant(), ZoneId.systemDefault());
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = calendar.getTime();
 
-        Calendar calNewStart = Calendar.getInstance();  // Get start time
-        calNewStart.setTime(newStart);
-        var timeNewStart = LocalTime.ofInstant(calNewStart.getTime().toInstant(), ZoneId.systemDefault());
-
-        if (timeCurrent.isAfter(timeNewStart)) {
+        if (currentDate.after(newStart)) {
             throw new IllegalArgumentException("Activity start time is in the past !");
         }
+        return true;
     }
 
 }
