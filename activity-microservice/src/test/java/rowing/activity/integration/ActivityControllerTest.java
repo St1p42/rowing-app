@@ -724,6 +724,33 @@ public class ActivityControllerTest {
 
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffTrainingNotAccepted() throws Exception {
+
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurTraining;
+        amateurTraining.setApplicants(Arrays.asList("Admin"));
+        activity = mockActivityRepository.save(activity);
+        trainingId = activity.getId();
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        match.setActivityId(trainingId); // Make sure to set for the activity you want to sign up for
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", trainingId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + match.getUserId()
+                + " has signed off from the activity : " + match.getActivityId().toString());
+        assertThat(mockActivityRepository.findActivityById(trainingId).get().getApplicants().contains("Admin")).isFalse();
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void userDidNotApplyForThisPosition() throws Exception {
 
         Activity training = amateurTraining;
@@ -744,6 +771,33 @@ public class ActivityControllerTest {
         // Assert
         String response = result.getResponse().getContentAsString();
         assertThat(response).isEqualTo("The user didn't apply for this position");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffCompetitionNotAccepted() throws Exception {
+
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurCompetition;
+        amateurCompetition.setApplicants(Arrays.asList("Admin"));
+        activity = mockActivityRepository.save(activity);
+        competitionId = activity.getId();
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        match.setActivityId(competitionId); // Make sure to set for the activity you want to sign up for
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + match.getUserId()
+                + " has signed off from the activity : " + match.getActivityId().toString());
+        assertThat(mockActivityRepository.findActivityById(competitionId).get().getApplicants().contains("Admin")).isFalse();
     }
 
     @Test
@@ -803,6 +857,205 @@ public class ActivityControllerTest {
         String response = result.getResponse().getContentAsString();
         assertThat(response).isEqualTo("User " + "Efe"
                 + " is rejected successfully");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffTrainingAccepted() throws Exception {
+
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurTraining;
+        amateurTraining.setApplicants(Arrays.asList("Admin"));
+        activity = mockActivityRepository.save(activity);
+        trainingId = activity.getId();
+        System.out.println(mockActivityRepository.existsById(trainingId));
+        match.setActivityId(trainingId); // Make sure to set for the activity you want to sign up for
+        Match match1 = new Match(UUID.randomUUID(), trainingId, "Admin", Position.COACH);
+        mockMatchRepository.save(match1);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", trainingId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + match.getUserId()
+                + " has signed off from the activity : " + match.getActivityId().toString());
+        assertThat(mockActivityRepository.findActivityById(trainingId).get().getApplicants().contains("Admin")).isFalse();
+        assertThat(mockMatchRepository.findByActivityIdAndUserId(trainingId, "Admin").isPresent()).isFalse();
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffCompetitionAccepted() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurCompetition;
+        amateurCompetition.setApplicants(Arrays.asList("Admin"));
+        activity = mockActivityRepository.save(activity);
+        competitionId = activity.getId();
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        match.setActivityId(competitionId); // Make sure to set for the activity you want to sign up for
+        Match match1 = new Match(UUID.randomUUID(), competitionId, "Admin", Position.COACH);
+        mockMatchRepository.save(match1);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + match.getUserId()
+                + " has signed off from the activity : " + match.getActivityId().toString());
+        assertThat(mockActivityRepository.findActivityById(competitionId).get().getApplicants().contains("Admin")).isFalse();
+        assertThat(mockMatchRepository.findByActivityIdAndUserId(competitionId, "Admin").isPresent()).isFalse();
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffTrainingNotAcceptedException() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurTraining;
+        amateurTraining.setApplicants(Arrays.asList("Admin"));
+        activity = mockActivityRepository.save(activity);
+        trainingId = activity.getId();
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", UUID.randomUUID())
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Activity not found!");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffCompetitionNotAcceptedException() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurCompetition;
+        amateurCompetition.setApplicants(Arrays.asList("Admin"));
+        activity = mockActivityRepository.save(activity);
+        competitionId = activity.getId();
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", UUID.randomUUID())
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Activity not found!");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffTrainingAcceptedException() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurTraining;
+        amateurTraining.setApplicants(Arrays.asList("Admin"));
+        activity = mockActivityRepository.save(activity);
+        trainingId = activity.getId();
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        match.setActivityId(trainingId); // Make sure to set for the activity you want to sign up for
+        Match match1 = new Match(UUID.randomUUID(), trainingId, "Admin", Position.COACH);
+        mockMatchRepository.save(match1);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", UUID.randomUUID())
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Activity not found!");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffCompetitionAcceptedException() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurCompetition;
+        amateurCompetition.setApplicants(Arrays.asList("Admin"));
+        activity = mockActivityRepository.save(activity);
+        competitionId = activity.getId();
+        match.setActivityId(trainingId); // Make sure to set for the activity you want to sign up for
+        Match match1 = new Match(UUID.randomUUID(), trainingId, "Admin", Position.COACH);
+        mockMatchRepository.save(match1);
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", UUID.randomUUID())
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Activity not found!");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffTrainingNotAcceptedException2() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurTraining;
+        activity = mockActivityRepository.save(activity);
+        trainingId = activity.getId();
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", trainingId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User has not signed-up for this activity");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffCompetitionNotAcceptedException2() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurCompetition;
+        activity = mockActivityRepository.save(activity);
+        competitionId = activity.getId();
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User has not signed-up for this activity");
     }
 
     @Test
@@ -972,6 +1225,56 @@ public class ActivityControllerTest {
         // Assert
         String response = result.getResponse().getContentAsString();
         assertThat(response).isEqualTo("User " + "Admin" + " was not signed up for this activity !");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffTrainingAcceptedException2() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurTraining;
+        activity = mockActivityRepository.save(activity);
+        trainingId = activity.getId();
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        match.setActivityId(trainingId); // Make sure to set for the activity you want to sign up for
+        Match match1 = new Match(UUID.randomUUID(), trainingId, "Admin", Position.COACH);
+        mockMatchRepository.save(match1);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", trainingId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User has not signed-up for this activity");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignOffCompetitionAcceptedException2() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Admin");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        Activity activity = amateurCompetition;
+        activity = mockActivityRepository.save(activity);
+        competitionId = activity.getId();
+        match.setActivityId(trainingId); // Make sure to set for the activity you want to sign up for
+        Match match1 = new Match(UUID.randomUUID(), trainingId, "Admin", Position.COACH);
+        mockMatchRepository.save(match1);
+        //System.out.println(mockActivityRepository.existsById(trainingId));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/signOff/{activityId}", competitionId)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        // Assert
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User has not signed-up for this activity");
     }
 
     @Test

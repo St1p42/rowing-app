@@ -41,7 +41,7 @@ public class Certificates {
     }
 
     /**
-     * Getter for certificate.
+     * Getter for a certificate.
      *
      * Throws an exception if not found.
      * @param name - name of the certificate
