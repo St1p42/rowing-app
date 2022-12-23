@@ -268,7 +268,7 @@ public class ActivityControllerTest {
         activity.setPositions(positionList2);
 
         List<String> applicantList1 = new ArrayList<>();
-        applicantList1.add("Efe"); 
+        applicantList1.add("Efe");
         activity.setApplicants(applicantList1);
 
         List<ActivityDTO> activityDTOList = new ArrayList<>();
