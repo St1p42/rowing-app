@@ -199,79 +199,13 @@ public class ActivityControllerTest {
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void returnActivities() throws Exception {
-        Competition activity = new Competition();
-        activity.setId(UUID.randomUUID());
-        activity.setOwner("Admin");
-        activity.setName("Test Activity2");
-        activity.setType("Competition");
-        activity.setStart(amateurTrainingDate);
-        activity.setGender(Gender.MALE);
-
-        List<Position> positionList2 = new ArrayList<>();
-        positionList2.add(Position.PORT);
-        positionList2.add(Position.COX);
-        activity.setPositions(positionList2);
-
-        List<String> applicantList1 = new ArrayList<>();
-        applicantList1.add("Efe");
-        activity.setApplicants(applicantList1);
 
         List<ActivityDTO> activityDTOList = new ArrayList<>();
 
         amateurTraining = mockActivityRepository.save(amateurTraining);
-        activity = mockActivityRepository.save(activity);
+        amateurCompetition = mockActivityRepository.save(amateurCompetition);
 
         activityDTOList.add(amateurTraining.toDto());
-        activityDTOList.add(activity.toDto());
-
-        ResultActions result = mockMvc.perform(get("/activity/activityList")
-                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
-
-        // Assert
-        result.andExpect(status().isOk());
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        String response = result.andReturn().getResponse().getContentAsString();
-        System.out.println(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("}}", "}"));
-        System.out.println(mapper.writeValueAsString(activityDTOList));
-
-        //assertThat(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("\"COX\"]}}", "\"COX\"]}")).
-        // isEqualTo(mapper.writeValueAsString(activity_dto_list));
-        JSONAssert.assertEquals(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("}}", "}"),
-                mapper.writeValueAsString(activityDTOList), false);
-    }
-
-    @Test
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void activityExpired() throws Exception {
-
-        String dateString2 = "26-09-1884";
-        SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
-        Date date = formatter2.parse(dateString2);
-
-        Competition activity = new Competition();
-        activity.setId(UUID.randomUUID());
-        activity.setOwner("Admin");
-        activity.setName("Test Activity2");
-        activity.setType("Competition");
-        activity.setStart(date);
-        activity.setGender(Gender.MALE);
-
-        List<Position> positionList2 = new ArrayList<>();
-        positionList2.add(Position.PORT);
-        positionList2.add(Position.COX);
-        activity.setPositions(positionList2);
-
-        List<String> applicantList1 = new ArrayList<>();
-        applicantList1.add("Efe");
-        activity.setApplicants(applicantList1);
-
-        List<ActivityDTO> activityDTOList = new ArrayList<>();
-
-        amateurCompetition = mockActivityRepository.save(amateurTraining);
-        activity = mockActivityRepository.save(activity);
-
         activityDTOList.add(amateurCompetition.toDto());
 
         ResultActions result = mockMvc.perform(get("/activity/activityList")
@@ -284,8 +218,34 @@ public class ActivityControllerTest {
 
         String response = result.andReturn().getResponse().getContentAsString();
 
-        // assertThat(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("\"COX\"]}}", "\"COX\"]}")).
-        // isEqualTo(mapper.writeValueAsString(activity_dto_list));
+        JSONAssert.assertEquals(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("}}", "}"),
+                mapper.writeValueAsString(activityDTOList), false);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void activityExpired() throws Exception {
+
+        String dateString2 = "26-09-1884";
+        SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = formatter2.parse(dateString2);
+        amateurTraining.setStart(date);
+        amateurCompetition = mockActivityRepository.save(amateurCompetition);
+        amateurTraining = mockActivityRepository.save(amateurTraining);
+
+        List<ActivityDTO> activityDTOList = new ArrayList<>();
+        activityDTOList.add(amateurCompetition.toDto());
+
+        ResultActions result = mockMvc.perform(get("/activity/activityList")
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isOk());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        String response = result.andReturn().getResponse().getContentAsString();
+
         JSONAssert.assertEquals(response.replaceAll("\\{\"ActivityDTO\":", "").replaceAll("}}", "}"),
                 mapper.writeValueAsString(activityDTOList), false);
     }
