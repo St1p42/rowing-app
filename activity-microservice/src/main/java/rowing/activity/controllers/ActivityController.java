@@ -3,6 +3,7 @@ package rowing.activity.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import rowing.activity.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +45,10 @@ public class ActivityController {
     /**
      * Instantiates a new controller.
      *
-     * @param authManager Spring Security component used to authenticate and authorize the user
+     * @param authManager        Spring Security component used to authenticate and authorize the user
      * @param activityRepository the activity repository to be used
-     * @param matchRepository the match repository to be used
-     * @param activityService the activity service to be used
+     * @param matchRepository    the match repository to be used
+     * @param activityService    the activity service to be used
      */
     @Autowired
     public ActivityController(AuthManager authManager, ActivityRepository activityRepository,
@@ -273,5 +274,10 @@ public class ActivityController {
             }
         }
         return ResponseEntity.badRequest().body("ActivityId is not correct !");
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable String userId){
+        return ResponseEntity.ok(activityService.getUser(userId));
     }
 }
