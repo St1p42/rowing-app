@@ -74,7 +74,7 @@
 //                "--jdbc.driverClassName=org.h2.Driver",
 //                "--jdbc.url=jdbc:h2:./user-microservice/example;DB_CLOSE_ON_EXIT=FALSE",
 //                "--hibernate.dialect=org.hibernate.dialect.H2Dialect",
-//                "--hibernate.hbm2ddl.auto=create");
+//                "--hibernate.hbm2ddl.auto=create-drop");
 //
 //        SpringApplicationBuilder auth = new SpringApplicationBuilder(rowing.authentication.Application.class);
 //        auth.run("--server.port=8081");

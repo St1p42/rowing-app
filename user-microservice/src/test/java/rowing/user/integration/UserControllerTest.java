@@ -165,6 +165,7 @@ public class UserControllerTest {
         // Act
         // Still include Bearer token as AuthFilter itself is not mocked
         ObjectMapper objectMapper = new ObjectMapper().registerModules(new Jdk8Module(), new JavaTimeModule());
+        System.out.println(objectMapper.writeValueAsString(u.toDTO()));
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/user/remove-availability")
                 .header("Authorization", "Bearer MockedToken")
@@ -382,7 +383,6 @@ public class UserControllerTest {
                 .content(new ObjectMapper().writeValueAsString(updateUserDTO))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer MockedToken"));
-
 
         // Assert
         result.andExpect(status().isOk());
