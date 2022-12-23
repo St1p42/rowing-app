@@ -1514,6 +1514,6 @@ public class ActivityControllerTest {
                 .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
 
         // Assert
-        result.andExpect(status().isBadRequest());
+        result.andExpect(status().isUnauthorized());
     }
 }
