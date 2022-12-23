@@ -1,27 +1,25 @@
-# Lab Template
+# Rowing Matching Application(Group 33b SEM Project)
 
-This template contains two microservices:
-- authentication-microservice
-- example-microservice
+This is group's 33b Software Engineering Methods lab project\
+Scenario: ROWING\
 
-The `authentication-microservice` is responsible for registering new users and authenticating current ones. After successful authentication, this microservice will provide a JWT token which can be used to bypass the security on the `example-microservice`. This token contains the *Username* of the user that authenticated. If your scenario includes different roles, these will have to be added to the authentication-microservice and to the JWT token. To do this, you will have to:
-- Add a concept of roles to the `AppUser`
-- Add the roles to the `UserDetails` in `JwtUserDetailsService`
-- Add the roles as claims to the JWT token in `JwtTokenGenerator`
+This project contains the following microservices:\
+-[activity](activity-microservice/README.md)\
+-[authentication](authentication-microservice/README.md)\
+-[notification](notification-microservice/README.md)\
+-[user](user-microservice/README.md)
 
-The `example-microservice` is just an example and needs to be modified to suit the domain you are modeling based on your scenario.
+Inside each of the microservice's readmes there are intructions on how to run and configure
 
-The `domain` and `application` packages contain the code for the domain layer and application layer. The code for the framework layer is the root package as *Spring* has some limitations on were certain files are located in terms of autowiring.
+# Creating credentials for a microservice
 
-## Running the microservices
+1. Run the Authentication microservice(you can use the guide [here](authentication-microservice/README.md) to configure and run it).
+2. Import [this](postmanRequestCollections/Create_credentials_for_microservice.postman_collection.json) configuration into Postman as a collection.
+3. Replace in the body of the requests 'microserviceName' with the name of the microservice(notification for notification-microservice and activity for activity-microservice).
+4. Alternatively to Postman you can check out the following pictures depicting the POST requests needed to be performed.
 
-You can run the two microservices individually by starting the Spring applications. Then, you can use *Postman* to perform the different requests:
+![image](instructions/imgRegisterMicroservice.png)
 
-Register:
-![image](instructions/register.png)
+![image](instructions/imgAuthMicroservice.png)
 
-Authenticate:
-![image](instructions/authenticate.png)
-
-Hello:
-![image](instructions/hello.png)
+5. Set the token received to the value 'microserviceJWT' inside the microservice's application.properties
