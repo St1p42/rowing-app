@@ -286,7 +286,7 @@ public class ActivityController {
      * @return a response entity with the userDTO object inside
      */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable String userId){
+    public ResponseEntity<UserDTO> getUser(@PathVariable String userId) {
         try {
             return ResponseEntity.ok(activityService.getUser(userId));
         } catch (Exception e) {
@@ -301,7 +301,7 @@ public class ActivityController {
      * @return a response entity with the list of participants inside
      */
     @GetMapping("/{activityId}/participants")
-    public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable UUID activityId){
+    public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable UUID activityId) {
         try {
             return ResponseEntity.ok(activityService.getParticipants(activityId));
 
