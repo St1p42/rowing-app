@@ -1,5 +1,6 @@
 package rowing.activity.integration;
 
+import static org.assertj.core.api.Assertions.setMaxElementsForPrinting;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -190,7 +191,6 @@ public class ActivityControllerTest {
                 .header("Authorization", "Bearer MockedToken")
                 .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(amateurTraining.getDto()))
                 .contentType(MediaType.APPLICATION_JSON);
-        System.out.println(objectMapper.writeValueAsString(amateurTraining.getDto()));
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         // Assert

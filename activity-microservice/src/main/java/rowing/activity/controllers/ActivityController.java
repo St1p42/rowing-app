@@ -306,7 +306,7 @@ public class ActivityController {
         if (activityOpt.isPresent()) {
             Activity activity = activityRepository.findActivityById(activityId).get();;
             if (!authManager.getUsername().equals(activity.getOwner())) {
-                return ResponseEntity.badRequest().header("Only the owner can see the participants").build();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             return ResponseEntity.ok(activityService.getParticipants(activityId));
         }
