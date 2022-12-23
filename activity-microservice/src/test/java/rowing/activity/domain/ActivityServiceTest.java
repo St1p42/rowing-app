@@ -179,4 +179,5 @@ public class ActivityServiceTest {
         verify(mockActivityRepository).delete(activity);
         verify(mockMatchRepository).deleteAll(mockMatchRepository.findAllByActivityId(id));
     }
+
 }
