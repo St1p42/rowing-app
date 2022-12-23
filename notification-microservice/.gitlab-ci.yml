@@ -30,6 +30,6 @@ PMD-notification-microservice:
 test-notification-microservice:
   stage: test
   script:
-    - gradle notification-microservice:test notification-microservice:jacocoTestReport
+    - gradle notification-microservice:test notification-microservice:jacocoTestReport --scan
     - cat notification-microservice/build/reports/jacoco/test/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/
