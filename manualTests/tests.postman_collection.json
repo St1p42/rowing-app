@@ -1,0 +1,1376 @@
+{
+	"info": {
+		"_postman_id": "802241e9-e82d-4761-89eb-527e92e07b5a",
+		"name": "tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19797825"
+	},
+	"item": [
+		{
+			"name": "authentication tests",
+			"item": [
+				{
+					"name": "testRegisterFirstTime",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"alex\",\r\n    \"password\": \"somePass\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "testAuthenticateAndGetToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Response includes token\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var key = \"token\";\r",
+									"    pm.expect(jsonData).to.include.key(key)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"alex\",\r\n    \"password\": \"somePass\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/authenticate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "testAuthenticateWrongPass",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"notification\",\r\n    \"password\": \"somePassWrong\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/authenticate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "testAuthenticateWrongUsername",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"testing\",\r\n    \"password\": \"somePassWrong\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/authenticate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "testRegisterAgainSameCredentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400, already registered\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"test\",\r\n    \"password\": \"somePass\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "notificationTests",
+			"item": [
+				{
+					"name": "notify accepted no email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//setting up the environment by creating an account and authenticating to get the bearer token\r",
+									"\r",
+									"const registerFirst={\r",
+									"    url: 'http://localhost:8081/register',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ username: \"test\",\r",
+									"        password: \"somePass\" })\r",
+									"    },\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(registerFirst, function (err, response) {\r",
+									"    console.log(response);\r",
+									"});\r",
+									"\r",
+									"const authenticateFirst={\r",
+									"    url: 'http://localhost:8081/authenticate',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ username: \"test\",\r",
+									"        password: \"somePass\" })\r",
+									"    },\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(authenticateFirst, function (err, response) {\r",
+									"    var jsonData = response.json();\r",
+									"    console.log(jsonData);\r",
+									"    console.log(\"get accesstoken\");\r",
+									"    var key = \"token\";\r",
+									"    console.log(jsonData['token']);\r",
+									"    pm.collectionVariables.set(\"testNotificationAccessToken\", jsonData['token']);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{testNotificationAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"NotificationRequestModel\": {\r\n        \"username\": \"test\",\r\n        \"location\": null,\r\n        \"date\": null,\r\n        \"status\": \"ACCEPTED\",\r\n        \"activityId\": \"00000000-0000-0001-0000-000000000001\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8082/notify",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"notify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "notify accepted with email",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//setting up the environment by creating an account and authenticating to get the bearer token\r",
+									"\r",
+									"const registerFirst={\r",
+									"    url: 'http://localhost:8081/register',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ username: \"test\",\r",
+									"        password: \"somePass\" })\r",
+									"    },\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(registerFirst, function (err, response) {\r",
+									"    console.log(response);\r",
+									"});\r",
+									"\r",
+									"const authenticateFirst={\r",
+									"    url: 'http://localhost:8081/authenticate',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ username: \"test\",\r",
+									"        password: \"somePass\" })\r",
+									"    },\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(authenticateFirst, function (err, response) {\r",
+									"    var jsonData = response.json();\r",
+									"    console.log(jsonData);\r",
+									"    console.log(\"get accesstoken\");\r",
+									"    var key = \"token\";\r",
+									"    console.log(jsonData['token']);\r",
+									"    pm.collectionVariables.set(\"testNotificationAccessToken\", jsonData['token']);\r",
+									"});\r",
+									"\r",
+									"const updateUserProfileToContainEmail={\r",
+									"    url: 'http://localhost:8081/authenticate',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ username: \"test\",\r",
+									"        password: \"somePass\" })\r",
+									"    },\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(updateUserProfileToContainEmail, function (err, response) {\r",
+									"    var jsonData = response.json();\r",
+									"    console.log(jsonData);\r",
+									"    console.log(\"get accesstoken\");\r",
+									"    var key = \"token\";\r",
+									"    console.log(jsonData['token']);\r",
+									"    pm.collectionVariables.set(\"testNotificationAccessToken\", jsonData['token']);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJub3RpZmljYXRpb24iLCJleHAiOjE2NzIxMjg5MTIsImlhdCI6MTY3MTYyODI1OH0.JYp8QD8HZ-hMTjKPJNiQ5WM3rjUKO8ZK_Q3qT156OD2hFJ0AeXlyH27INXWw5HcVLc5jDLqkfzhS7Lj0r_KNGQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"NotificationRequestModel\": {\r\n        \"username\": \"alex\",\r\n        \"location\": null,\r\n        \"date\": null,\r\n        \"status\": \"ACCEPTED\",\r\n        \"activityId\": \"00000000-0000-0001-0000-000000000001\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8082/notify",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"notify"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Tests",
+			"item": [
+				{
+					"name": "testUpdateUserNonExistent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Your test name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var jsonExpected = {\r",
+									"    \"userId\": \"alex\",\r",
+									"    \"rowingPositions\": null,\r",
+									"    \"availability\": [\r",
+									"        {\r",
+									"            \"startInterval\": \"13:00:00\",\r",
+									"            \"endInterval\": \"14:30:00\",\r",
+									"            \"day\": \"MONDAY\"\r",
+									"        }\r",
+									"    ],\r",
+									"    \"email\": \"aojica65@gmail.com\",\r",
+									"    \"firstName\": \"alex\",\r",
+									"    \"lastName\": \"test\",\r",
+									"    \"coxCertificates\": null,\r",
+									"    \"gender\": null,\r",
+									"    \"rowingOrganization\": null,\r",
+									"    \"competitive\": null\r",
+									"}\r",
+									"    pm.expect(jsonData.userId).to.equals('testUserNonAdmin');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//setting up the environment by creating an account and authenticating to get the bearer token\r",
+									"\r",
+									"const registerFirst={\r",
+									"    url: 'http://localhost:8081/register',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ username: \"testUserNonAdmin\",\r",
+									"        password: \"somePass\" })\r",
+									"    },\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(registerFirst, function (err, response) {\r",
+									"    console.log(response);\r",
+									"});\r",
+									"\r",
+									"const authenticateFirst={\r",
+									"    url: 'http://localhost:8081/authenticate',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ username: \"testUserNonAdmin\",\r",
+									"        password: \"somePass\" })\r",
+									"    },\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(authenticateFirst, function (err, response) {\r",
+									"    var jsonData = response.json();\r",
+									"    console.log(jsonData);\r",
+									"    console.log(\"get accesstoken\");\r",
+									"    var key = \"token\";\r",
+									"    console.log(jsonData['token']);\r",
+									"    pm.collectionVariables.set(\"testUsersAccessToken\", jsonData['token']);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{testUsersAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rowingPositions\": null,\r\n    \"availability\": [\r\n        {\r\n            \"startInterval\": \"13:00\",\r\n            \"endInterval\": \"14:30\",\r\n            \"day\": \"MONDAY\"\r\n        }\r\n    ],\r\n    \"email\": \"aojica65@gmail.com\",\r\n    \"firstName\": \"nonAdmin\",\r\n    \"lastName\": \"test\",\r\n    \"coxCertificates\": null,\r\n    \"gender\": null,\r\n    \"rowingOrganization\": null,\r\n    \"competitive\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8084/user/update-user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"user",
+								"update-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "testUpdateUserExistent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Your test name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var jsonExpected = {\r",
+									"    \"userId\": \"alex\",\r",
+									"    \"rowingPositions\": null,\r",
+									"    \"availability\": [\r",
+									"        {\r",
+									"            \"startInterval\": \"13:00:00\",\r",
+									"            \"endInterval\": \"14:30:00\",\r",
+									"            \"day\": \"MONDAY\"\r",
+									"        }\r",
+									"    ],\r",
+									"    \"email\": \"aojica65@gmail.com\",\r",
+									"    \"firstName\": \"alex\",\r",
+									"    \"lastName\": \"test\",\r",
+									"    \"coxCertificates\": null,\r",
+									"    \"gender\": null,\r",
+									"    \"rowingOrganization\": null,\r",
+									"    \"competitive\": null\r",
+									"}\r",
+									"    pm.expect(jsonData.userId).to.equals('testUserNonAdmin');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//setting up the environment by creating an account and authenticating to get the bearer token\r",
+									"\r",
+									"const registerFirst={\r",
+									"    url: 'http://localhost:8081/register',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ username: \"testUserNonAdmin\",\r",
+									"        password: \"somePass\" })\r",
+									"    },\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(registerFirst, function (err, response) {\r",
+									"    console.log(response);\r",
+									"});\r",
+									"\r",
+									"const authenticateFirst={\r",
+									"    url: 'http://localhost:8081/authenticate',\r",
+									"    method: 'POST',\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({ username: \"testUserNonAdmin\",\r",
+									"        password: \"somePass\" })\r",
+									"    },\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(authenticateFirst, function (err, response) {\r",
+									"    var jsonData = response.json();\r",
+									"    console.log(jsonData);\r",
+									"    console.log(\"get accesstoken\");\r",
+									"    var key = \"token\";\r",
+									"    console.log(jsonData['token']);\r",
+									"    pm.collectionVariables.set(\"testUsersAccessToken\", jsonData['token']);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{testUsersAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rowingPositions\": null,\r\n    \"availability\": [\r\n        {\r\n            \"startInterval\": \"13:30\",\r\n            \"endInterval\": \"14:30\",\r\n            \"day\": \"MONDAY\"\r\n        },\r\n        {\r\n            \"startInterval\": \"13:00\",\r\n            \"endInterval\": \"14:30\",\r\n            \"day\": \"TUESDAY\"\r\n        }\r\n    ],\r\n    \"email\": \"aojica65@gmail.com\",\r\n    \"firstName\": \"nonAdmin\",\r\n    \"lastName\": \"test\",\r\n    \"coxCertificates\": null,\r\n    \"gender\": null,\r\n    \"rowingOrganization\": null,\r\n    \"competitive\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8084/user/update-user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"user",
+								"update-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "testGetUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Your test name\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.userId).to.eql(\"testUserNonAdmin\");\r",
+									"    pm.expect(jsonData.rowingPositions).to.eql([]);\r",
+									"    pm.expect(jsonData.availability[0].day).to.eql(\"MONDAY\");\r",
+									"    pm.expect(jsonData.email).to.eql(\"aojica65@gmail.com\");\r",
+									"    pm.expect(jsonData.firstName).to.eql(\"nonAdmin\");\r",
+									"    pm.expect(jsonData.lastName).to.eql(\"test\");\r",
+									"    pm.expect(jsonData.coxCertificates).to.eql([]);\r",
+									"    pm.expect(jsonData.gender).to.eql(null);\r",
+									"    pm.expect(jsonData.rowingOrganization).to.eql(null);\r",
+									"    pm.expect(jsonData.competitive).to.eql(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{testUsersAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8084/user/get-user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"user",
+								"get-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test get email address found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Body is correct\", function () {\r",
+									"    pm.response.to.have.body(\"aojica65@gmail.com\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{testNotificationAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\" : \"testUserNonAdmin\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8084/user/get-email-address",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"user",
+								"get-email-address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test get email address not found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{testNotificationAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\" : \"testUserNonAdminNotFound\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8084/user/get-email-address",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"user",
+								"get-email-address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test remove availability",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{testUsersAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"day\" : \"Monday\",\r\n    \"start\" : \"13:30\",\r\n    \"end\" : \"14:30\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8084/user/remove-availability",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"user",
+								"remove-availability"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test remove availabilityNotFound",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{testUsersAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"day\" : \"Friday\",\r\n    \"start\" : \"13:00\",\r\n    \"end\" : \"14:30\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8084/user/remove-availability",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"user",
+								"remove-availability"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test edit availability",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{testUsersAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oldAvailability\": {\r\n        \"day\": \"Tuesday\",\r\n        \"start\": \"13:00\",\r\n        \"end\": \"14:30\"\r\n    },\r\n    \"newAvailability\": {\r\n        \"day\": \"Wednesday\",\r\n        \"start\": \"13:00\",\r\n        \"end\": \"14:30\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8084/user/edit-availability",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"user",
+								"edit-availability"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Activity Tests",
+			"item": [
+				{
+					"name": "test new activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Body is correct\", function () {\r",
+									"    pm.response.to.have.body(\"Activity 00000000-0000-0001-0000-000000000001 was created successfully !\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{nonExpiredToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TrainingDTO\": {\r\n        \"id\": \"00000000-0000-0001-0000-000000000001\",\r\n        \"owner\": \"Admin\",\r\n        \"name\": \"Amateur\",\r\n        \"type\": \"Training\",\r\n        \"start\": \"2023-02-21 12:05:05\",\r\n        \"positions\": [\r\n            \"COACH\"\r\n        ],\r\n        \"applicants\": [],\r\n        \"boatType\": \"C4\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8085/activity/new",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"activity",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "activity list test",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{nonExpiredToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8085/activity/activityList",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"activity",
+								"activityList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "activity sign 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{nonExpiredToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"MatchingDTO\": {\r\n        \"id\": \"886aac69-b7f6-4426-aa9f-668baf6391f3\",\r\n        \"activityId\": \"9e69b9ac-1b49-4cf3-bc33-7f64fb2e6a6e\",\r\n        \"userId\": \"testUserNonAdmin\",\r\n        \"position\": \"COACH\",\r\n        \"gender\": \"MALE\",\r\n        \"competitive\": false,\r\n        \"organisation\": \"TUDelft\",\r\n        \"availability\": [\r\n            {\r\n                \"startInterval\": \"08:00\",\r\n                \"endInterval\": \"16:00\",\r\n                \"day\": \"WEDNESDAY\"\r\n            }\r\n        ],\r\n        \"status\": \"ACCEPTED\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8085/activity/sign/9e69b9ac-1b49-4cf3-bc33-7f64fb2e6a6e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"activity",
+								"sign",
+								"9e69b9ac-1b49-4cf3-bc33-7f64fb2e6a6e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "activity sign does not exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Body is correct\", function () {\r",
+									"    pm.response.to.have.body(\"Activity does not exist !\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{nonExpiredToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"MatchingDTO\": {\r\n        \"id\": \"886aac69-b7f6-4426-aa9f-668baf6391f3\",\r\n        \"activityId\": \"00000000-0000-0001-0000-000000000001\",\r\n        \"userId\": \"Admin\",\r\n        \"position\": \"COACH\",\r\n        \"gender\": \"MALE\",\r\n        \"competitive\": true,\r\n        \"organisation\": \"TUDelft\",\r\n        \"availability\": [\r\n            {\r\n                \"startInterval\": \"10:00\",\r\n                \"endInterval\": \"13:00\",\r\n                \"day\": \"MONDAY\"\r\n            }\r\n        ],\r\n        \"status\": \"ACCEPTED\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8085/activity/sign/886aac69-b7f6-4426-aa9f-668baf6391f3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"activity",
+								"sign",
+								"886aac69-b7f6-4426-aa9f-668baf6391f3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "accept user test",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBZG1pbiIsImV4cCI6MTY3MjMzNTMxNiwiaWF0IjoxNjcxODM0NjYyfQ.BMqylQNAdnNgr7nkgZUF99QLaMT-Yt0g3Qv7NkwRvwsFhaA85ff7CgFpsuJioEJYsmaE0mVMpKWO6D6iin1Twg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserDTORequestModel\": {\r\n        \"userId\": \"testUserNonAdmin\",\r\n        \"rowingPositions\": [\r\n            \"COACH\"\r\n        ],\r\n        \"availability\": [\r\n            {\r\n                \"startInterval\": \"08:00\",\r\n                \"endInterval\": \"16:00\",\r\n                \"day\": \"WEDNESDAY\"\r\n            }\r\n        ],\r\n        \"email\": \"aojica65@gmail.com\",\r\n        \"firstName\": \"alex\",\r\n        \"lastName\": \"alex\",\r\n        \"coxCertificates\": [\r\n            \"C4\"\r\n        ],\r\n        \"gender\": \"MALE\",\r\n        \"rowingOrganization\": \"TUDelft\",\r\n        \"competitive\": true,\r\n        \"positionSelected\": \"COACH\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8085/activity/9e69b9ac-1b49-4cf3-bc33-7f64fb2e6a6e/accept",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"activity",
+								"9e69b9ac-1b49-4cf3-bc33-7f64fb2e6a6e",
+								"accept"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "testNotificationAccessToken",
+			"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJub3RpZmljYXRpb24iLCJleHAiOjE2NzIzMjkxNzgsImlhdCI6MTY3MTgyODUyNH0.inFuxHKvUbMJoI8rlWOlIvoH3QCOHOs7IpztW6DFoiA-bWSGzwZJDmWsnuwQ-dyn9WOJaVSxqk_Bceh1BgtXmw",
+			"type": "string"
+		},
+		{
+			"key": "portAuthentication",
+			"value": "8081",
+			"type": "string"
+		},
+		{
+			"key": "portNotification",
+			"value": "8082",
+			"type": "string"
+		},
+		{
+			"key": "portUsers",
+			"value": "8084",
+			"type": "string"
+		},
+		{
+			"key": "portAcivity",
+			"value": "8085",
+			"type": "string"
+		},
+		{
+			"key": "nonExpiredToken",
+			"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbGV4IiwiZXhwIjoxNjcyMjQ4MDIwLCJpYXQiOjE2NzE3NDczNjZ9.rkuj7fRaGJFUlXPhACjAeqi7iISrNlnMagfhRYwK3KW2tGWi-WZmNar2T5594wkJqZkDxTb3HZnBkdyvVL2PVA"
+		},
+		{
+			"key": "testUsersAccessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "emailAddressUsernameToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

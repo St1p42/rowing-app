@@ -30,6 +30,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.5'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation('org.assertj:assertj-core:3.23.1')
 }
 
 jar {
@@ -39,7 +40,7 @@ test {
     useJUnitPlatform()
     jacoco {
         enabled = true
-        includes = ['rowing.*']
+        includes = ['rowing.commons.*']
         excludes = []
     }
 }
@@ -50,7 +51,7 @@ jacocoTestCoverageVerification() {
         rule {
             enabled = true
             element = 'CLASS'
-            includes = ['rowing.*']
+            includes = ['rowing.commons.*']
 
             limit {
                 counter = 'BRANCH'

@@ -7,16 +7,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import rowing.commons.AvailabilityIntervals;
 import rowing.commons.entities.UpdateUserDTO;
+import rowing.commons.entities.UserDTO;
 import rowing.user.authentication.AuthManager;
 import rowing.user.domain.user.AvailabilityNotFoundException;
 import rowing.user.domain.user.User;
 import rowing.user.domain.user.UserRepository;
+import rowing.user.domain.user.utils.UserNotFoundException;
 import rowing.user.models.AvailabilityModel;
 import rowing.user.models.TwoAvailabilitiesModel;
 import rowing.user.services.AvailabilityService;
+import rowing.user.services.UserService;
 
 import java.time.DateTimeException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,6 +38,7 @@ public class UserController {
 
     private final transient UserRepository userRepository;
 
+    private final transient UserService userService;
     private final transient AvailabilityService availabilityService;
 
     /**
@@ -41,9 +47,11 @@ public class UserController {
      * @param authManager Spring Security component used to authenticate and authorize the user
      */
     @Autowired
-    public UserController(AuthManager authManager, UserRepository userRepository, AvailabilityService availabilityService) {
+    public UserController(AuthManager authManager, UserRepository userRepository, UserService userService,
+                          AvailabilityService availabilityService) {
         this.authManager = authManager;
         this.userRepository = userRepository;
+        this.userService = userService;
         this.availabilityService = availabilityService;
     }
 
@@ -53,16 +61,37 @@ public class UserController {
      * @return user
      */
     @GetMapping("/get-user")
-    public ResponseEntity<User> getUser() {
+    public ResponseEntity<UserDTO> getUser() {
         String userId = authManager.getUsername();
+        UserDTO userDTO;
+
+        try {
+            userDTO = userService.getUser(userId);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found", e);
+        }
+
+        return ResponseEntity.ok(userDTO);
+    }
+
+    /**
+     * Gets user availability.
+     *
+     * @return user availability.
+     */
+    @GetMapping("/get-availability-user")
+    public ResponseEntity<List<AvailabilityIntervals>> getAvailability(@RequestBody String userId) {
+        if (!authManager.getUsername().equals("activity")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Request forbidden");
+        }
         Optional<User> optionalUser = userRepository.findByUserId(userId);
 
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
         User user = optionalUser.get();
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(user.getAvailability());
     }
 
 
@@ -77,7 +106,7 @@ public class UserController {
         String userId = (String) ((JSONObject) array.get(0)).get("username");
         Optional<User> u = userRepository.findByUserId(userId);
         System.out.println(username);
-        if (!u.isPresent()) {
+        if (u.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user = u.get();
@@ -92,30 +121,20 @@ public class UserController {
      *
      * @return updated user
      */
-    @PatchMapping("/update-user")
-    public ResponseEntity<User> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
+    @PostMapping("/update-user")
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
         String userId = authManager.getUsername();
-        Optional<User> optionalUser = userRepository.findByUserId(userId);
 
-        if (optionalUser.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        UserDTO updatedUserDTO;
+
+        try {
+            updatedUserDTO = userService.updateUser(userId, updateUserDTO);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Input types incorrect.");
         }
 
-        User user = optionalUser.get();
 
-        Optional.ofNullable(updateUserDTO.getRowingPositions()).ifPresent(user::setRowingPositions);
-        Optional.ofNullable(updateUserDTO.getAvailability()).ifPresent(user::setAvailability);
-        Optional.ofNullable(updateUserDTO.getEmail()).ifPresent(user::setEmail);
-        Optional.ofNullable(updateUserDTO.getFirstName()).ifPresent(user::setFirstName);
-        Optional.ofNullable(updateUserDTO.getLastName()).ifPresent(user::setLastName);
-        Optional.ofNullable(updateUserDTO.getCoxCertificates()).ifPresent(user::setCoxCertificates);
-        Optional.ofNullable(updateUserDTO.getGender()).ifPresent(user::setGender);
-        Optional.ofNullable(updateUserDTO.getRowingOrganization()).ifPresent(user::setRowingOrganization);
-        Optional.ofNullable(updateUserDTO.getCompetitive()).ifPresent(user::setCompetitive);
-
-        userRepository.save(user);
-
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(updatedUserDTO);
     }
 
     /**
@@ -134,6 +153,8 @@ public class UserController {
             userRepository.save(u);
         } catch (IllegalArgumentException | DateTimeException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "AVAILABILITY IS NOT IN THE CORRECT FORMAT", e);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "USER NOT FOUND", e);
         }
         return ResponseEntity.ok().build();
     }
@@ -156,6 +177,8 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AVAILABILITY NOT FOUND", e);
         } catch (IllegalArgumentException | DateTimeException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "AVAILABILITY IS NOT IN THE CORRECT FORMAT");
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "USER NOT FOUND", e);
         }
         return ResponseEntity.ok().build();
     }
@@ -184,8 +207,24 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "AVAILABILITY NOT FOUND OR CANNOT BE REPLACED", e);
         } catch (IllegalArgumentException | DateTimeException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "AVAILABILITY IS NOT IN THE CORRECT FORMAT", e);
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "USER NOT FOUND", e);
         }
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Endpoint for retrieving the user from the database with their username.
+     *
+     * @param userId of the user to get from the database
+     * @return a response entity containing the userDTO object of the requested user
+     */
+    @GetMapping("/{userId}/get-user")
+    public ResponseEntity<UserDTO> getUserSelected(@PathVariable String userId) {
+        if (!userRepository.findByUserId(userId).isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(userService.getUserSelected(userId));
     }
 
 }

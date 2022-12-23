@@ -1,5 +1,6 @@
 package rowing.commons;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,12 +12,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
+import java.util.Locale;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.Locale.forLanguageTag;
 
 @Data
-@NoArgsConstructor
+//@NoArgsConstructor
 public class AvailabilityIntervals {
     private LocalTime startInterval;
     private LocalTime endInterval;
@@ -25,17 +27,17 @@ public class AvailabilityIntervals {
     /**
      * Constructor that turns strings given by the user into LocalTimes and day of week.
      *
-     * @param dayOfWeek - day represented as enum
+     * @param day - day represented as enum
      * @param startInterval - the time the interval starts
      * @param endInterval - the time the interval ends
      * @throws IllegalArgumentException - if the format is not right
      */
-    public AvailabilityIntervals(String dayOfWeek, String startInterval, String endInterval)
+    public AvailabilityIntervals(String day, String startInterval, String endInterval)
             throws IllegalArgumentException {
         LocalTime d1;
         LocalTime d2;
         DayOfWeek d;
-        if (dayOfWeek == null || startInterval == null || endInterval == null) {
+        if (day == null || startInterval == null || endInterval == null) {
             throw new IllegalArgumentException();
         }
         DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("EEEE")
@@ -43,7 +45,7 @@ public class AvailabilityIntervals {
         try {
             d1 = convertToTime(startInterval);
             d2 = convertToTime(endInterval);
-            TemporalAccessor accessor = formatter.parse(dayOfWeek);
+            TemporalAccessor accessor = formatter.parse(day);
             d = DayOfWeek.from(accessor);
         } catch (ParseException | DateTimeException e) {
             throw new IllegalArgumentException();
@@ -85,7 +87,7 @@ public class AvailabilityIntervals {
      * @return d - a LocalTime object
      * @throws ParseException - exception if the format is incorrect.
      */
-    public LocalTime convertToTime(String time) throws ParseException {
+    public final LocalTime convertToTime(String time) throws ParseException {
         //time += ":00";
         int limit = 5;
         if (time.length() != limit) {
@@ -98,5 +100,9 @@ public class AvailabilityIntervals {
     @Override
     public String toString() {
         return this.day + " " + this.startInterval.toString() + "-" + this.endInterval.toString();
+    }
+
+    public AvailabilityIntervals() {
+
     }
 }

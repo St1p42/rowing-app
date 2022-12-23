@@ -1,4 +1,4 @@
-package rowing.activity.domain;
+package rowing.activity.domain.utils;
 
 import rowing.activity.domain.entities.Activity;
 import rowing.commons.Position;
@@ -13,13 +13,17 @@ public interface Builder {
 
     void setType(String type);
 
-    void setOwner(UUID owner);
+    void setOwner(String owner);
 
     void setStart(Date start);
+
+    void setLocation(String location);
 
     void setPositions(List<Position> positions);
 
     void setApplicants(List<String> applicants);
+
+    void setBoatType(String boatType);
 
     Activity build();
 }

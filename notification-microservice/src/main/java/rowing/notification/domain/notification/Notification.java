@@ -1,9 +1,11 @@
 package rowing.notification.domain.notification;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import rowing.commons.NotificationStatus;
-import rowing.commons.requestModels.NotificationRequestModel;
+import rowing.commons.models.NotificationRequestModel;
 
 //write tests for this class
 //later add the activity information to this class and change retrieveText respectively
@@ -12,26 +14,30 @@ public class Notification {
     private String activityId;
     private NotificationStatus notificationStatus;
     private transient String destinationEmail;
-    @Value("${body.notification.accepted}")
+    private String newLocation;
+    private String newDate;
+
     private String acceptedBody;
 
-    @Value("${body.notification.rejected}")
     private String rejectedBody;
 
-    @Value("${body.notification.deleted}")
     private String deletedBody;
 
-    @Value("${body.notification.kicked}")
     private String kickedBody;
 
-    @Value("${body.notification.withdrawn}")
     private String withdrawnBody;
 
-    @Value("${body.notification.default}")
     private String defaultBody;
 
-    @Value("${subject.notification}")
     private String subject;
+
+    private String changesSubject;
+
+    private String changesBody;
+
+    private String activityFullSubject;
+
+    private String activityFullBody;
 
     private String username;
     private boolean useKafka = false;
@@ -46,14 +52,21 @@ public class Notification {
      * @param email - the email of the user to be notified
      */
     public Notification(NotificationRequestModel requestInfo, String email) {
-        if (requestInfo == null) {
+        if (requestInfo == null || requestInfo.getActivityId() == null) {
             this.activityId = unknown;
         } else {
             this.notificationStatus = requestInfo.getStatus();
-            if (requestInfo.getActivityId() != null) {
-                this.activityId = requestInfo.getActivityId().toString();
+            this.activityId = requestInfo.getActivityId().toString();
+            if (requestInfo.getDate() != null) {
+                this.newDate = requestInfo.getDate().toString();
             } else {
-                this.activityId = unknown;
+                this.newDate = "The date has not changed since the last update.";
+            }
+
+            if (requestInfo.getLocation() != null) {
+                this.newLocation = requestInfo.getLocation();
+            } else {
+                this.newLocation = "The location has not changed since the last update.";
             }
 
             this.destinationEmail = email;
@@ -68,14 +81,21 @@ public class Notification {
      * @param useKafka - boolean that represents if kafka is to be used
      */
     public Notification(NotificationRequestModel requestInfo, String username, boolean useKafka) {
-        if (requestInfo == null) {
+        if (requestInfo == null || requestInfo.getActivityId() == null) {
             this.activityId = unknown;
         } else {
             this.notificationStatus = requestInfo.getStatus();
-            if (requestInfo.getActivityId() != null) {
-                this.activityId = requestInfo.getActivityId().toString();
+            this.activityId = requestInfo.getActivityId().toString();
+            if (requestInfo.getDate() != null) {
+                this.newDate = requestInfo.getDate().toString();
             } else {
-                this.activityId = unknown;
+                this.newDate = "The date has not changed since the last update.";
+            }
+
+            if (requestInfo.getLocation() != null) {
+                this.newLocation = requestInfo.getLocation();
+            } else {
+                this.newDate = "The location has not changed since the last update.";
             }
 
             this.username = username;
@@ -103,6 +123,11 @@ public class Notification {
                 return kickedBody + activityId;
             case WITHDRAWN:
                 return withdrawnBody + activityId;
+            case CHANGES:
+                return changesBody + activityId + ":\n"
+                        + "Date: " + newDate + "\nLocation: " + newLocation;
+            case ACTIVITY_FULL:
+                return activityFullBody + activityId;
             default:
                 return defaultBody + activityId;
         }
@@ -117,8 +142,12 @@ public class Notification {
     public String retrieveSubject() {
         if (notificationStatus == null) {
             return subject + "unknown";
+        } else if (notificationStatus == NotificationStatus.CHANGES) {
+            return changesSubject;
+        } else if (notificationStatus == NotificationStatus.ACTIVITY_FULL) {
+            return activityFullSubject;
         }
-        return subject + notificationStatus; //add info about activity
+        return subject + notificationStatus;
     }
 
     /**
