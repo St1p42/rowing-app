@@ -1268,6 +1268,25 @@ public class ActivityControllerTest {
 
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void noUserTest() throws Exception {
+
+        UserDTO userDTO = exampleUser;
+
+        mockServer.expect(requestTo("http://localhost:8084/user/" + userDTO.getUserId() + "/get-user"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withBadRequest());
+
+
+        ResultActions result = mockMvc.perform(get("/activity/user/" + userDTO.getUserId())
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isBadRequest());
+        mockServer.verify();
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void getParticipantsTest() throws Exception {
 
         UserDTO userDTO = exampleUser;
@@ -1299,24 +1318,5 @@ public class ActivityControllerTest {
         // Assert
 
         assertThat(response).isEqualTo(objectMapper.writeValueAsString(new ArrayList<>(Arrays.asList(userDTO))));
-    }
-
-    @Test
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void noUserTest() throws Exception {
-
-        UserDTO userDTO = exampleUser;
-
-        mockServer.expect(requestTo("http://localhost:8084/user/" + userDTO.getUserId() + "/get-user"))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withBadRequest());
-
-
-        ResultActions result = mockMvc.perform(get("/activity/user/" + userDTO.getUserId())
-                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
-
-        // Assert
-        result.andExpect(status().isBadRequest());
-        mockServer.verify();
     }
 }

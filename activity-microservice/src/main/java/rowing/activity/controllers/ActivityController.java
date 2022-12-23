@@ -302,11 +302,6 @@ public class ActivityController {
      */
     @GetMapping("/{activityId}/participants")
     public ResponseEntity<List<UserDTO>> getParticipants(@PathVariable UUID activityId) {
-        try {
-            return ResponseEntity.ok(activityService.getParticipants(activityId));
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(activityService.getParticipants(activityId));
     }
 }
