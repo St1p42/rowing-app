@@ -59,6 +59,12 @@ public class IntegrationTest {
     @Value("${testingTokenAlex}")
     String testingTokenAlex;
 
+    /**
+     * This method starts the user and authentication
+     * microservice and sets up the database for the user microservice.
+     *
+     * @throws JsonProcessingException from parsing a json
+     */
     @BeforeAll
     public void setup() throws JsonProcessingException {
         SpringApplicationBuilder uws = new SpringApplicationBuilder(rowing.user.Application.class);
@@ -76,7 +82,9 @@ public class IntegrationTest {
         headers.setBearerAuth(testingTokenAlex);
         headers.setContentType(MediaType.APPLICATION_JSON);
         UpdateUserDTO updateUserDTO =
-                new UpdateUserDTO(null, List.of(new AvailabilityIntervals("monday", "13:00", "14:30")), "aojica65@gmail.com", "alex",
+                new UpdateUserDTO(null, List.of(
+                        new AvailabilityIntervals("monday", "13:00", "14:30")),
+                        "aojica65@gmail.com", "alex",
                         "test", null, null, null, null);
         String body = JsonUtil.serialize(updateUserDTO);
         HttpEntity requestHttp = new HttpEntity(body, headers);
