@@ -269,8 +269,7 @@ public class ActivityService {
         ResponseEntity responseEntity = restTemplate.exchange(
                 urlNotification + ":" + portNotification + pathNotify,
                 HttpMethod.POST, requestEntity, String.class);
-        String response = "User "  + model.getUserId() + " is accepted successfully to the activity with id " +
-                activity.getId();
+        String response = "User "  + model.getUserId() + " is accepted successfully to the activity with id " + activity.getId();
         if (activity.getPositions().size() < 1) {
             List<String> applicants = activity.getApplicants();
             for (String user : applicants) {

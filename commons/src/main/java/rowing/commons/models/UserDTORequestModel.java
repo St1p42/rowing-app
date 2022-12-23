@@ -18,12 +18,27 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 @JsonView(Views.Public.class)
-public class UserDTORequestModel extends UserDTO{
+public class UserDTORequestModel extends UserDTO {
 
     private Position positionSelected;
 
     public UserDTORequestModel(){}
 
+    /**
+     * Constructor for request model of user DTO.
+     *
+     * @param userId - id of a user
+     * @param rowingPositions - positions of a user
+     * @param availability - availability of a user
+     * @param email - user's email
+     * @param firstName - user's first name
+     * @param lastName - user's last name
+     * @param coxCertificates - user's cox certificates
+     * @param gender - user's gender
+     * @param rowingOrganization - user's rowing organization
+     * @param competitive - boolean, true if user is looking for competition, false if for a training session
+     * @param selected - user's selected position for the activity
+     */
     public UserDTORequestModel(String userId, List<Position> rowingPositions,
                         List<AvailabilityIntervals> availability, String email,
                         String firstName, String lastName, List<String> coxCertificates,
@@ -35,6 +50,12 @@ public class UserDTORequestModel extends UserDTO{
         positionSelected = selected;
     }
 
+    /**
+     * Constructor for request model of User DTO using User DTO as a parameter.
+     *
+     * @param userDTO - DTO to create a request model from
+     * @param selected - selected position of a user for the activity
+     */
     public UserDTORequestModel(UserDTO userDTO, Position selected) {
 
         super(userDTO.getUserId(), userDTO.getRowingPositions(), userDTO.getAvailability(),
