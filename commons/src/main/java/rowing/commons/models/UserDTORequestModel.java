@@ -25,19 +25,19 @@ public class UserDTORequestModel extends UserDTO {
     public UserDTORequestModel(){}
 
     /**
-     * Constructor, it constructs.
+     * Constructor for request model of user DTO.
      *
-     * @param userId userId
-     * @param rowingPositions position
-     * @param availability availability
-     * @param email email
-     * @param firstName first name
-     * @param lastName last name...
-     * @param coxCertificates cox
-     * @param gender gender
-     * @param rowingOrganization organization
-     * @param competitive competitive
-     * @param selected selected...or not selected?
+     * @param userId - id of a user
+     * @param rowingPositions - positions of a user
+     * @param availability - availability of a user
+     * @param email - user's email
+     * @param firstName - user's first name
+     * @param lastName - user's last name
+     * @param coxCertificates - user's cox certificates
+     * @param gender - user's gender
+     * @param rowingOrganization - user's rowing organization
+     * @param competitive - boolean, true if user is looking for competition, false if for a training session
+     * @param selected - user's selected position for the activity
      */
     public UserDTORequestModel(String userId, List<Position> rowingPositions,
                         List<AvailabilityIntervals> availability, String email,
@@ -51,10 +51,10 @@ public class UserDTORequestModel extends UserDTO {
     }
 
     /**
-     * Constructor, it constructs.
+     * Constructor for request model of User DTO using User DTO as a parameter.
      *
-     * @param userDTO a dto for the user?
-     * @param selected selected
+     * @param userDTO - DTO to create a request model from
+     * @param selected - selected position of a user for the activity
      */
     public UserDTORequestModel(UserDTO userDTO, Position selected) {
 

@@ -8,8 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import rowing.activity.authentication.AuthManager;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
@@ -20,23 +24,26 @@ import rowing.activity.domain.utils.Builder;
 import rowing.activity.services.ActivityService;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.Gender;
+import rowing.commons.NotificationStatus;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.MatchingDTO;
+import rowing.commons.entities.UserDTO;
+import rowing.commons.entities.utils.JsonUtil;
+import rowing.commons.models.NotificationRequestModel;
+import rowing.commons.models.UserDTORequestModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,6 +55,7 @@ public class ActivityServiceTest {
     private transient MatchRepository mockMatchRepository = mock(MatchRepository.class);
     @Autowired
     private transient AuthManager mockAuthenticationManager;
+
     private ActivityService activityService;
 
     Activity amateurTraining;
@@ -87,13 +95,13 @@ public class ActivityServiceTest {
 
         director.constructTraining((TrainingBuilder) trainingBuilder, UUID.randomUUID(),
                 "Admin", "Amateur Training", "Training",
-                amateurTrainingDate, positionList, applicantList, "C4");
+                amateurTrainingDate, "Aula", positionList, applicantList, "C4");
         amateurTraining = trainingBuilder.build();
 
         Builder competitionBuilder = new CompetitionBuilder();
         director.constructCompetition((CompetitionBuilder) competitionBuilder, UUID.randomUUID(),
                 "Admin", "Amateur Competition", "Competition",
-                amateurCompetitionDate,  Gender.MALE, "TUDelft", positionList, applicantList, "C4");
+                amateurCompetitionDate, "Aula", Gender.MALE, "TUDelft", positionList, applicantList, "C4");
         amateurCompetition = competitionBuilder.build();
 
         availability = new ArrayList<AvailabilityIntervals>();
@@ -178,6 +186,36 @@ public class ActivityServiceTest {
 
         verify(mockActivityRepository).delete(activity);
         verify(mockMatchRepository).deleteAll(mockMatchRepository.findAllByActivityId(id));
+    }
+
+    @Test
+    public void checkStartFalse() throws ParseException {
+        String dateString = "26-09-1043 14:05:05";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        Date passedDate = formatter.parse(dateString);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            ActivityService.checkNewStart(passedDate);
+        });
+    }
+
+    @Test
+    public void checkStartTrue() throws ParseException {
+        String dateString = "26-09-3043 14:05:05";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        Date futureDate = formatter.parse(dateString);
+
+        assertTrue(ActivityService.checkNewStart(futureDate));
+    }
+
+    @Test
+    public void checkStartCurrentFalse() throws ParseException {
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = calendar.getTime();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            ActivityService.checkNewStart(currentDate);
+        });
     }
 
 }

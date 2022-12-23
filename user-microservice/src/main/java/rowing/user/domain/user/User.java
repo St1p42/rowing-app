@@ -2,6 +2,8 @@ package rowing.user.domain.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.bytebuddy.dynamic.loading.InjectionClassLoader;
+import org.hibernate.annotations.GeneratorType;
 import rowing.commons.*;
 import rowing.commons.entities.UserDTO;
 import rowing.user.domain.HasEvents;
@@ -24,6 +26,7 @@ public class User extends HasEvents {
      */
     @Id
     @Column(name = "userId", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String userId;
 
     @Column(name = "rowingPositions")

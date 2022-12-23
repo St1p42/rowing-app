@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import rowing.commons.AvailabilityIntervals;
 import rowing.commons.entities.UpdateUserDTO;
 import rowing.commons.entities.UserDTO;
 import rowing.user.authentication.AuthManager;
@@ -20,6 +21,7 @@ import rowing.user.services.AvailabilityService;
 import rowing.user.services.UserService;
 
 import java.time.DateTimeException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -72,6 +74,26 @@ public class UserController {
         return ResponseEntity.ok(userDTO);
     }
 
+    /**
+     * Gets user availability.
+     *
+     * @return user availability.
+     */
+    @GetMapping("/get-availability-user")
+    public ResponseEntity<List<AvailabilityIntervals>> getAvailability(@RequestBody String userId) {
+        if (!authManager.getUsername().equals("activity")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Request forbidden");
+        }
+        Optional<User> optionalUser = userRepository.findByUserId(userId);
+
+        if (optionalUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        User user = optionalUser.get();
+        return ResponseEntity.ok(user.getAvailability());
+    }
+
 
     /**
      * Gets user email.
@@ -84,7 +106,7 @@ public class UserController {
         String userId = (String) ((JSONObject) array.get(0)).get("username");
         Optional<User> u = userRepository.findByUserId(userId);
         System.out.println(username);
-        if (!u.isPresent()) {
+        if (u.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         User user = u.get();
