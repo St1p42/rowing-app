@@ -41,10 +41,19 @@ public class ActivityService {
     private final transient AuthManager authManager;
     private final transient MatchRepository matchRepository;
     @Autowired
-    private RestTemplate restTemplate;
+    private transient RestTemplate restTemplate;
 
-    @Value("${tokenJWTActivity}")
-    String token;
+    @Value("${microserviceJWT}")
+    private transient String token;
+
+    @Value("${portNotification}")
+    String portNotification;
+
+    @Value("${urlNotification}")
+    String urlNotification;
+
+    @Value("${pathNotify}")
+    String pathNotify;
 
     /**
      * Constructor for the ActivityService class.
@@ -119,8 +128,8 @@ public class ActivityService {
                 activityRepository.delete(activity);
             }
         }
-        for(UUID id : uuids){
-            if(matchRepository.existsByActivityId(id)){
+        for (UUID id : uuids) {
+            if (matchRepository.existsByActivityId(id)) {
                 matchRepository.deleteAll(matchRepository.findAllByActivityId(id));
             }
         }
@@ -174,7 +183,7 @@ public class ActivityService {
      * @return String - the response corresponding to the signUp result
      * @throws IllegalArgumentException - if the activity is not found in the database or user is not compatible
      */
-    public String signUp(MatchingDTO match) throws IllegalArgumentException {
+    public String signUp(MatchingDTO match) throws IllegalArgumentException, JsonProcessingException {
 
         Optional<Activity> activity = activityRepository.findActivityById(match.getActivityId());
         if (activity.isPresent()) {
@@ -205,7 +214,23 @@ public class ActivityService {
             }
 
             activityPresent.addApplicant(match.getUserId()); // If all is fine we add the applicant
-            activityRepository.save(activityPresent);
+            activityPresent = activityRepository.save(activityPresent);
+
+            if (activityPresent.getPositions().size() < 1) {
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                headers.setBearerAuth(token);
+
+                NotificationRequestModel request = new NotificationRequestModel(match.getUserId(),
+                        NotificationStatus.ACTIVITY_FULL, activityPresent.getId());
+
+                String body = JsonUtil.serialize(request);
+                HttpEntity requestEntity = new HttpEntity(body, headers);
+                ResponseEntity responseEntity = restTemplate.exchange(
+                        urlNotification + ":" + portNotification + pathNotify,
+                        HttpMethod.POST, requestEntity, String.class);
+            }
 
             return "User " + match.getUserId() + " signed up for activity : " + match.getActivityId().toString();
         }
@@ -217,17 +242,19 @@ public class ActivityService {
      *
      * @param activity that the owner wants to accept the user for
      * @param model the UserDTORequestModel keeping the information about the selected user and position
-     * @return a String that notifies that the user is created successfully.
-     * @throws JsonProcessingException if there is a problem occurs when converting the NotificationRequestModel object to Json
+     * @return a String that notifies that the user is accepted successfully.
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
      */
     public String acceptUser(Activity activity, UserDTORequestModel model) throws JsonProcessingException {
         activity.getPositions().remove(model.getPositionSelected());
         Match<MatchingDTO> match = new Match<>(new MatchingDTO(UUID.randomUUID(), activity.getId(),
                 model.getUserId(), model.getPositionSelected(), model.getGender(),
-                model.getCompetitive(), model.getRowingOrganization(), model.getAvailability(), NotificationStatus.ACCEPTED));
+                model.getCompetitive(), model.getRowingOrganization(),
+                model.getAvailability(), NotificationStatus.ACCEPTED));
 
-        matchRepository.save(match);
-        activityRepository.save(activity);
+        match = matchRepository.save(match);
+        activity = activityRepository.save(activity);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -239,10 +266,54 @@ public class ActivityService {
         String body = JsonUtil.serialize(request);
         HttpEntity requestEntity = new HttpEntity(body, headers);
         ResponseEntity responseEntity = restTemplate.exchange(
-                "http://localhost:8082/notify",
+                urlNotification + ":" + portNotification + pathNotify,
                 HttpMethod.POST, requestEntity, String.class);
 
+        if (activity.getPositions().size() < 1) {
+            List<String> applicants = activity.getApplicants();
+            for (String user : applicants) {
+                if (!matchRepository.existsByActivityIdAndUserId(match.getActivityId(), user)) {
+
+                    request = new NotificationRequestModel(user,
+                            NotificationStatus.ACTIVITY_FULL, activity.getId());
+                    body = JsonUtil.serialize(request);
+                    requestEntity = new HttpEntity(body, headers);
+                    responseEntity = restTemplate.exchange(
+                            urlNotification + ":" + portNotification + pathNotify,
+                            HttpMethod.POST, requestEntity, String.class);
+                }
+            }
+        }
+
         return "User " + model.getUserId() + " is accepted successfully";
+    }
+
+    /**
+     * Rejects the user applied to the activity, and sends a notification to the user.
+     *
+     * @param activity that the owner wants to reject the user for
+     * @param model the UserDTO keeping the information about the selected user
+     * @return a String that notifies that the user is rejected successfully.
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
+     */
+    public String rejectUser(Activity activity, UserDTO model) throws JsonProcessingException {
+        activity.getApplicants().remove(model.getUserId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        NotificationRequestModel request = new NotificationRequestModel(model.getUserId(),
+                NotificationStatus.REJECTED, activity.getId());
+
+        String body = JsonUtil.serialize(request);
+        HttpEntity requestEntity = new HttpEntity(body, headers);
+        ResponseEntity responseEntity = restTemplate.exchange(
+                urlNotification + ":" + portNotification + pathNotify,
+                HttpMethod.POST, requestEntity, String.class);
+
+        return "User " + model.getUserId() + " is rejected successfully";
     }
 
 

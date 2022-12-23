@@ -12,6 +12,8 @@ import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
 import rowing.activity.services.ActivityService;
+import rowing.commons.Certificates;
+import rowing.commons.CoxCertificate;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
@@ -22,6 +24,7 @@ import rowing.commons.models.UserDTORequestModel;
 import rowing.commons.entities.CompetitionDTO;
 import rowing.commons.entities.UpdateUserDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,8 +48,10 @@ public class ActivityController {
     /**
      * Instantiates a new controller.
      *
-     * @param authManager     Spring Security component used to authenticate and authorize the user
-     * @param matchRepository
+     * @param authManager Spring Security component used to authenticate and authorize the user
+     * @param activityRepository the activity repository to be used
+     * @param matchRepository the match repository to be used
+     * @param activityService the activity service to be used
      */
     @Autowired
     public ActivityController(AuthManager authManager, ActivityRepository activityRepository,
@@ -144,7 +149,7 @@ public class ActivityController {
         String response = "";
         try {
             response = activityService.signUp(match);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
             //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
         }
@@ -157,14 +162,15 @@ public class ActivityController {
      * @param activityId the id of the activity
      * @param model the UserDTORequestModel keeping the information about the selected user and position
      * @return a ResponseEntity of string to notify what happened
-     * @throws JsonProcessingException if there is a problem occurs when converting the NotificationRequestModel object to Json
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
      */
     @PostMapping("/{activityId}/accept")
     public ResponseEntity<String> acceptUser(@PathVariable("activityId") UUID activityId,
                                              @RequestBody UserDTORequestModel model) throws JsonProcessingException {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
         if (!optionalActivity.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist !");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist!");
         }
         Activity activity = optionalActivity.get();
         if (!authManager.getUsername().equals(activity.getOwner())) {
@@ -178,13 +184,79 @@ public class ActivityController {
                 }
             }
         }
-        if(!activity.getApplicants().contains(model.getUserId())){
-            return ResponseEntity.badRequest().body("This user didn't apply to this activity");
+        if (!model.getRowingPositions().contains(model.getPositionSelected())) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The user didn't apply for this position");
         }
-        if(!activity.getPositions().contains(model.getPositionSelected())){
+        if (!activity.getApplicants().contains(model.getUserId())) {
+            return ResponseEntity.badRequest().body("This user didn't apply for this activity");
+        }
+        if (!activity.getPositions().contains(model.getPositionSelected())) {
             return ResponseEntity.badRequest().body("This position is already full");
+        }
+        if (model.getPositionSelected().equals(Position.COX)) {
+            List<String> certificates = model.getCoxCertificates();
+            List<CoxCertificate> coxCertificates = new ArrayList<>();
+            for (String s : certificates) {
+                if (Certificates.existByName(s)) {
+                    coxCertificates.add(Certificates.getCertificate(s));
+                }
+            }
+            boolean exists = false;
+            for (CoxCertificate certificate : coxCertificates) {
+                if (certificate.getName().equals(activity.getBoatType())) {
+                    exists = true;
+                    break;
+                }
+                if (certificate.getSupersedes() != null) {
+                    for (String supersede : certificate.getSupersedes()) {
+                        if (supersede.equals(activity.getBoatType())) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!exists) {
+                return ResponseEntity.badRequest().body("The user don't have a certificate for this boat type!");
+            }
         }
 
         return ResponseEntity.ok(activityService.acceptUser(activity, model));
+    }
+
+    /**
+     * Endpoint for rejecting a specific user to an activity.
+     *
+     * @param activityId the id of the activity
+     * @param model the UserDTO keeping the information about the selected user
+     * @return a ResponseEntity of string to notify what happened
+     * @throws JsonProcessingException if there is a problem occurs when converting
+     *         the NotificationRequestModel object to Json
+     */
+    @PostMapping("/{activityId}/reject")
+    public ResponseEntity<String> rejectUser(@PathVariable("activityId") UUID activityId,
+                                             @RequestBody UserDTO model) throws JsonProcessingException {
+
+        Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
+        if (!optionalActivity.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist!");
+        }
+        Activity activity = optionalActivity.get();
+        if (!authManager.getUsername().equals(activity.getOwner())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only the owner of the activity can reject users");
+        }
+        if (matchRepository.existsByActivityId(activityId)) {
+            List<Match> matches = matchRepository.findAllByActivityId(activityId);
+            for (Match match : matches) {
+                if (match.getUserId().equals(model.getUserId())) {
+                    return ResponseEntity.badRequest().body("This user is already participating in the activity");
+                }
+            }
+        }
+        if (!activity.getApplicants().contains(model.getUserId())) {
+            return ResponseEntity.badRequest().body("This user didn't apply for this activity");
+        }
+
+        return ResponseEntity.ok(activityService.rejectUser(activity, model));
     }
 }

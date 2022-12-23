@@ -25,7 +25,7 @@ public class Director {
      * @param applicants list of applicants names
      */
     public void constructTraining(TrainingBuilder builder, UUID id, String name, String owner, String type,
-                                  Date start, List<Position> positions, List<String> applicants) {
+                                  Date start, List<Position> positions, List<String> applicants, String boatType) {
         builder.setId(id);
         builder.setName(name);
         builder.setOwner(owner);
@@ -33,6 +33,7 @@ public class Director {
         builder.setStart(start);
         builder.setPositions(positions);
         builder.setApplicants(applicants);
+        builder.setBoatType(builder.getBoatType());
     }
 
     /**
@@ -50,6 +51,7 @@ public class Director {
         builder.setLocation(dto.getLocation());
         builder.setPositions(dto.getPositions());
         builder.setApplicants(dto.getApplicants());
+        builder.setBoatType(builder.getBoatType());
     }
 
     /**
@@ -68,7 +70,7 @@ public class Director {
      */
     public void constructCompetition(CompetitionBuilder builder, UUID id, String name, String owner, String type,
                                      Date start, Gender gender, String organisation,
-                                     List<Position> positions, List<String> applicants) {
+                                     List<Position> positions, List<String> applicants, String boatType) {
         builder.setId(id);
         builder.setName(name);
         builder.setOwner(owner);
@@ -78,6 +80,7 @@ public class Director {
         builder.setOrganisation(organisation);
         builder.setPositions(positions);
         builder.setApplicants(applicants);
+        builder.setBoatType(boatType);
     }
 
     /**
@@ -97,5 +100,6 @@ public class Director {
         builder.setGender(dto.getGender());
         builder.setOrganisation(dto.getOrganisation());
         builder.setApplicants(builder.getApplicants());
+        builder.setBoatType(builder.getBoatType());
     }
 }

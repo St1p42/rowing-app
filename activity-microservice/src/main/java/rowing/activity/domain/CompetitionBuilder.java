@@ -22,8 +22,9 @@ public class CompetitionBuilder implements Builder {
     private String organisation;
     private List<Position> positions;
     private List<String> applicants;
+    private String boatType;
 
     public Competition build() {
-        return new Competition(id, owner, name, type, start, location, gender, organisation, positions, applicants);
+        return new Competition(id, owner, name, type, start, gender, organisation, positions, applicants, boatType);
     }
 }

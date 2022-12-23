@@ -51,6 +51,7 @@ public class Match<T extends MatchingDTO> extends BaseEntity<T> {
         }
         this.activityId = dto.getActivityId();
         this.userId = dto.getUserId();
+        this.position = dto.getPosition();
     }
 
     /**

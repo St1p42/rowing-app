@@ -22,7 +22,10 @@ import java.util.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(indexes = {@Index(name = "id", columnList = "id")})
 public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
-    @Column(name = "id", nullable = false, unique = true)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private UUID id;
 
     @Column(name = "owner", nullable = false, unique = false)
@@ -47,6 +50,9 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
     @Column(name = "applicants", nullable = true, unique = false)
     @ElementCollection
     private List<String> applicants;
+
+    @Column(name = "boat_type")
+    private String boatType;
 
     /**
      * Mapper that maps a dto to an activity.
@@ -73,6 +79,7 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
         this.location = dto.getLocation();
         this.positions = dto.getPositions();
         this.applicants = dto.getApplicants();
+        this.boatType = dto.getBoatType();
     }
 
     /**
@@ -101,7 +108,8 @@ public abstract class Activity<T extends ActivityDTO> extends BaseEntity<T> {
                 this.start,
                 this.location,
                 this.positions,
-                this.applicants
+                this.applicants,
+                this.boatType
                 );
     }
 
