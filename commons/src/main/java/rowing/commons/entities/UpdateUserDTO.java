@@ -15,11 +15,8 @@ import java.util.List;
 
 @NoArgsConstructor
 @Data
-@AllArgsConstructor
 @JsonView(Views.Public.class)
 public class UpdateUserDTO implements DTO {
-
-    private String userId;
 
     private List<Position> rowingPositions;
 
