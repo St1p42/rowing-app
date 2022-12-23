@@ -33,8 +33,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -179,5 +178,16 @@ public class ActivityServiceTest {
 
         verify(mockActivityRepository).delete(activity);
         verify(mockMatchRepository).deleteAll(mockMatchRepository.findAllByActivityId(id));
+    }
+
+    @Test
+    public void checkStartFalse() throws ParseException {
+        String dateString = "26-09-1043 14:05:05";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        Date passedDate = formatter.parse(dateString);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            ActivityService.checkNewStart(passedDate);
+        });
     }
 }

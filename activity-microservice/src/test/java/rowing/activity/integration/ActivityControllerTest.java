@@ -926,4 +926,60 @@ public class ActivityControllerTest {
         String response = result.getResponse().getContentAsString();
         assertThat(response).isEqualTo("Only the owner of the activity can kick users");
     }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void ActivityUpdatedSuccessfullyEmptyUpdate() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
+
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+
+        training = mockActivityRepository.save(training);
+        UUID id = training.getId();
+
+        ActivityDTO updatedActivity = training.toDto();
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .put("/activity/" + id + "/update-activity")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updatedActivity))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        // Assert
+        String response = result.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("Activity" + id + "has been updated successfully");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void ActivityUpdatedSuccessfullyChanges() throws Exception {
+        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
+        when(mockJwtTokenVerifier.validateToken(anyString())).thenReturn(true);
+        when(mockAuthenticationManager.getUsername()).thenReturn("Efe");
+
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+
+        training = mockActivityRepository.save(training);
+        UUID id = training.getId();
+
+        String dateString = "10-09-3043 14:05:05";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        Date newAmateurTrainingDate = formatter.parse(dateString);
+
+        ActivityDTO updatedActivity = training.toDto();
+        updatedActivity.setName("Updated Activity");
+        updatedActivity.setStart(newAmateurTrainingDate);
+        updatedActivity.setLocation("Updated Location");
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .put("/activity/" + id + "/update-activity")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updatedActivity))
+                .contentType(MediaType.APPLICATION_JSON);
+    }
 }

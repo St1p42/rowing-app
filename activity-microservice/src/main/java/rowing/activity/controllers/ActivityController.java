@@ -118,7 +118,7 @@ public class ActivityController {
      * @return activityDTO - the activity that has been updated
      */
     @PatchMapping("/{activityId}/update-activity")
-    public ResponseEntity<String> updateUser(@PathVariable("activityId") UUID activityId, ActivityDTO dto) {
+    public ResponseEntity<String> updateUser(@PathVariable("activityId") UUID activityId, @RequestBody ActivityDTO dto) {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
         if (!optionalActivity.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist !");

@@ -79,7 +79,7 @@ public class UserController {
      *
      * @return user availability.
      */
-    @GetMapping("/get-availability")
+    @GetMapping("/get-availability-user")
     public ResponseEntity<List<AvailabilityIntervals>> getAvailability(@RequestBody String userId) {
         if (!authManager.getUsername().equals("activity")) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Request forbidden");

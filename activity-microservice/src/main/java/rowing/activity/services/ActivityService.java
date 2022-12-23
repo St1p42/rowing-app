@@ -1,28 +1,25 @@
 package rowing.activity.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rowing.activity.authentication.AuthManager;
-import rowing.activity.domain.entities.Match;
-import rowing.activity.domain.utils.Builder;
 import rowing.activity.domain.CompetitionBuilder;
 import rowing.activity.domain.Director;
 import rowing.activity.domain.TrainingBuilder;
 import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Competition;
+import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.entities.Training;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
+import rowing.activity.domain.utils.Builder;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.NotificationStatus;
-import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
 import rowing.commons.entities.CompetitionDTO;
 import rowing.commons.entities.MatchingDTO;
@@ -54,6 +51,12 @@ public class ActivityService {
 
     @Value("${pathNotify}")
     String pathNotify;
+
+    @Value("${portUsers}")
+    String portUsers;
+
+    @Value("${pathUserAvailability}")
+    String pathUserAvailability;
 
     /**
      * Constructor for the ActivityService class.
@@ -356,16 +359,17 @@ public class ActivityService {
      * @param updateActivityDto - the activityDto containing the information which the activity will be updated with
      * @return activityDto - the activityDto corresponding to the updated activity
      * @throws IllegalArgumentException - if the activity is not found in the database
+     * @throws JsonProcessingException - if there is a problem occurs when converting
      */
     public String updateActivity(UUID activityId, ActivityDTO updateActivityDto)
             throws IllegalArgumentException, JsonProcessingException {
         Optional<Activity> optionalActivity = activityRepository.findActivityById(activityId);
-        if (optionalActivity.isPresent()) {
+        if (optionalActivity.isEmpty()) {
             throw new IllegalArgumentException("Activity does not exist !");
         }
         Activity activity = optionalActivity.get();
 
-        NotificationRequestModel request = new NotificationRequestModel(activity.getOwner(),
+        NotificationRequestModel requestModel = new NotificationRequestModel(null,
                 NotificationStatus.CHANGES,
                 activity.getId());
 
@@ -374,7 +378,7 @@ public class ActivityService {
             Date newStart = optionalStart.get();
             checkNewStart(newStart);  // Checking if the new start is in the future
             activity.setStart(newStart);
-            request.setDate(newStart);
+            requestModel.setDate(newStart);
         }
 
         Optional.ofNullable(updateActivityDto.getName()).ifPresent(activity::setName);
@@ -383,51 +387,48 @@ public class ActivityService {
         if (optionalLocation.isPresent()) {
             String newLocation = optionalLocation.get();
             activity.setLocation(newLocation);
-            request.setLocation(newLocation);
+            requestModel.setLocation(newLocation);
         }
 
         //get all participants of the activity
-        List<String> participants = new ArrayList<>();
-
-        if (matchRepository.existsByActivityId(activityId)) {
-            List<Match> matches = matchRepository.findAllByActivityId(activityId);
-            for (Match match : matches) {
-                if (match.getDto().getStatus() == NotificationStatus.ACCEPTED) {
-                    participants.add(match.getUserId());
-                }
-            }
-        }
+        List<String> participants = getParticipantIDs(activityId);
 
         // Send notification to all participants
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(token);
+        String uriNotification = urlNotification + ":" + portNotification + pathNotify;
+        HttpHeaders headersNotification = new HttpHeaders();
+        headersNotification.setContentType(MediaType.APPLICATION_JSON);
+        headersNotification.setBearerAuth(token);
 
-        String body = JsonUtil.serialize(request);
-        HttpEntity requestEntity = new HttpEntity(body, headers);
-        ResponseEntity responseEntity = restTemplate.exchange(
-                "http://localhost:8082/notify",
-                HttpMethod.POST, requestEntity, String.class);
+        for(String username: participants){
+            requestModel.setUsername(username);
+            String bodyNotification = JsonUtil.serialize(requestModel);
+            HttpEntity requestNotification = new HttpEntity(bodyNotification, headersNotification);
+            ResponseEntity<String> responseNotification = restTemplate.exchange(
+                    uriNotification,
+                    HttpMethod.POST, requestNotification, String.class);
+
 
         //Check if any participants are not available for the new date and remove them from the activity if they are not
-        for (String userId : participants) {
-            //building the request
-            String uriUser = "http://localhost:8084/get-availability";
-            HttpHeaders headersUser = new HttpHeaders();
-            headersUser.setContentType(MediaType.APPLICATION_JSON);
-            headersUser.setBearerAuth(token);
-            HttpEntity requestHttpUser = new HttpEntity(userId, headersUser);
+            if (optionalStart.isPresent()) {
+                //building the request for the user availability
+                String uriUser = urlNotification + ":" + portUsers + pathUserAvailability;
+                HttpHeaders headersUser = new HttpHeaders();
+                headersUser.setContentType(MediaType.APPLICATION_JSON);
+                headersUser.setBearerAuth(token);
+                HttpEntity requestHttpUser = new HttpEntity(username, headersUser);
 
-            //sending the request
-            ResponseEntity<List<AvailabilityIntervals>> response =
-                    restTemplate.exchange(uriUser, HttpMethod.GET, requestHttpUser,
-                    new ParameterizedTypeReference<List<AvailabilityIntervals>>() {}, userId);
+                //sending the request
+                ResponseEntity<List<AvailabilityIntervals>> response =
+                        restTemplate.exchange(uriUser, HttpMethod.GET, requestHttpUser,
+                                new ParameterizedTypeReference<List<AvailabilityIntervals>>() {
+                                }, username);
 
-            //checking the response
-            if (response.getStatusCode() == HttpStatus.OK) {
-                List<AvailabilityIntervals> availability = response.getBody();
-                if (!checkAvailability(activity, availability)) {
-                    kickUser(activity, userId);
+                //checking the response
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    List<AvailabilityIntervals> availability = response.getBody();
+                    if (!checkAvailability(activity, availability)) {
+                        kickUser(activity, username);
+                    }
                 }
             }
         }
@@ -439,24 +440,42 @@ public class ActivityService {
     }
 
     /**
+     * Gets the list of accepted participants of an activity.
+     *
+     * @param activityId - the UUID corresponding to the activity
+     * @return List<String> - the list of accepted participants
+     */
+    private List<String> getParticipantIDs(UUID activityId) {
+        List<String> participants = new ArrayList<>();
+
+        if (matchRepository.existsByActivityId(activityId)) {
+            List<Match> matches = matchRepository.findAllByActivityId(activityId);
+            for (Match match : matches) {
+                if (match.getDto().getStatus() == NotificationStatus.ACCEPTED) {
+                    participants.add(match.getUserId());
+                }
+            }
+        }
+        return participants;
+    }
+
+    /**
      * Method to check if the new start date is valid.
      *
      * @param newStart - the new start date
      * @throws IllegalArgumentException - if the new start date is invalid
      */
-    private static void checkNewStart(Date newStart)
+    public static void checkNewStart(Date newStart)
             throws IllegalArgumentException {
         Calendar calCurrent = Calendar.getInstance();  // Get local time
         calCurrent.setTime(Calendar.getInstance().getTime());
-        var dayCurrent = calCurrent.get(Calendar.DAY_OF_WEEK);
         var timeCurrent = LocalTime.ofInstant(calCurrent.getTime().toInstant(), ZoneId.systemDefault());
 
         Calendar calNewStart = Calendar.getInstance();  // Get start time
         calNewStart.setTime(newStart);
-        var dayNewStart = calNewStart.get(Calendar.DAY_OF_WEEK);
         var timeNewStart = LocalTime.ofInstant(calNewStart.getTime().toInstant(), ZoneId.systemDefault());
 
-        if (dayCurrent == dayNewStart && timeCurrent.isAfter(timeNewStart)) {
+        if (timeCurrent.isAfter(timeNewStart)) {
             throw new IllegalArgumentException("Activity start time is in the past !");
         }
     }
