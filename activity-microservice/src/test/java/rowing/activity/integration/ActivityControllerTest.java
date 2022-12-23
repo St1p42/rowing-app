@@ -213,6 +213,7 @@ public class ActivityControllerTest {
         activity.setPositions(positionList2);
 
         List<String> applicantList1 = new ArrayList<>();
+        applicantList1.add("Efe");
         activity.setApplicants(applicantList1);
 
         List<ActivityDTO> activityDTOList = new ArrayList<>();
@@ -263,6 +264,7 @@ public class ActivityControllerTest {
         activity.setPositions(positionList2);
 
         List<String> applicantList1 = new ArrayList<>();
+        applicantList1.add("Efe");
         activity.setApplicants(applicantList1);
 
         List<ActivityDTO> activityDTOList = new ArrayList<>();
@@ -461,9 +463,70 @@ public class ActivityControllerTest {
 
     @Test
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void testSignUpWhenFull() throws Exception {
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Efe")));
+        training = mockActivityRepository.save(training);
+        UUID id = training.getId();
+
+        //new match where user will be notified about activity's fullness when signing up
+        MatchingDTO newMatch = new MatchingDTO(UUID.randomUUID(), id,
+                "Khalit", Position.COACH, Gender.MALE, true, "TUDelft",
+                availability, null);
+
+        UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
+
+
+        NotificationRequestModel notificationRequestModel = new NotificationRequestModel("Efe",
+                NotificationStatus.ACCEPTED, id);
+
+        NotificationRequestModel notificationRequestModelFull = new NotificationRequestModel("Khalit",
+                NotificationStatus.ACTIVITY_FULL, id);
+
+        mockServer.expect(requestTo("http://localhost:8082/notify"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().json(JsonUtil.serialize(notificationRequestModel)))
+                .andRespond(withSuccess("extra.efeunluyurt@gmail.com", MediaType.TEXT_PLAIN));
+
+        mockServer.expect(requestTo("http://localhost:8082/notify"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().json(JsonUtil.serialize(notificationRequestModelFull)))
+                .andRespond(withSuccess("extra.efeunluyurt@gmail.com", MediaType.TEXT_PLAIN));
+
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/activity/" + id + "/accept")
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(model))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        RequestBuilder requestBuilder1 = MockMvcRequestBuilders
+                .post("/activity/sign/{activityId}", id)
+                .header("Authorization", "Bearer MockedToken")
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(newMatch))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+        MvcResult resultFull = mockMvc.perform(requestBuilder1).andReturn();
+        mockServer.verify();
+        String response = result.getResponse().getContentAsString();
+        String responseFull = resultFull.getResponse().getContentAsString();
+        assertThat(response).isEqualTo("User " + "Efe"
+                + " is accepted successfully to the activity with id " + id);
+        assertThat(responseFull).isEqualTo("User Khalit"
+                + " signed up for activity : " + newMatch.getActivityId()
+                + " but since activity was full the user is currently in the waitlist.");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void userAcceptedSuccessfully() throws Exception {
 
         Activity training = amateurTraining;
+        List<Position> positionListNew = new ArrayList<>();
+        positionListNew.add(Position.COACH);
+        positionListNew.add(Position.COX);
+        training.setPositions(positionListNew);
         training.setApplicants(new ArrayList<>(Arrays.asList("Efe")));
         UserDTORequestModel model = new UserDTORequestModel(exampleUser, Position.COACH);
 
@@ -490,7 +553,7 @@ public class ActivityControllerTest {
         // Assert
         String response = result.getResponse().getContentAsString();
         assertThat(response).isEqualTo("User " + "Efe"
-                + " is accepted successfully");
+                + " is accepted successfully to the activity with id " + id);
     }
 
     @Test
@@ -648,11 +711,14 @@ public class ActivityControllerTest {
                 .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
         mockServer.verify();
         // Assert
         String response = result.getResponse().getContentAsString();
+
         assertThat(response).isEqualTo("User " + "Efe"
-                + " is accepted successfully");
+                + " is accepted successfully to the activity with id " + id
+                + "\nUser Alex is currently in the waitlist since the activity was full.");
     }
 
     @Test
