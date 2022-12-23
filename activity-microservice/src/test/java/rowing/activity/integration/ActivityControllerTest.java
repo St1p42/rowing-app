@@ -1365,6 +1365,5 @@ public class ActivityControllerTest {
 
         // Assert
         result.andExpect(status().isBadRequest());
-
     }
 }
