@@ -1469,4 +1469,27 @@ public class ActivityControllerTest {
         assertThat(response).isEqualTo("Activity does not exist !");
     }
 
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void canNotGetParticipantsForNoActivityTest() throws Exception {
+
+        UserDTO userDTO = exampleUser;
+
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+
+        UUID id = training.getId();
+
+
+        mockMatchRepository.save(new Match(UUID.randomUUID(), id, "Efe", Position.COACH));
+
+
+        ResultActions result = mockMvc.perform(get("/activity/" + id + "/participants")
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isBadRequest());
+
+    }
 }

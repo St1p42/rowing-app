@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import rowing.commons.AvailabilityIntervals;
 import rowing.commons.NotificationStatus;
 import rowing.commons.entities.UpdateUserDTO;
+import rowing.commons.entities.UserDTO;
 import rowing.commons.entities.utils.JsonUtil;
 import rowing.commons.models.NotificationRequestModel;
 import rowing.notification.authentication.AuthManager;
@@ -89,7 +90,7 @@ public class IntegrationTest {
         String body = JsonUtil.serialize(updateUserDTO);
         HttpEntity requestHttp = new HttpEntity(body, headers);
         System.out.println(body);
-        restTemplate.exchange("http://localhost:8084/user/update-user", HttpMethod.POST, requestHttp, String.class);
+        restTemplate.exchange("http://localhost:8084/user/update-user", HttpMethod.POST, requestHttp, UserDTO.class);
     }
 
     @Test
