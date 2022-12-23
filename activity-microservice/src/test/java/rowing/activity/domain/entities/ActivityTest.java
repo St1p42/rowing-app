@@ -33,7 +33,7 @@ class ActivityTest {
 
         List<String> applicantList = new ArrayList<>();
         String boatType = "Boat1337";
-        dto = new ActivityDTO(id, owner, name, type, startDate, positionList, applicantList, boatType);
+        dto = new ActivityDTO(id, owner, name, type, startDate, "Aula", positionList, applicantList, boatType);
     }
 
     @Test
