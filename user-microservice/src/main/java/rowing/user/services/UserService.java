@@ -68,8 +68,11 @@ public class UserService {
             user = findUserById(userId);
         } catch (UserNotFoundException e) {
             user = new User(userId);
+            if (updateUserDTO.getFirstName() == null || updateUserDTO.getEmail() == null
+                    || updateUserDTO.getLastName() == null) {
+                throw new IllegalArgumentException("First name, last name and email cannot be empty");
+            }
         }
-
         Optional.ofNullable(updateUserDTO.getRowingPositions()).ifPresent(user::setRowingPositions);
         Optional.ofNullable(updateUserDTO.getAvailability()).ifPresent(user::setAvailability);
         Optional.ofNullable(updateUserDTO.getEmail()).ifPresent(user::setEmail);
