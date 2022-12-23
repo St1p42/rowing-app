@@ -1,6 +1,7 @@
 package rowing.notification.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import kafka.utils.Json;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -25,6 +26,8 @@ import rowing.commons.entities.utils.JsonUtil;
 import rowing.commons.models.NotificationRequestModel;
 import rowing.notification.authentication.AuthManager;
 import rowing.notification.authentication.JwtTokenVerifier;
+
+import java.io.IOException;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,7 +70,7 @@ public class IntegrationTest {
      * @throws JsonProcessingException from parsing a json
      */
     @BeforeAll
-    public void setup() throws JsonProcessingException {
+    public void setup() throws IOException {
         SpringApplicationBuilder uws = new SpringApplicationBuilder(rowing.user.Application.class);
         uws.run("--server.port=8084", "--spring.jpa.hibernate.ddl-auto=create-drop",
                 "--jdbc.driverClassName=org.h2.Driver",
@@ -90,7 +93,8 @@ public class IntegrationTest {
         String body = JsonUtil.serialize(updateUserDTO);
         HttpEntity requestHttp = new HttpEntity(body, headers);
         //System.out.println(body);
-        restTemplate.exchange("http://localhost:8084/user/update-user", HttpMethod.POST, requestHttp, String.class);
+        UserDTO response = JsonUtil.deserialize(restTemplate.exchange("http://localhost:8084/user/update-user", HttpMethod.POST, requestHttp, String.class).getBody(), UserDTO.class);
+        System.out.print("\n\n\n\n\n\n" + response + "\n\n\n\n\n");
     }
 
     @Test
