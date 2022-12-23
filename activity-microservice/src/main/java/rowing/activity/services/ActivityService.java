@@ -315,6 +315,7 @@ public class ActivityService {
         return "User " + username + " has signed off from the activity : " + activityId;
     }
 
+    /**
      * Rejects the user applied to the activity, and sends a notification to the user.
      *
      * @param activity that the owner wants to reject the user for
