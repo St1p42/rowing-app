@@ -79,7 +79,7 @@ test {
 	jacoco {
 		enabled = true
 		includes = ['rowing.notification.*']
-		excludes = ['rowing.notification.integration.IntegrationTest.java']
+		excludes = []
 	}
 
 	finalizedBy jacocoTestReport
@@ -104,7 +104,7 @@ jacocoTestCoverageVerification() {
 			enabled = true
 			element = 'CLASS'
 			includes = ['rowing.notification.*']
-			excludes = ['rowing.notification.integration.IntegrationTest.java']
+			excludes = []
 			limit {
 				counter = 'BRANCH'
 				value = 'COVEREDRATIO'
