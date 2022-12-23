@@ -3,6 +3,7 @@ package rowing.activity.integration;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -1236,5 +1237,86 @@ public class ActivityControllerTest {
         // Assert
         String response = result.getResponse().getContentAsString();
         assertThat(response).isEqualTo("Only the owner of the activity can kick users");
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void getUserTest() throws Exception {
+
+        UserDTO userDTO = exampleUser;
+
+        mockServer.expect(requestTo("http://localhost:8084/user/" + userDTO.getUserId() + "/get-user"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(userDTO), MediaType.APPLICATION_JSON));
+
+
+        ResultActions result = mockMvc.perform(get("/activity/user/" + userDTO.getUserId())
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isOk());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        String response = result.andReturn().getResponse().getContentAsString();
+
+        mockServer.verify();
+        // Assert
+
+        assertThat(response).isEqualTo(objectMapper.writeValueAsString(userDTO));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void noUserTest() throws Exception {
+
+        UserDTO userDTO = exampleUser;
+
+        mockServer.expect(requestTo("http://localhost:8084/user/" + userDTO.getUserId() + "/get-user"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withBadRequest());
+
+
+        ResultActions result = mockMvc.perform(get("/activity/user/" + userDTO.getUserId())
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isBadRequest());
+        mockServer.verify();
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void getParticipantsTest() throws Exception {
+
+        UserDTO userDTO = exampleUser;
+
+        Activity training = amateurTraining;
+        training.setApplicants(new ArrayList<>(Arrays.asList("Alex", "Efe")));
+
+        training = mockActivityRepository.save(training);
+        UUID id = training.getId();
+
+        mockMatchRepository.save(new Match(UUID.randomUUID(), id, "Efe", Position.COACH));
+
+        mockServer.expect(requestTo("http://localhost:8084/user/Efe/get-user"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(objectMapper.writeValueAsString(userDTO), MediaType.APPLICATION_JSON));
+
+
+        ResultActions result = mockMvc.perform(get("/activity/" + id + "/participants")
+                .header("Authorization", "Bearer MockedToken").contentType(MediaType.APPLICATION_JSON));
+
+        // Assert
+        result.andExpect(status().isOk());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        String response = result.andReturn().getResponse().getContentAsString();
+
+        mockServer.verify();
+        // Assert
+
+        assertThat(response).isEqualTo(objectMapper.writeValueAsString(new ArrayList<>(Arrays.asList(userDTO))));
     }
 }
