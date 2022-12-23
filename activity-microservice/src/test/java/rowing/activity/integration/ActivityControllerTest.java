@@ -117,6 +117,8 @@ public class ActivityControllerTest {
      */
     @BeforeEach
     public void init() throws ParseException {
+        mockActivityRepository.deleteAll();
+        mockMatchRepository.deleteAll();
         // Arrange
         // Notice how some custom parts of authorisation need to be mocked.
         // Otherwise, the integration test would never be able to authorise as the authorisation server is offline.
