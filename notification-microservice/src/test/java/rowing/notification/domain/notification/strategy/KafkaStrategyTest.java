@@ -3,8 +3,10 @@ package rowing.notification.domain.notification.strategy;
 import org.junit.jupiter.api.Test;
 import org.springframework.kafka.core.KafkaTemplate;
 import rowing.notification.domain.notification.Notification;
+import rowing.notification.domain.notification.NotifyUserService;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 import static rowing.notification.domain.notification.strategy.StrategyName.KAFKA;
 

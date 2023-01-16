@@ -4,9 +4,11 @@ import lombok.Data;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import rowing.notification.domain.notification.Notification;
+import rowing.notification.domain.notification.NotifyUserService;
 
 @Data
 @Component

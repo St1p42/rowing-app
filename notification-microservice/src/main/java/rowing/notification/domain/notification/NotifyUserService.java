@@ -3,6 +3,7 @@ package rowing.notification.domain.notification;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,7 +17,10 @@ import rowing.notification.domain.notification.strategy.Strategy;
 import rowing.notification.domain.notification.strategy.StrategyFactory;
 import rowing.notification.domain.notification.strategy.StrategyName;
 
+import javax.annotation.Resource;
 import javax.naming.ConfigurationException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Data
