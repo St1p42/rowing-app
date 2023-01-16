@@ -125,53 +125,74 @@ public class NotifyUserService {
      * @param request - request that was received
      */
     public void notifyUser(NotificationRequestModel request) throws ConfigurationException {
-        // data validation
-        if (request == null || request.getUsername() == null
-                || request.getActivityId() == null || request.getStatus() == null) {
+        if (!validateRequest(request)) {
             throw new IllegalArgumentException();
         }
-        if (request.getStatus().equals(NotificationStatus.CHANGES)
-                && (request.getDate() == null && request.getLocation() == null)) {
-            throw new IllegalArgumentException();
-        }
-
-        if (url == null || port == null || emailPath == null || token == null) {
+        if (!validateConfiguration()) {
             throw new ConfigurationException("uri or token not configured properly");
         }
-
-        //building the request
-        String uri = url + ":" + port + emailPath;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        String body = "{\"username\":\"" + request.getUsername() + "\"}";
-        HttpEntity requestHttp = new HttpEntity(body, headers);
-
-        //getting the strategy depending on the response
-        Strategy strategy;
-        Notification notification;
+        HttpEntity requestHttp = buildRequest(request);
 
         //sending the request
+        String uri = url + ":" + port + emailPath;
         try {
+            // send request and get response
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, requestHttp, String.class);
-            System.out.println(response);
-            strategy =
-                    strategyFactory.findStrategy(StrategyName.EMAIL);
-            notification = new Notification(request, response.getBody());
-            strategy.notifyUser(notification);
+            executeNotification(StrategyName.EMAIL, request, response.getBody(), false);
         } catch (RestClientException e) {
-            if (e.getMessage().contains("404")) {
-                System.out.println(e.getMessage());
-                strategy =
-                        strategyFactory.findStrategy(StrategyName.KAFKA);
-                notification = new Notification(request, request.getUsername(), true);
-                strategy.notifyUser(notification);
-            } else {
-                throw e;
-            }
-        } catch (Exception e) {
+            handleError(e, request);
+        }
+    }
+
+    private void handleError(RestClientException e, NotificationRequestModel request) {
+        if (e.getMessage().contains("404")) {
+            System.out.println(e.getMessage());
+            executeNotification(StrategyName.KAFKA, request, request.getUsername(), true);
+        } else {
             throw e;
         }
     }
+
+    private HttpEntity buildRequest(NotificationRequestModel request) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        String body = "{\"username\":\"" + request.getUsername() + "\"}";
+        return new HttpEntity(body, headers);
+    }
+
+    private boolean validateRequest(NotificationRequestModel request) {
+        if (request == null || request.getUsername() == null
+                || request.getActivityId() == null || request.getStatus() == null) {
+            return false;
+        }
+        if (request.getStatus().equals(NotificationStatus.CHANGES)
+                && (request.getDate() == null && request.getLocation() == null)) {
+            return false;
+        }
+        return true;
+    }
+
+
+    private boolean validateConfiguration() {
+        return url != null
+                && port != null && emailPath != null
+                && token != null;
+    }
+
+    private void executeNotification(StrategyName strategyName,
+                                     NotificationRequestModel request,
+                                     String response,
+                                     boolean useKafka) {
+        Strategy strategy = strategyFactory.findStrategy(strategyName);
+        Notification notification;
+        if (strategyName == StrategyName.EMAIL) {
+            notification = new Notification(request, response);
+        } else {
+            notification = new Notification(request, response, useKafka);
+        }
+        strategy.notifyUser(notification);
+    }
+
 
     /**
      * Getter for the map containing notification bodies.
