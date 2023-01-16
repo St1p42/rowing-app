@@ -1,27 +1,16 @@
 package rowing.notification.domain.notification;
 
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import rowing.commons.NotificationStatus;
 import rowing.commons.models.NotificationRequestModel;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static javax.swing.UIManager.put;
-
-
-@Data
 public class Notification {
-    private String activityId;
-    private NotificationStatus notificationStatus;
+    private transient String activityId;
+    private transient NotificationStatus notificationStatus;
     private transient String destinationEmail;
-    private String newLocation;
-    private String newDate;
-    private String username;
-    private boolean useKafka = false;
+    private transient String newLocation;
+    private transient String newDate;
+    private transient String username;
+    private transient boolean useKafka = false;
 
     /**
      * Constructor for the notification object that is sent through email.
@@ -45,6 +34,15 @@ public class Notification {
 
     private String getActivityId(NotificationRequestModel requestInfo) {
         return requestInfo.getActivityId().toString();
+    }
+
+    /**
+     * Getter for the activity id field.
+     *
+     * @return the activity id
+     */
+    public String getActivityId() {
+        return activityId;
     }
 
     private String getDate(NotificationRequestModel requestInfo) {
@@ -83,5 +81,41 @@ public class Notification {
      */
     public String getDestinationEmail() {
         return this.destinationEmail;
+    }
+
+    /**
+     * Getter for notification status.
+     *
+     * @return the notification status
+     */
+    public NotificationStatus getNotificationStatus() {
+        return notificationStatus;
+    }
+
+    /**
+     * Getter for the new location.
+     *
+     * @return the new location
+     */
+    public String getNewLocation() {
+        return newLocation;
+    }
+
+    /**
+     * Getter for the new date.
+     *
+     * @return the new date
+     */
+    public String getNewDate() {
+        return newDate;
+    }
+
+    /**
+     * Getter for the username.
+     *
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
     }
 }
