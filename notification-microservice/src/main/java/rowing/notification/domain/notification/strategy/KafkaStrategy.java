@@ -17,6 +17,9 @@ public class KafkaStrategy implements Strategy {
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
 
+    @Autowired
+    NotifyUserService notifyUserService;
+
     @Value("${topicName}")
     String topicName;
 
@@ -27,7 +30,8 @@ public class KafkaStrategy implements Strategy {
 
     @Override
     public void notifyUser(Notification notification) {
-        String message = notification.retrieveSubject() + "\n" + notification.retrieveBody();
+        String message = notifyUserService.retrieveSubject(notification)
+                + "\n" + notifyUserService.retrieveBody(notification);
         JSONObject json = new JSONObject();
         json.put(notification.getUsername(), message);
         kafkaTemplate.send(topicName, json.toString());

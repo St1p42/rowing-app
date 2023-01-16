@@ -15,6 +15,8 @@ class KafkaStrategyTest {
     KafkaTemplate<String, String> kafkaTemplate = mock(KafkaTemplate.class);
     KafkaStrategy kafkaStrategy = spy(KafkaStrategy.class);
 
+    NotifyUserService notifyUserService;
+
     @Test
     void getStrategyName() {
         assertNotNull(kafkaStrategy);
@@ -24,8 +26,10 @@ class KafkaStrategyTest {
     @Test
     void notifyUser() {
         Notification notification = mock(Notification.class);
-        when(notification.retrieveBody()).thenReturn("somebody");
-        when(notification.retrieveSubject()).thenReturn("somesubject");
+        notifyUserService = mock(NotifyUserService.class);
+        when(notifyUserService.retrieveBody(any(Notification.class))).thenReturn("body");
+        when(notifyUserService.retrieveSubject(any(Notification.class))).thenReturn("subj");
+        kafkaStrategy.setNotifyUserService(notifyUserService);
         when(notification.getUsername()).thenReturn("test");
         kafkaStrategy.setKafkaTemplate(kafkaTemplate);
         kafkaStrategy.notifyUser(notification);
