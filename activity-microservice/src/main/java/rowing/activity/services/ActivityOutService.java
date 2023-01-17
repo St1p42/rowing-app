@@ -336,7 +336,8 @@ public class ActivityOutService {
         List<String> participants = getParticipantIDs(activityId);
 
         // Send notification to all participants
-        String uriNotification = ServiceConfig.urlNotification + ":" + ServiceConfig.portNotification + ServiceConfig.pathNotify;
+        String uriNotification = ServiceConfig.urlNotification + ":"
+                + ServiceConfig.portNotification + ServiceConfig.pathNotify;
         HttpHeaders headersNotification = new HttpHeaders();
         headersNotification.setContentType(MediaType.APPLICATION_JSON);
         headersNotification.setBearerAuth(ServiceConfig.token);
@@ -353,7 +354,8 @@ public class ActivityOutService {
             //Check if any participants are not available for the new date and remove them from the activity if they are not
             if (optionalStart.isPresent()) {
                 //building the request for the user availability
-                String uriUser = ServiceConfig.urlNotification + ":" + ServiceConfig.portUsers + ServiceConfig.pathUserController + ServiceConfig.pathUserAvailability;
+                String uriUser = ServiceConfig.urlNotification + ":"
+                        + ServiceConfig.portUsers + ServiceConfig.pathUserController + ServiceConfig.pathUserAvailability;
                 HttpHeaders headersUser = new HttpHeaders();
                 headersUser.setContentType(MediaType.APPLICATION_JSON);
                 headersUser.setBearerAuth(ServiceConfig.token);

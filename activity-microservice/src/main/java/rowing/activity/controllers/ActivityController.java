@@ -51,8 +51,9 @@ public class ActivityController {
      * @param activityService    the activity service to be used
      */
     @Autowired
-    public ActivityController(AuthManager authManager, ActivityRepository activityRepository,
-                              MatchRepository matchRepository, ActivityService activityService, ActivityOutService activityOutService) {
+    public ActivityController(AuthManager authManager,
+                              ActivityRepository activityRepository, MatchRepository matchRepository,
+                              ActivityService activityService, ActivityOutService activityOutService) {
         this.authManager = authManager;
         this.activityRepository = activityRepository;
         this.matchRepository = matchRepository;

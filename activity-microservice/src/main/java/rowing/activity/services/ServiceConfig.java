@@ -11,8 +11,7 @@ enum ServiceConfig {
     static String token;
 
     @Value("${portNotification}")
-    static
-    String portNotification;
+    static String portNotification;
 
     @Value("${urlNotification}")
     static String urlNotification;
