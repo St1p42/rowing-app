@@ -40,26 +40,7 @@ public class ActivityService {
     @Autowired
     private transient RestTemplate restTemplate;
 
-    @Value("${microserviceJWT}")
-    private transient String token;
-
-    @Value("${portNotification}")
-    String portNotification;
-
-    @Value("${urlNotification}")
-    String urlNotification;
-
-    @Value("${pathNotify}")
-    String pathNotify;
-
-    @Value("${portUsers}")
-    String portUsers;
-
-    @Value("${pathUserController}")
-    String pathUserController;
-
-    @Value("${pathUserAvailability}")
-    String pathUserAvailability;
+    private ServiceConfig config;
 
     /**
      * Constructor for the ActivityService class.
@@ -227,7 +208,7 @@ public class ActivityService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.setBearerAuth(token);
+                headers.setBearerAuth(config.getToken());
 
                 NotificationRequestModel request = new NotificationRequestModel(match.getUserId(),
                         NotificationStatus.ACTIVITY_FULL, activityPresent.getId());
@@ -235,7 +216,7 @@ public class ActivityService {
                 String body = JsonUtil.serialize(request);
                 HttpEntity requestEntity = new HttpEntity(body, headers);
                 ResponseEntity responseEntity = restTemplate.exchange(
-                        urlNotification + ":" + portNotification + pathNotify,
+                        config.getUrlNotification() + ":" + config.getPortNotification() + config.getPathNotify(),
                         HttpMethod.POST, requestEntity, String.class);
                 return "User " + match.getUserId() + " signed up for activity : " + match.getActivityId().toString()
                         + " but since activity was full the user is currently in the waitlist.";
@@ -267,7 +248,7 @@ public class ActivityService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(token);
+        headers.setBearerAuth(config.getToken());
 
         NotificationRequestModel request = new NotificationRequestModel(model.getUserId(),
                 NotificationStatus.ACCEPTED, activity.getId());
@@ -275,7 +256,7 @@ public class ActivityService {
         String body = JsonUtil.serialize(request);
         HttpEntity requestEntity = new HttpEntity(body, headers);
         ResponseEntity responseEntity = restTemplate.exchange(
-                urlNotification + ":" + portNotification + pathNotify,
+                config.getUrlNotification() + ":" + config.getPortNotification() + config.getPathNotify(),
                 HttpMethod.POST, requestEntity, String.class);
         String response = "User "  + model.getUserId() + " is accepted successfully to the activity with id "
                 + activity.getId();
@@ -288,7 +269,7 @@ public class ActivityService {
                     body = JsonUtil.serialize(request);
                     requestEntity = new HttpEntity(body, headers);
                     responseEntity = restTemplate.exchange(
-                            urlNotification + ":" + portNotification + pathNotify,
+                            config.getUrlNotification() + ":" + config.getPortNotification() + config.getPathNotify(),
                             HttpMethod.POST, requestEntity, String.class);
                     response += "\nUser " + user + " is currently in the waitlist since the activity was full.";
                 }
@@ -340,7 +321,7 @@ public class ActivityService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(token);
+        headers.setBearerAuth(config.getToken());
 
         NotificationRequestModel request = new NotificationRequestModel(model.getUserId(),
                 NotificationStatus.REJECTED, activity.getId());
@@ -348,7 +329,7 @@ public class ActivityService {
         String body = JsonUtil.serialize(request);
         HttpEntity requestEntity = new HttpEntity(body, headers);
         ResponseEntity responseEntity = restTemplate.exchange(
-                urlNotification + ":" + portNotification + pathNotify,
+                config.getUrlNotification() + ":" + config.getPortNotification() + config.getPathNotify(),
                 HttpMethod.POST, requestEntity, String.class);
 
         return "User " + model.getUserId() + " is rejected successfully";
@@ -395,11 +376,11 @@ public class ActivityService {
     public UserDTO getUser(String userId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(token);
+        headers.setBearerAuth(config.getToken());
 
         HttpEntity<String> requestEntity = new HttpEntity<>(userId, headers);
         ResponseEntity<UserDTO> response = restTemplate
-                .exchange(urlNotification + ":" + portUsers + "/user/" + userId + "/get-user",
+                .exchange(config.getUrlNotification() + ":" + config.getPortUsers() + "/user/" + userId + "/get-user",
                         HttpMethod.GET, requestEntity, UserDTO.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -476,10 +457,10 @@ public class ActivityService {
         List<String> participants = getParticipantIDs(activityId);
 
         // Send notification to all participants
-        String uriNotification = urlNotification + ":" + portNotification + pathNotify;
+        String uriNotification = config.getUrlNotification() + ":" + config.getPortNotification() + config.getPathNotify();
         HttpHeaders headersNotification = new HttpHeaders();
         headersNotification.setContentType(MediaType.APPLICATION_JSON);
-        headersNotification.setBearerAuth(token);
+        headersNotification.setBearerAuth(config.getToken());
 
         for (String username : participants) {
             requestModel.setUsername(username);
@@ -493,10 +474,10 @@ public class ActivityService {
             //Check if any participants are not available for the new date and remove them from the activity if they are not
             if (optionalStart.isPresent()) {
                 //building the request for the user availability
-                String uriUser = urlNotification + ":" + portUsers + pathUserController + pathUserAvailability;
+                String uriUser = config.getUrlNotification() + ":" + config.getPortUsers() + config.getPathUserController() + config.getPathUserAvailability();
                 HttpHeaders headersUser = new HttpHeaders();
                 headersUser.setContentType(MediaType.APPLICATION_JSON);
-                headersUser.setBearerAuth(token);
+                headersUser.setBearerAuth(config.getToken());
                 HttpEntity requestHttpUser = new HttpEntity(username, headersUser);
 
                 //sending the request
