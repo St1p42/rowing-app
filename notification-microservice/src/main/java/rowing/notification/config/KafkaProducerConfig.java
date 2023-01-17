@@ -3,6 +3,7 @@ package rowing.notification.config;
 import lombok.Data;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,7 @@ public class KafkaProducerConfig {
      * @param kafkaSecurityProtocol - security protocol
      * @param useAuthentication - if it uses authentication
      */
+    @Autowired
     public void setKafkaToValues(@Value("${spring.kafka.bootstrap-servers}") String bootstrapServers,
                                @Value("${spring.kafka.properties.sasl.jaas-config}") String kafkaJaasConfig,
                                @Value("${spring.kafka.properties.sasl-mechanism}") String kafkaSaslMechanism,

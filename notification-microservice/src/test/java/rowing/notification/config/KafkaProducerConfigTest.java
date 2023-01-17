@@ -29,7 +29,8 @@ class KafkaProducerConfigTest {
 
     @Test
     void gettersTest() {
-        assertEquals("pkc-ewzgj.europe-west4.gcp.confluent.cloud:9092", kafkaProducerConfig.getKafkaToValues().get("servers"));
+        assertEquals("pkc-ewzgj.europe-west4.gcp.confluent.cloud:9092",
+                kafkaProducerConfig.getKafkaToValues().get("servers"));
         assertEquals("org.apache.kafka.common.security.plain.PlainLoginModule "
                         + "required username='XB3BPWFWIIFKLH6A' "
                         + "password='CAoprjk2rgUqNEBAvdY2EAhdLAZ8rz3qx+qNE4uaLG4z7ru9k7BV5efdy2RdOWpB';",
