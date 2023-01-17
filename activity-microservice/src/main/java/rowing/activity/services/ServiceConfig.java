@@ -1,29 +1,32 @@
 package rowing.activity.services;
 
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 
-@Data
-public class ServiceConfig {
+@Getter
+enum ServiceConfig {
+    value;
 
     @Value("${microserviceJWT}")
-    private transient String token;
+    static String token;
 
     @Value("${portNotification}")
+    static
     String portNotification;
 
     @Value("${urlNotification}")
-    String urlNotification;
+    static String urlNotification;
 
     @Value("${pathNotify}")
-    String pathNotify;
+    static String pathNotify;
 
     @Value("${portUsers}")
-    String portUsers;
+    static String portUsers;
 
     @Value("${pathUserController}")
-    String pathUserController;
+    static String pathUserController;
 
     @Value("${pathUserAvailability}")
-    String pathUserAvailability;
+    static String pathUserAvailability;
 }
