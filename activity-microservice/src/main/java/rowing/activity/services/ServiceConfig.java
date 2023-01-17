@@ -1,6 +1,5 @@
 package rowing.activity.services;
 
-import lombok.Data;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 

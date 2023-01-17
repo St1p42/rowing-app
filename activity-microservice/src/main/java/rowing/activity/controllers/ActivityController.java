@@ -1,11 +1,8 @@
 package rowing.activity.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.h2.engine.User;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import rowing.activity.authentication.AuthManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +11,15 @@ import rowing.activity.domain.entities.Activity;
 import rowing.activity.domain.entities.Match;
 import rowing.activity.domain.repositories.ActivityRepository;
 import rowing.activity.domain.repositories.MatchRepository;
+import rowing.activity.services.ActivityOutService;
 import rowing.activity.services.ActivityService;
 import rowing.commons.Certificates;
 import rowing.commons.CoxCertificate;
-import rowing.commons.NotificationStatus;
 import rowing.commons.Position;
 import rowing.commons.entities.ActivityDTO;
-import rowing.commons.entities.CompetitionDTO;
-import rowing.commons.entities.UpdateUserDTO;
 import rowing.commons.entities.MatchingDTO;
 import rowing.commons.entities.UserDTO;
 import rowing.commons.models.UserDTORequestModel;
-import rowing.commons.entities.CompetitionDTO;
-import rowing.commons.entities.UpdateUserDTO;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +40,7 @@ public class ActivityController {
     private final transient MatchRepository matchRepository;
 
     private final transient ActivityService activityService;
+    private final transient ActivityOutService activityOutService;
 
     /**
      * Instantiates a new controller.
@@ -59,11 +52,12 @@ public class ActivityController {
      */
     @Autowired
     public ActivityController(AuthManager authManager, ActivityRepository activityRepository,
-                              MatchRepository matchRepository, ActivityService activityService) {
+                              MatchRepository matchRepository, ActivityService activityService, ActivityOutService activityOutService) {
         this.authManager = authManager;
         this.activityRepository = activityRepository;
         this.matchRepository = matchRepository;
         this.activityService = activityService;
+        this.activityOutService = activityOutService;
     }
 
     /**
@@ -124,7 +118,7 @@ public class ActivityController {
 
         String result = "Activity has not been updated";
         try {
-            result = activityService.updateActivity(activityId, dto);
+            result = activityOutService.updateActivity(activityId, dto);
         } catch (IllegalArgumentException e) {
             if (e.getMessage().equals("Activity does not exist !")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Activity does not exist !");
@@ -146,7 +140,7 @@ public class ActivityController {
     public ResponseEntity<String> signUpActivity(@RequestBody MatchingDTO match, @PathVariable UUID activityId) {
         String response = "";
         try {
-            response = activityService.signUp(match);
+            response = activityOutService.signUp(match);
         } catch (IllegalArgumentException | JsonProcessingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
             //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Activity was not found", e);
@@ -236,7 +230,7 @@ public class ActivityController {
             }
         }
 
-        return ResponseEntity.ok(activityService.acceptUser(activity, model));
+        return ResponseEntity.ok(activityOutService.acceptUser(activity, model));
     }
 
     /**
@@ -272,7 +266,7 @@ public class ActivityController {
             return ResponseEntity.badRequest().body("This user didn't apply for this activity");
         }
 
-        return ResponseEntity.ok(activityService.rejectUser(activity, model));
+        return ResponseEntity.ok(activityOutService.rejectUser(activity, model));
     }
 
 
@@ -294,7 +288,7 @@ public class ActivityController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only the owner of the activity can kick users");
             }
             try {
-                response = activityService.kickUser(activity, userId);
+                response = activityOutService.kickUser(activity, userId);
                 return ResponseEntity.ok(response);
             } catch (IllegalArgumentException e) {
                 response = e.getMessage();
@@ -313,7 +307,7 @@ public class ActivityController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String userId) {
         try {
-            return ResponseEntity.ok(activityService.getUser(userId));
+            return ResponseEntity.ok(activityOutService.getUser(userId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -333,7 +327,7 @@ public class ActivityController {
             if (!authManager.getUsername().equals(activity.getOwner())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            return ResponseEntity.ok(activityService.getParticipants(activityId));
+            return ResponseEntity.ok(activityOutService.getParticipants(activityId));
         }
         return ResponseEntity.badRequest().build();
     }
