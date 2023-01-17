@@ -26,16 +26,14 @@ public class CoxCertificate {
             throw new IllegalArgumentException("A certificate with this name already exists");
         }
         this.name = name;
-        if (isSupersededBy == null) {
-            this.supersedes = supersedes;
-        } else {
-            for (String certificate : isSupersededBy) {
-                if (Certificates.existByName(certificate) == false) {
-                    throw new IllegalArgumentException("Certificate is not recognized");
-                }
+        if(isSupersededBy == null)
+            return;
+        for (String certificate : isSupersededBy) {
+            if (Certificates.existByName(certificate) == false) {
+                throw new IllegalArgumentException("Certificate is not recognized");
             }
-            this.supersedes = isSupersededBy;
         }
+        this.supersedes = isSupersededBy;
     }
 
     public String getName() {
