@@ -279,19 +279,22 @@ public class ActivityService {
                 HttpMethod.POST, requestEntity, String.class);
         String response = "User "  + model.getUserId() + " is accepted successfully to the activity with id "
                 + activity.getId();
-        if (activity.getPositions().size() < 1) {
-            List<String> applicants = activity.getApplicants();
-            for (String user : applicants) {
-                if (!matchRepository.existsByActivityIdAndUserId(match.getActivityId(), user)) {
-                    request = new NotificationRequestModel(user,
-                            NotificationStatus.ACTIVITY_FULL, activity.getId());
-                    body = JsonUtil.serialize(request);
-                    requestEntity = new HttpEntity(body, headers);
-                    responseEntity = restTemplate.exchange(
-                            urlNotification + ":" + portNotification + pathNotify,
-                            HttpMethod.POST, requestEntity, String.class);
-                    response += "\nUser " + user + " is currently in the waitlist since the activity was full.";
-                }
+
+        if (activity.getPositions().size() >= 1) {
+            return response;
+        }
+
+        List<String> applicants = activity.getApplicants();
+        for (String user : applicants) {
+            if (!matchRepository.existsByActivityIdAndUserId(match.getActivityId(), user)) {
+                request = new NotificationRequestModel(user,
+                        NotificationStatus.ACTIVITY_FULL, activity.getId());
+                body = JsonUtil.serialize(request);
+                requestEntity = new HttpEntity(body, headers);
+                responseEntity = restTemplate.exchange(
+                        urlNotification + ":" + portNotification + pathNotify,
+                        HttpMethod.POST, requestEntity, String.class);
+                response += "\nUser " + user + " is currently in the waitlist since the activity was full.";
             }
         }
         return response;
