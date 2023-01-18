@@ -449,28 +449,11 @@ public class ActivityService {
             throw new IllegalArgumentException("Activity does not exist !");
         }
         Activity activity = optionalActivity.get();
-
-        NotificationRequestModel requestModel = new NotificationRequestModel(null,
-                NotificationStatus.CHANGES,
-                activity.getId());
-
         Optional<Date> optionalStart = Optional.ofNullable(updateActivityDto.getStart());
-        if (optionalStart.isPresent()) {
-            Date newStart = optionalStart.get();
-            checkNewStart(newStart);  // Checking if the new start is in the future
-            activity.setStart(newStart);
-            requestModel.setDate(newStart);
-        }
-
         Optional<String> optionalLocation = Optional.ofNullable(updateActivityDto.getLocation());
-        if (optionalLocation.isPresent()) {
-            String newLocation = optionalLocation.get();
-            activity.setLocation(newLocation);
-            requestModel.setLocation(newLocation);
-        }
 
-        //get all participants of the activity
-        List<String> participants = getParticipantIDs(activityId);
+        NotificationRequestModel requestModel =
+                createUpdateNotificationRequestModel(activity, optionalStart, optionalLocation);
 
         // Send notification to all participants
         String uriNotification = urlNotification + ":" + portNotification + pathNotify;
@@ -478,7 +461,7 @@ public class ActivityService {
         headersNotification.setContentType(MediaType.APPLICATION_JSON);
         headersNotification.setBearerAuth(token);
 
-        for (String username : participants) {
+        for (String username : getParticipantIDs(activityId)) {
             requestModel.setUsername(username);
             String bodyNotification = JsonUtil.serialize(requestModel);
             HttpEntity requestNotification = new HttpEntity(bodyNotification, headersNotification);
@@ -486,36 +469,58 @@ public class ActivityService {
                     uriNotification,
                     HttpMethod.POST, requestNotification, String.class);
 
-
             //Check if any participants are not available for the new date and remove them from the activity if they are not
             if (optionalStart.isPresent()) {
-                //building the request for the user availability
-                String uriUser = urlNotification + ":" + portUsers + pathUserController + pathUserAvailability;
-                HttpHeaders headersUser = new HttpHeaders();
-                headersUser.setContentType(MediaType.APPLICATION_JSON);
-                headersUser.setBearerAuth(token);
-                HttpEntity requestHttpUser = new HttpEntity(username, headersUser);
-
-                //sending the request
-                ResponseEntity<List<AvailabilityIntervals>> response =
-                        restTemplate.exchange(uriUser, HttpMethod.GET, requestHttpUser,
-                                new ParameterizedTypeReference<List<AvailabilityIntervals>>() {
-                                }, username);
-
-                //checking the response
-                if (response.getStatusCode() == HttpStatus.OK) {
-                    List<AvailabilityIntervals> availability = response.getBody();
-                    if (!checkAvailability(activity, availability)) {
-                        kickUser(activity, username);
-                    }
-                }
+                removeUnavailableUser(activity, username);
             }
         }
 
         activityRepository.save(activity);
-
-        ActivityDTO activityDto = activity.toDto();
         return "Activity" + activityId + "has been updated successfully";
+    }
+
+    private void removeUnavailableUser(Activity activity, String username) {
+        //building the request for the user availability
+        String uriUser = urlNotification + ":" + portUsers + pathUserController + pathUserAvailability;
+        HttpHeaders headersUser = new HttpHeaders();
+        headersUser.setContentType(MediaType.APPLICATION_JSON);
+        headersUser.setBearerAuth(token);
+        HttpEntity requestHttpUser = new HttpEntity(username, headersUser);
+
+        //sending the request
+        ResponseEntity<List<AvailabilityIntervals>> response =
+                restTemplate.exchange(uriUser, HttpMethod.GET, requestHttpUser,
+                        new ParameterizedTypeReference<List<AvailabilityIntervals>>() {
+                        }, username);
+
+        //checking the response
+        if (response.getStatusCode() == HttpStatus.OK) {
+            List<AvailabilityIntervals> availability = response.getBody();
+            if (!checkAvailability(activity, availability)) {
+                kickUser(activity, username);
+            }
+        }
+    }
+
+    private static NotificationRequestModel createUpdateNotificationRequestModel(Activity activity,
+                                     Optional<Date> optionalStart, Optional<String> optionalLocation) {
+        NotificationRequestModel requestModel = new NotificationRequestModel(null,
+                NotificationStatus.CHANGES,
+                activity.getId());
+
+        if (optionalStart.isPresent()) {
+            Date newStart = optionalStart.get();
+            checkNewStart(newStart);  // Checking if the new start is in the future
+            activity.setStart(newStart);
+            requestModel.setDate(newStart);
+        }
+
+        if (optionalLocation.isPresent()) {
+            String newLocation = optionalLocation.get();
+            activity.setLocation(newLocation);
+            requestModel.setLocation(newLocation);
+        }
+        return requestModel;
     }
 
     /**
