@@ -419,21 +419,15 @@ public class ActivityService {
      */
     public List<UserDTO> getParticipants(UUID activityId) {
         List<String> ids = new ArrayList<>();
-
-        if (matchRepository.existsByActivityId(activityId)) {
-            List<Match> matches = matchRepository.findAllByActivityId(activityId);
-            for (Match match : matches) {
-                if (match.getDto().getStatus() == NotificationStatus.ACCEPTED) {
-                    ids.add(match.getUserId());
-                }
-            }
-        }
-
         List<UserDTO> users = new ArrayList<>();
 
-        for (String id : ids) {
-            users.add(getUser(id));
+        if (!matchRepository.existsByActivityId(activityId)) {
+            return users;
         }
+
+        List<Match> matches = matchRepository.findAllByActivityId(activityId);
+        matches.stream().filter(match -> match.getDto().getStatus() == NotificationStatus.ACCEPTED)
+                .forEach(match -> users.add(getUser(match.getUserId())));
 
         return users;
     }
