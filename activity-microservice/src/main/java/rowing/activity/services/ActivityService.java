@@ -455,7 +455,8 @@ public class ActivityService {
         Optional<Date> optionalStart = Optional.ofNullable(updateActivityDto.getStart());
         Optional<String> optionalLocation = Optional.ofNullable(updateActivityDto.getLocation());
 
-        NotificationRequestModel requestModel = createUpdateNotificationRequestModel(activity, optionalStart, optionalLocation);
+        NotificationRequestModel requestModel =
+                createUpdateNotificationRequestModel(activity, optionalStart, optionalLocation);
 
         // Send notification to all participants
         String uriNotification = urlNotification + ":" + portNotification + pathNotify;
@@ -504,7 +505,8 @@ public class ActivityService {
         }
     }
 
-    private static NotificationRequestModel createUpdateNotificationRequestModel(Activity activity, Optional<Date> optionalStart, Optional<String> optionalLocation) {
+    private static NotificationRequestModel createUpdateNotificationRequestModel(Activity activity,
+                                     Optional<Date> optionalStart, Optional<String> optionalLocation) {
         NotificationRequestModel requestModel = new NotificationRequestModel(null,
                 NotificationStatus.CHANGES,
                 activity.getId());
